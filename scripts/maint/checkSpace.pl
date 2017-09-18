@@ -123,6 +123,12 @@ for my $fn (@ARGV) {
             if (/([^\s'])\{/) {
                 msg "       $1\{:$fn:$.\n";
             }
+
+            ## Warn about there being no space after a comma.
+            #
+            if (/\((\w+),[^\s]/) {
+                msg "      Space missing after comma on $. in $fn.\n";
+            }
             ## Warn about multiple internal spaces.
             #if (/[^\s,:]\s{2,}[^\s\\=]/) {
             #    msg "     X  X:$fn:$.\n";
