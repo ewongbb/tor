@@ -76,7 +76,7 @@ static char geoip6_digest[DIGEST_LEN];
  * country list if it is a valid 2-letter country code, otherwise
  * return -1. */
 MOCK_IMPL(country_t,
-geoip_get_country,(const char *country))
+geoip_get_country, (const char *country))
 {
   void *idxplus1_;
   intptr_t idx;
@@ -165,8 +165,8 @@ geoip_parse_entry(const char *line, sa_family_t family)
   char buf[512];
   if (family == AF_INET) {
     unsigned int low, high;
-    if (tor_sscanf(line,"%u,%u,%2s", &low, &high, c) == 3 ||
-        tor_sscanf(line,"\"%u\",\"%u\",\"%2s\",", &low, &high, c) == 3) {
+    if (tor_sscanf(line, "%u,%u,%2s", &low, &high, c) == 3 ||
+        tor_sscanf(line, "\"%u\",\"%u\",\"%2s\",", &low, &high, c) == 3) {
       tor_addr_from_ipv4h(&low_addr, low);
       tor_addr_from_ipv4h(&high_addr, high);
     } else
@@ -414,7 +414,7 @@ geoip_get_country_by_ipv6(const struct in6_addr *addr)
  * geoip_get_n_countries().  To decode it, call geoip_get_country_name().
  */
 MOCK_IMPL(int,
-geoip_get_country_by_addr,(const tor_addr_t *addr))
+geoip_get_country_by_addr, (const tor_addr_t *addr))
 {
   if (tor_addr_family(addr) == AF_INET) {
     return geoip_get_country_by_ipv4(tor_addr_to_ipv4h(addr));
@@ -427,7 +427,7 @@ geoip_get_country_by_addr,(const tor_addr_t *addr))
 
 /** Return the number of countries recognized by the GeoIP country list. */
 MOCK_IMPL(int,
-geoip_get_n_countries,(void))
+geoip_get_n_countries, (void))
 {
   if (!geoip_countries)
     init_geoip_countries();
@@ -448,7 +448,7 @@ geoip_get_country_name(country_t num)
 
 /** Return true iff we have loaded a GeoIP database.*/
 MOCK_IMPL(int,
-geoip_is_loaded,(sa_family_t family))
+geoip_is_loaded, (sa_family_t family))
 {
   tor_assert(family == AF_INET || family == AF_INET6);
   if (geoip_countries == NULL)
@@ -860,7 +860,8 @@ geoip_get_transport_history(void)
    *  c) We concatenate string_chunks to form the final string.
    */
 
-  log_debug(LD_GENERAL,"Starting iteration for transport history. %d clients.",
+  log_debug(LD_GENERAL,
+            "Starting iteration for transport history. %d clients.",
             HT_SIZE(&client_history));
 
   /* Loop through all clients. */

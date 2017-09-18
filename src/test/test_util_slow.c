@@ -27,7 +27,7 @@
 #ifdef _WIN32
 /* I've assumed Windows doesn't have the gap between fork and exec
  * that causes the race condition on unix-like platforms */
-#define MATCH_PROCESS_STATUS(s1,s2)         ((s1) == (s2))
+#define MATCH_PROCESS_STATUS(s1, s2)         ((s1) == (s2))
 
 #else
 /* work around a race condition of the timing of SIGCHLD handler updates
@@ -39,7 +39,7 @@
 #define IS_RUNNING_OR_NOTRUNNING(s)           \
   ((s) == PROCESS_STATUS_RUNNING || (s) == PROCESS_STATUS_NOTRUNNING)
 /* well, this is ugly */
-#define MATCH_PROCESS_STATUS(s1,s2)           \
+#define MATCH_PROCESS_STATUS(s1, s2)           \
   (  (s1) == (s2)                                         \
      ||((s1) == PROCESS_STATUS_RUNNING_OR_NOTRUNNING      \
         && IS_RUNNING_OR_NOTRUNNING(s2))                  \
@@ -119,15 +119,15 @@ run_util_spawn_background(const char *argv[], const char *expected_out,
                                          sizeof(stdout_buf) - 1);
   tt_assert(pos >= 0);
   stdout_buf[pos] = '\0';
-  tt_int_op(strlen(expected_out),OP_EQ, pos);
-  tt_str_op(expected_out,OP_EQ, stdout_buf);
+  tt_int_op(strlen(expected_out), OP_EQ, pos);
+  tt_str_op(expected_out, OP_EQ, stdout_buf);
 
   notify_pending_waitpid_callbacks();
 
   /* Check it terminated correctly */
   retval = tor_get_exit_code(process_handle, 1, &exit_code);
-  tt_int_op(PROCESS_EXIT_EXITED,OP_EQ, retval);
-  tt_int_op(expected_exit,OP_EQ, exit_code);
+  tt_int_op(PROCESS_EXIT_EXITED, OP_EQ, retval);
+  tt_int_op(expected_exit, OP_EQ, exit_code);
   // TODO: Make test-child exit with something other than 0
 
 #ifndef _WIN32
@@ -140,8 +140,8 @@ run_util_spawn_background(const char *argv[], const char *expected_out,
                                          sizeof(stderr_buf) - 1);
   tt_assert(pos >= 0);
   stderr_buf[pos] = '\0';
-  tt_str_op(expected_err,OP_EQ, stderr_buf);
-  tt_int_op(strlen(expected_err),OP_EQ, pos);
+  tt_str_op(expected_err, OP_EQ, stderr_buf);
+  tt_int_op(strlen(expected_err), OP_EQ, pos);
 
   notify_pending_waitpid_callbacks();
 
@@ -230,9 +230,9 @@ test_util_spawn_background_partial_read_impl(int exit_early)
 #else
   status = tor_spawn_background(argv[0], argv, NULL, &process_handle);
 #endif
-  tt_int_op(expected_status,OP_EQ, status);
+  tt_int_op(expected_status, OP_EQ, status);
   tt_assert(process_handle);
-  tt_int_op(expected_status,OP_EQ, process_handle->status);
+  tt_int_op(expected_status, OP_EQ, process_handle->status);
 
   /* Check stdout */
   for (expected_out_ctr = 0; expected_out[expected_out_ctr] != NULL;) {
@@ -253,8 +253,8 @@ test_util_spawn_background_partial_read_impl(int exit_early)
 
     tt_assert(pos > 0);
     stdout_buf[pos] = '\0';
-    tt_str_op(expected_out[expected_out_ctr],OP_EQ, stdout_buf);
-    tt_int_op(strlen(expected_out[expected_out_ctr]),OP_EQ, pos);
+    tt_str_op(expected_out[expected_out_ctr], OP_EQ, stdout_buf);
+    tt_int_op(strlen(expected_out[expected_out_ctr]), OP_EQ, pos);
     expected_out_ctr++;
   }
 
@@ -269,14 +269,14 @@ test_util_spawn_background_partial_read_impl(int exit_early)
   pos = tor_read_all_handle(process_handle->stdout_pipe, stdout_buf,
                             sizeof(stdout_buf) - 1,
                             process_handle);
-  tt_int_op(0,OP_EQ, pos);
+  tt_int_op(0, OP_EQ, pos);
 #else
   if (!eof) {
     /* We should have got all the data, but maybe not the EOF flag */
     pos = tor_read_all_handle(process_handle->stdout_pipe, stdout_buf,
                               sizeof(stdout_buf) - 1,
                               process_handle, &eof);
-    tt_int_op(0,OP_EQ, pos);
+    tt_int_op(0, OP_EQ, pos);
     tt_assert(eof);
   }
   /* Otherwise, we got the EOF on the last read */
@@ -284,8 +284,8 @@ test_util_spawn_background_partial_read_impl(int exit_early)
 
   /* Check it terminated correctly */
   retval = tor_get_exit_code(process_handle, 1, &exit_code);
-  tt_int_op(PROCESS_EXIT_EXITED,OP_EQ, retval);
-  tt_int_op(expected_exit,OP_EQ, exit_code);
+  tt_int_op(PROCESS_EXIT_EXITED, OP_EQ, retval);
+  tt_int_op(expected_exit, OP_EQ, exit_code);
 
   // TODO: Make test-child exit with something other than 0
 
@@ -294,8 +294,8 @@ test_util_spawn_background_partial_read_impl(int exit_early)
                                          sizeof(stderr_buf) - 1);
   tt_assert(pos >= 0);
   stderr_buf[pos] = '\0';
-  tt_str_op(expected_err,OP_EQ, stderr_buf);
-  tt_int_op(strlen(expected_err),OP_EQ, pos);
+  tt_str_op(expected_err, OP_EQ, stderr_buf);
+  tt_int_op(strlen(expected_err), OP_EQ, pos);
 
  done:
   tor_process_handle_destroy(process_handle, 1);

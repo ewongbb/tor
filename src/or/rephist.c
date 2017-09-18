@@ -454,7 +454,8 @@ rep_hist_note_router_reachable(const char *id, const tor_addr_t *at_addr,
       penalty = (int)(fresh_interval + live_interval) / 2;
     }
     format_local_iso_time(tbuf, hist->start_of_run);
-    log_info(LD_HIST,"Router %s still seems Running, but its address appears "
+    log_info(LD_HIST,
+             "Router %s still seems Running, but its address appears "
              "to have changed since the last time it was reachable.  I'm "
              "going to treat it as having been down for %d seconds",
              hex_str(id, DIGEST_LEN), penalty);
@@ -466,7 +467,8 @@ rep_hist_note_router_reachable(const char *id, const tor_addr_t *at_addr,
       log_debug(LD_HIST, "Router %s is still Running; it has been Running "
                 "since %s", hex_str(id, DIGEST_LEN), tbuf);
     else
-      log_info(LD_HIST,"Router %s is now Running; it was previously untracked",
+      log_info(LD_HIST,
+               "Router %s is now Running; it was previously untracked",
                hex_str(id, DIGEST_LEN));
   }
   if (at_addr)
@@ -574,7 +576,7 @@ rep_hist_downrate_old_runs(time_t now)
   /* Multiply every w_r_l, t_r_w pair by alpha. */
   for (orhist_it = digestmap_iter_init(history_map);
        !digestmap_iter_done(orhist_it);
-       orhist_it = digestmap_iter_next(history_map,orhist_it)) {
+       orhist_it = digestmap_iter_next(history_map, orhist_it)) {
     digestmap_iter_get(orhist_it, &digest1, &hist_p);
     hist = hist_p;
 
@@ -723,7 +725,7 @@ void
 rep_hist_note_extend_succeeded(const char *from_id, const char *to_id)
 {
   link_history_t *hist;
-  /* log_fn(LOG_WARN, "EXTEND SUCCEEDED: %s->%s",from_name,to_name); */
+  /* log_fn(LOG_WARN, "EXTEND SUCCEEDED: %s->%s", from_name, to_name); */
   hist = get_link_history(from_id, to_id);
   if (!hist)
     return;
@@ -739,7 +741,7 @@ void
 rep_hist_note_extend_failed(const char *from_id, const char *to_id)
 {
   link_history_t *hist;
-  /* log_fn(LOG_WARN, "EXTEND FAILED: %s->%s",from_name,to_name); */
+  /* log_fn(LOG_WARN, "EXTEND FAILED: %s->%s", from_name, to_name); */
   hist = get_link_history(from_id, to_id);
   if (!hist)
     return;
@@ -774,7 +776,7 @@ rep_hist_dump_stats(time_t now, int severity)
 
   for (orhist_it = digestmap_iter_init(history_map);
        !digestmap_iter_done(orhist_it);
-       orhist_it = digestmap_iter_next(history_map,orhist_it)) {
+       orhist_it = digestmap_iter_next(history_map, orhist_it)) {
     double s;
     long stability;
     digestmap_iter_get(orhist_it, &digest1, &or_history_p);
@@ -873,7 +875,7 @@ rep_history_clean(time_t before)
         tor_free(link_history);
         continue;
       }
-      lhist_it = digestmap_iter_next(or_history->link_history_map,lhist_it);
+      lhist_it = digestmap_iter_next(or_history->link_history_map, lhist_it);
     }
     orhist_it = digestmap_iter_next(history_map, orhist_it);
   }
@@ -938,7 +940,7 @@ rep_hist_record_mtbf_data(time_t now, int missing_means_down)
    * Not for 0.2.0. -NM */
   for (orhist_it = digestmap_iter_init(history_map);
        !digestmap_iter_done(orhist_it);
-       orhist_it = digestmap_iter_next(history_map,orhist_it)) {
+       orhist_it = digestmap_iter_next(history_map, orhist_it)) {
     char dbuf[HEX_DIGEST_LEN+1];
     const char *t = NULL;
     digestmap_iter_get(orhist_it, &digest, &or_history_p);
@@ -1089,17 +1091,17 @@ rep_hist_load_mtbf_data(time_t now)
       break;
     if (!strcmpstart(line, "last-downrated ")) {
       if (parse_iso_time(line+strlen("last-downrated "), &last_downrated)<0)
-        log_warn(LD_HIST,"Couldn't parse downrate time in mtbf "
+        log_warn(LD_HIST, "Couldn't parse downrate time in mtbf "
                  "history file.");
     }
     if (!strcmpstart(line, "stored-at ")) {
       if (parse_iso_time(line+strlen("stored-at "), &stored_at)<0)
-        log_warn(LD_HIST,"Couldn't parse stored time in mtbf "
+        log_warn(LD_HIST, "Couldn't parse stored time in mtbf "
                  "history file.");
     }
     if (!strcmpstart(line, "tracked-since ")) {
       if (parse_iso_time(line+strlen("tracked-since "), &tracked_since)<0)
-        log_warn(LD_HIST,"Couldn't parse started-tracking time in mtbf "
+        log_warn(LD_HIST, "Couldn't parse started-tracking time in mtbf "
                  "history file.");
     }
   }
@@ -1513,7 +1515,7 @@ rep_hist_fill_bandwidth_history(char *buf, size_t len, const bw_array_t *b)
     cutoff = UINT64_MAX;
   }
 
-  for (n=0; n<b->num_maxes_set; ++n,++i) {
+  for (n=0; n<b->num_maxes_set; ++n, ++i) {
     uint64_t total;
     if (i >= NUM_TOTALS)
       i -= NUM_TOTALS;
@@ -1601,7 +1603,7 @@ rep_hist_update_bwhist_state_section(or_state_t *state,
                                      time_t *s_begins,
                                      int *s_interval)
 {
-  int i,j;
+  int i, j;
   uint64_t maxval;
 
   if (*s_values) {
@@ -1635,7 +1637,7 @@ rep_hist_update_bwhist_state_section(or_state_t *state,
   *s_maxima = smartlist_new();
   /* Set i to first position in circular array */
   i = (b->num_maxes_set <= b->next_max_idx) ? 0 : b->next_max_idx;
-  for (j=0; j < b->num_maxes_set; ++j,++i) {
+  for (j=0; j < b->num_maxes_set; ++j, ++i) {
     if (i >= NUM_TOTALS)
       i = 0;
     smartlist_add_asprintf(*s_values, U64_FORMAT,
@@ -1689,7 +1691,7 @@ rep_hist_load_bwhist_state_section(bw_array_t *b,
   time_t start;
 
   uint64_t v, mv;
-  int i,ok,ok_m = 0;
+  int i, ok, ok_m = 0;
   int have_maxima = s_maxima && s_values &&
     (smartlist_len(s_values) == smartlist_len(s_maxima));
 
@@ -1712,7 +1714,8 @@ rep_hist_load_bwhist_state_section(bw_array_t *b,
         }
         if (!ok) {
           retval = -1;
-          log_notice(LD_HIST, "Could not parse value '%s' into a number.'",cp);
+          log_notice(LD_HIST, "Could not parse value '%s' into a number.'",
+                     cp);
         }
         if (maxstr && !ok_m) {
           retval = -1;

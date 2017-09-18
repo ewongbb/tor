@@ -368,7 +368,7 @@ cpuworker_onion_handshake_replyfn(void *work_)
 
   if (TO_CIRCUIT(circ)->marked_for_close) {
     /* We already marked this circuit; we can't call it open. */
-    log_debug(LD_OR,"circuit is already marked.");
+    log_debug(LD_OR, "circuit is already marked.");
     goto done_processing;
   }
 
@@ -384,11 +384,11 @@ cpuworker_onion_handshake_replyfn(void *work_)
                        &rpl.created_cell,
                        (const char*)rpl.keys, sizeof(rpl.keys),
                        rpl.rend_auth_material) < 0) {
-    log_warn(LD_OR,"onionskin_answer failed. Closing.");
+    log_warn(LD_OR, "onionskin_answer failed. Closing.");
     circuit_mark_for_close(TO_CIRCUIT(circ), END_CIRC_REASON_INTERNAL);
     goto done_processing;
   }
-  log_debug(LD_OR,"onionskin_answer succeeded. Yay.");
+  log_debug(LD_OR, "onionskin_answer succeeded. Yay.");
 
  done_processing:
   memwipe(&rpl, 0, sizeof(rpl));
@@ -416,7 +416,7 @@ cpuworker_onion_handshake_threadfn(void *state_, void *work_)
 
   const create_cell_t *cc = &req.create_cell;
   created_cell_t *cell_out = &rpl.created_cell;
-  struct timeval tv_start = {0,0}, tv_end;
+  struct timeval tv_start = {0, 0}, tv_end;
   int n;
   rpl.timed = req.timed;
   rpl.started_at = req.started_at;
@@ -431,12 +431,12 @@ cpuworker_onion_handshake_threadfn(void *state_, void *work_)
                                   rpl.rend_auth_material);
   if (n < 0) {
     /* failure */
-    log_debug(LD_OR,"onion_skin_server_handshake failed.");
+    log_debug(LD_OR, "onion_skin_server_handshake failed.");
     memset(&rpl, 0, sizeof(rpl));
     rpl.success = 0;
   } else {
     /* success */
-    log_debug(LD_OR,"onion_skin_server_handshake succeeded.");
+    log_debug(LD_OR, "onion_skin_server_handshake succeeded.");
     cell_out->handshake_len = n;
     switch (cc->cell_type) {
     case CELL_CREATE:
@@ -485,16 +485,16 @@ queue_pending_tasks(void)
       return;
 
     if (assign_onionskin_to_cpuworker(circ, onionskin) < 0)
-      log_info(LD_OR,"assign_to_cpuworker failed. Ignoring.");
+      log_info(LD_OR, "assign_to_cpuworker failed. Ignoring.");
   }
 }
 
 /** DOCDOC */
 MOCK_IMPL(workqueue_entry_t *,
-cpuworker_queue_work,(workqueue_priority_t priority,
-                      workqueue_reply_t (*fn)(void *, void *),
-                      void (*reply_fn)(void *),
-                      void *arg))
+cpuworker_queue_work, (workqueue_priority_t priority,
+                       workqueue_reply_t (*fn)(void *, void *),
+                       void (*reply_fn)(void *),
+                       void *arg))
 {
   tor_assert(threadpool);
 
@@ -522,13 +522,13 @@ assign_onionskin_to_cpuworker(or_circuit_t *circ,
   tor_assert(threadpool);
 
   if (!circ->p_chan) {
-    log_info(LD_OR,"circ->p_chan gone. Failing circ.");
+    log_info(LD_OR, "circ->p_chan gone. Failing circ.");
     tor_free(onionskin);
     return -1;
   }
 
   if (total_pending_tasks >= max_pending_tasks) {
-    log_debug(LD_OR,"No idle cpuworkers. Queuing.");
+    log_debug(LD_OR, "No idle cpuworkers. Queuing.");
     if (onion_pending_add(circ, onionskin) < 0) {
       tor_free(onionskin);
       return -1;

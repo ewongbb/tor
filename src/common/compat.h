@@ -106,15 +106,15 @@
 /* we have push/pop support */
 #    define DISABLE_GCC_WARNING(warningopt) \
           PRAGMA_DIAGNOSTIC_(push) \
-          PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W,warningopt))
+          PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W, warningopt))
 #    define ENABLE_GCC_WARNING(warningopt) \
           PRAGMA_DIAGNOSTIC_(pop)
 #  else
 /* older version of gcc: no push/pop support. */
 #    define DISABLE_GCC_WARNING(warningopt) \
-         PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W,warningopt))
+         PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W, warningopt))
 #    define ENABLE_GCC_WARNING(warningopt) \
-         PRAGMA_DIAGNOSTIC_(warning PRAGMA_JOIN_STRINGIFY_(-W,warningopt))
+         PRAGMA_DIAGNOSTIC_(warning PRAGMA_JOIN_STRINGIFY_(-W, warningopt))
 #  endif
 #else /* ifdef __GNUC__ */
 /* not gcc at all */
@@ -483,10 +483,10 @@ tor_socket_t tor_open_socket_with_extensions(
                                            int domain, int type, int protocol,
                                            int cloexec, int nonblock);
 MOCK_DECL(tor_socket_t,
-tor_open_socket,(int domain, int type, int protocol));
+          tor_open_socket, (int domain, int type, int protocol));
 tor_socket_t tor_open_socket_nonblocking(int domain, int type, int protocol);
 tor_socket_t tor_accept_socket(tor_socket_t sockfd, struct sockaddr *addr,
-                                  socklen_t *len);
+                               socklen_t *len);
 tor_socket_t tor_accept_socket_nonblocking(tor_socket_t sockfd,
                                            struct sockaddr *addr,
                                            socklen_t *len);
@@ -495,13 +495,13 @@ tor_socket_t tor_accept_socket_with_extensions(tor_socket_t sockfd,
                                                socklen_t *len,
                                                int cloexec, int nonblock);
 MOCK_DECL(tor_socket_t,
-tor_connect_socket,(tor_socket_t socket,const struct sockaddr *address,
-                    socklen_t address_len));
+tor_connect_socket, (tor_socket_t socket, const struct sockaddr *address,
+                     socklen_t address_len));
 int get_n_open_sockets(void);
 
-MOCK_DECL(int,
-tor_getsockname,(tor_socket_t socket, struct sockaddr *address,
-                 socklen_t *address_len));
+MOCK_DECL(int, tor_getsockname, (tor_socket_t socket,
+                                 struct sockaddr *address,
+                                 socklen_t *address_len));
 
 #define tor_socket_send(s, buf, len, flags) send(s, buf, len, flags)
 #define tor_socket_recv(s, buf, len, flags) recv(s, buf, len, flags)
@@ -568,11 +568,11 @@ struct sockaddr_in6 {
 };
 #endif
 
-MOCK_DECL(int,tor_gethostname,(char *name, size_t namelen));
+MOCK_DECL(int, tor_gethostname, (char *name, size_t namelen));
 int tor_inet_aton(const char *cp, struct in_addr *addr) ATTR_NONNULL((1,2));
 const char *tor_inet_ntop(int af, const void *src, char *dst, size_t len);
 int tor_inet_pton(int af, const char *src, void *dst);
-MOCK_DECL(int,tor_lookup_hostname,(const char *name, uint32_t *addr));
+MOCK_DECL(int, tor_lookup_hostname, (const char *name, uint32_t *addr));
 int set_socket_nonblocking(tor_socket_t socket);
 int tor_socketpair(int family, int type, int protocol, tor_socket_t fd[2]);
 int network_init(void);

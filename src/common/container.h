@@ -236,7 +236,7 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
  * 10 lines or so.  Use SMARTLIST_FOREACH_{BEGIN,END} for those.
  */
 #define SMARTLIST_FOREACH(sl, type, var, cmd)                   \
-  SMARTLIST_FOREACH_BEGIN(sl,type,var) {                        \
+  SMARTLIST_FOREACH_BEGIN(sl, type, var) {                        \
     cmd;                                                        \
   } SMARTLIST_FOREACH_END(var)
 

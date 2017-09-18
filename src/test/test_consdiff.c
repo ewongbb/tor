@@ -11,8 +11,8 @@
 #include "memarea.h"
 #include "log_test_helpers.h"
 
-#define tt_str_eq_line(a,b) \
-  tt_assert(line_str_eq((b),(a)))
+#define tt_str_eq_line(a, b) \
+  tt_assert(line_str_eq((b), (a)))
 
 static void
 test_consdiff_smartlist_slice(void *arg)

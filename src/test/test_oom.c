@@ -227,14 +227,14 @@ test_oom_streambuf(void *arg)
 
   /* go halfway into the second. */
   monotime_coarse_set_mock_time_nsec(start_ns + 500 * 1000000);
-  c1 = dummy_or_circuit_new(10,10);
+  c1 = dummy_or_circuit_new(10, 10);
 
   monotime_coarse_set_mock_time_nsec(start_ns + 510 * 1000000);
   c2 = dummy_origin_circuit_new(20);
   monotime_coarse_set_mock_time_nsec(start_ns + 520 * 1000000);
-  c3 = dummy_or_circuit_new(20,20);
+  c3 = dummy_or_circuit_new(20, 20);
   monotime_coarse_set_mock_time_nsec(start_ns + 530 * 1000000);
-  c4 = dummy_or_circuit_new(0,0);
+  c4 = dummy_or_circuit_new(0, 0);
   tt_int_op(cell_queues_get_total_allocation(), OP_EQ,
             packed_cell_mem_cost() * 80);
 

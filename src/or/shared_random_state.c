@@ -68,7 +68,7 @@ static config_var_t state_vars[] = {
   V(Commit,                     LINELIST, NULL),
 
   V(SharedRandValues,           LINELIST_V, NULL),
-  VAR("SharedRandPreviousValue",LINELIST_S, SharedRandValues, NULL),
+  VAR("SharedRandPreviousValue", LINELIST_S, SharedRandValues, NULL),
   VAR("SharedRandCurrentValue", LINELIST_S, SharedRandValues, NULL),
   { NULL, CONFIG_TYPE_OBSOLETE, 0, NULL }
 };

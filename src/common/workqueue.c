@@ -262,7 +262,7 @@ worker_thread_main(void *thread_)
       if (thread->in_pool->generation != thread->generation) {
         void *arg = thread->in_pool->update_args[thread->index];
         thread->in_pool->update_args[thread->index] = NULL;
-        workqueue_reply_t (*update_fn)(void*,void*) =
+        workqueue_reply_t (*update_fn)(void*, void*) =
             thread->in_pool->update_fn;
         thread->generation = thread->in_pool->generation;
         tor_mutex_release(&pool->lock);

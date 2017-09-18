@@ -2113,7 +2113,7 @@ NS(smartlist_free)(smartlist_t *s)
  */
 
 NS_DECL(void, smartlist_free, (smartlist_t *sl));
-NS_DECL(void, strmap_free,(strmap_t *map, void (*free_val)(void*)));
+NS_DECL(void, strmap_free, (strmap_t *map, void (*free_val)(void*)));
 NS_DECL(void, digestmap_free, (digestmap_t *map, void (*free_val)(void*)));
 
 static void

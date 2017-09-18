@@ -451,7 +451,7 @@ nt_service_stop(SC_HANDLE hService)
       printf("Service did not stop within %d seconds.\n", wait_time);
     } else {
       errmsg = format_win32_error(GetLastError());
-      printf("QueryServiceStatus() failed : %s\n",errmsg);
+      printf("QueryServiceStatus() failed : %s\n", errmsg);
       tor_free(errmsg);
     }
   } else {
@@ -494,7 +494,7 @@ nt_service_command_line(int *using_default_torrc)
     }
   }
   if (smartlist_len(sl))
-    options = smartlist_join_strings(sl,"\" \"",0,NULL);
+    options = smartlist_join_strings(sl, "\" \"", 0, NULL);
   smartlist_free(sl);
 
 #ifdef UNICODE

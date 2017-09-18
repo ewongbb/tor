@@ -202,8 +202,8 @@ secret_to_key_rfc2440(char *key_out, size_t key_out_len, const char *secret,
   d = crypto_digest_new();
   tmplen = 8+secret_len;
   tmp = tor_malloc(tmplen);
-  memcpy(tmp,s2k_specifier,8);
-  memcpy(tmp+8,secret,secret_len);
+  memcpy(tmp, s2k_specifier, 8);
+  memcpy(tmp+8, secret, secret_len);
   secret_len += 8;
   while (count) {
     if (count >= secret_len) {

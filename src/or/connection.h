@@ -28,7 +28,7 @@ listener_connection_t *listener_connection_new(int type, int socket_family);
 connection_t *connection_new(int type, int socket_family);
 
 void connection_link_connections(connection_t *conn_a, connection_t *conn_b);
-MOCK_DECL(void,connection_free,(connection_t *conn));
+MOCK_DECL(void, connection_free, (connection_t *conn));
 void connection_free_all(void);
 void connection_about_to_close_connection(connection_t *conn);
 void connection_close_immediate(connection_t *conn);
@@ -140,10 +140,10 @@ MOCK_DECL(void, connection_write_to_buf_impl_,
           (const char *string, size_t len, connection_t *conn, int zlib));
 /* DOCDOC connection_write_to_buf */
 static void connection_buf_add(const char *string, size_t len,
-                                    connection_t *conn);
+                               connection_t *conn);
 /* DOCDOC connection_write_to_buf_compress */
 static void connection_buf_add_compress(const char *string, size_t len,
-                                             dir_connection_t *conn, int done);
+                                        dir_connection_t *conn, int done);
 static inline void
 connection_buf_add(const char *string, size_t len, connection_t *conn)
 {
@@ -176,9 +176,8 @@ connection_get_outbuf_len(connection_t *conn)
 connection_t *connection_get_by_global_id(uint64_t id);
 
 connection_t *connection_get_by_type(int type);
-MOCK_DECL(connection_t *,connection_get_by_type_addr_port_purpose,(int type,
-                                                  const tor_addr_t *addr,
-                                                  uint16_t port, int purpose));
+MOCK_DECL(connection_t *, connection_get_by_type_addr_port_purpose,
+          (int type, const tor_addr_t *addr, uint16_t port, int purpose));
 connection_t *connection_get_by_type_state(int type, int state);
 connection_t *connection_get_by_type_state_rendquery(int type, int state,
                                                      const char *rendquery);
@@ -276,7 +275,7 @@ void connection_buckets_note_empty_ts(uint32_t *timestamp_var,
                                       int tokens_before,
                                       size_t tokens_removed,
                                       const struct timeval *tvnow);
-MOCK_DECL(STATIC int,connection_connect_sockaddr,
+MOCK_DECL(STATIC int, connection_connect_sockaddr,
                                             (connection_t *conn,
                                              const struct sockaddr *sa,
                                              socklen_t sa_len,

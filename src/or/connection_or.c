@@ -308,7 +308,7 @@ connection_or_note_state_when_broken(or_connection_t *orconn)
   if (disable_broken_connection_counts)
     return;
   connection_or_get_state_description(orconn, buf, sizeof(buf));
-  log_info(LD_HANDSHAKE,"Connection died in state '%s'", buf);
+  log_info(LD_HANDSHAKE, "Connection died in state '%s'", buf);
   note_broken_connection(buf);
 }
 
@@ -516,7 +516,7 @@ connection_or_reached_eof(or_connection_t *conn)
 {
   tor_assert(conn);
 
-  log_info(LD_OR,"OR connection reached EOF. Closing.");
+  log_info(LD_OR, "OR connection reached EOF. Closing.");
   connection_or_close_normally(conn, 1);
 
   return 0;
@@ -651,7 +651,7 @@ connection_or_finished_flushing(or_connection_t *conn)
     case OR_CONN_STATE_OR_HANDSHAKING_V3:
       break;
     default:
-      log_err(LD_BUG,"Called in unexpected state %d.", conn->base_.state);
+      log_err(LD_BUG, "Called in unexpected state %d.", conn->base_.state);
       tor_fragile_assert();
       return -1;
   }
@@ -670,8 +670,8 @@ connection_or_finished_connecting(or_connection_t *or_conn)
   conn = TO_CONN(or_conn);
   tor_assert(conn->state == OR_CONN_STATE_CONNECTING);
 
-  log_debug(LD_HANDSHAKE,"OR connect() to router at %s:%u finished.",
-            conn->address,conn->port);
+  log_debug(LD_HANDSHAKE, "OR connect() to router at %s:%u finished.",
+            conn->address, conn->port);
   control_event_bootstrap(BOOTSTRAP_STATUS_HANDSHAKE, 0);
 
   if (proxy_type != PROXY_NONE) {
@@ -1183,11 +1183,11 @@ connection_or_connect, (const tor_addr_t *_addr, uint16_t port,
   tor_addr_copy(&addr, _addr);
 
   if (server_mode(options) && router_digest_is_me(id_digest)) {
-    log_info(LD_PROTOCOL,"Client asked me to connect to myself. Refusing.");
+    log_info(LD_PROTOCOL, "Client asked me to connect to myself. Refusing.");
     return NULL;
   }
   if (server_mode(options) && router_ed25519_id_is_me(ed_id)) {
-    log_info(LD_PROTOCOL,"Client asked me to connect to myself by Ed25519 "
+    log_info(LD_PROTOCOL, "Client asked me to connect to myself by Ed25519 "
              "identity. Refusing.");
     return NULL;
   }
@@ -1313,7 +1313,7 @@ connection_or_close_normally(or_connection_t *orconn, int flush)
  */
 
 MOCK_IMPL(void,
-connection_or_close_for_error,(or_connection_t *orconn, int flush))
+connection_or_close_for_error, (or_connection_t *orconn, int flush))
 {
   channel_t *chan = NULL;
 
@@ -1338,7 +1338,7 @@ connection_or_close_for_error,(or_connection_t *orconn, int flush))
  * Return -1 if <b>conn</b> is broken, else return 0.
  */
 MOCK_IMPL(int,
-connection_tls_start_handshake,(or_connection_t *conn, int receiving))
+connection_tls_start_handshake, (or_connection_t *conn, int receiving))
 {
   channel_listener_t *chan_listener;
   channel_t *chan;
@@ -1361,14 +1361,15 @@ connection_tls_start_handshake,(or_connection_t *conn, int receiving))
   tor_assert(!conn->tls);
   conn->tls = tor_tls_new(conn->base_.s, receiving);
   if (!conn->tls) {
-    log_warn(LD_BUG,"tor_tls_new failed. Closing.");
+    log_warn(LD_BUG, "tor_tls_new failed. Closing.");
     return -1;
   }
   tor_tls_set_logged_address(conn->tls, // XXX client and relay?
       escaped_safe_str(conn->base_.address));
 
   connection_start_reading(TO_CONN(conn));
-  log_debug(LD_HANDSHAKE,"starting TLS handshake on fd "TOR_SOCKET_T_FORMAT,
+  log_debug(LD_HANDSHAKE,
+            "starting TLS handshake on fd "TOR_SOCKET_T_FORMAT,
             conn->base_.s);
 
   if (connection_tls_continue_handshake(conn) < 0)
@@ -1424,7 +1425,7 @@ connection_tls_continue_handshake(or_connection_t *conn)
 
   switch (result) {
     CASE_TOR_TLS_ERROR_ANY:
-    log_info(LD_OR,"tls error [%s]. breaking connection.",
+    log_info(LD_OR, "tls error [%s]. breaking connection.",
              tor_tls_err_to_string(result));
       return -1;
     case TOR_TLS_DONE:
@@ -1450,13 +1451,13 @@ connection_tls_continue_handshake(or_connection_t *conn)
       return connection_tls_finish_handshake(conn);
     case TOR_TLS_WANTWRITE:
       connection_start_writing(TO_CONN(conn));
-      log_debug(LD_OR,"wanted write");
+      log_debug(LD_OR, "wanted write");
       return 0;
     case TOR_TLS_WANTREAD: /* handshaking conns are *always* reading */
-      log_debug(LD_OR,"wanted read");
+      log_debug(LD_OR, "wanted read");
       return 0;
     case TOR_TLS_CLOSE:
-      log_info(LD_OR,"tls closed. breaking connection.");
+      log_info(LD_OR, "tls closed. breaking connection.");
       return -1;
   }
   return 0;
@@ -1519,12 +1520,14 @@ connection_or_check_valid_tls_handshake(or_connection_t *conn,
   check_no_tls_errors();
   has_cert = tor_tls_peer_has_cert(conn->tls);
   if (started_here && !has_cert) {
-    log_info(LD_HANDSHAKE,"Tried connecting to router at %s:%d, but it didn't "
+    log_info(LD_HANDSHAKE,
+             "Tried connecting to router at %s:%d, but it didn't "
              "send a cert! Closing.",
              safe_address, conn->base_.port);
     return -1;
   } else if (!has_cert) {
-    log_debug(LD_HANDSHAKE,"Got incoming connection with no certificate. "
+    log_debug(LD_HANDSHAKE,
+              "Got incoming connection with no certificate. "
               "That's ok.");
   }
   check_no_tls_errors();
@@ -1533,12 +1536,14 @@ connection_or_check_valid_tls_handshake(or_connection_t *conn,
     int v = tor_tls_verify(started_here?severity:LOG_INFO,
                            conn->tls, &identity_rcvd);
     if (started_here && v<0) {
-      log_fn(severity,LD_HANDSHAKE,"Tried connecting to router at %s:%d: It"
+      log_fn(severity, LD_HANDSHAKE,
+             "Tried connecting to router at %s:%d: It"
              " has a cert but it's invalid. Closing.",
              safe_address, conn->base_.port);
         return -1;
     } else if (v<0) {
-      log_info(LD_HANDSHAKE,"Incoming connection gave us an invalid cert "
+      log_info(LD_HANDSHAKE,
+               "Incoming connection gave us an invalid cert "
                "chain; ignoring.");
     } else {
       log_debug(LD_HANDSHAKE,
@@ -1777,7 +1782,7 @@ connection_tls_finish_handshake(or_connection_t *conn)
 
   tor_assert(!started_here);
 
-  log_debug(LD_HANDSHAKE,"%s tls handshake on %p with %s done, using "
+  log_debug(LD_HANDSHAKE, "%s tls handshake on %p with %s done, using "
             "ciphersuite %s. verifying.",
             started_here?"outgoing":"incoming",
             conn,
@@ -2001,8 +2006,8 @@ connection_or_write_cell_to_buf(const cell_t *cell, or_connection_t *conn)
  * affect a circuit.
  */
 MOCK_IMPL(void,
-connection_or_write_var_cell_to_buf,(const var_cell_t *cell,
-                                     or_connection_t *conn))
+connection_or_write_var_cell_to_buf, (const var_cell_t *cell,
+                                      or_connection_t *conn))
 {
   int n;
   char hdr[VAR_CELL_MAX_HEADER_SIZE];
@@ -2011,7 +2016,7 @@ connection_or_write_var_cell_to_buf,(const var_cell_t *cell,
   n = var_cell_pack_header(cell, hdr, conn->wide_circ_ids);
   connection_buf_add(hdr, n, TO_CONN(conn));
   connection_buf_add((char*)cell->payload,
-                          cell->payload_len, TO_CONN(conn));
+                     cell->payload_len, TO_CONN(conn));
   if (conn->base_.state == OR_CONN_STATE_OR_HANDSHAKING_V3)
     or_handshake_state_record_var_cell(conn, conn->handshake_state, cell, 0);
 
@@ -2058,7 +2063,8 @@ connection_or_process_cells_from_inbuf(or_connection_t *conn)
     log_debug(LD_OR,
               TOR_SOCKET_T_FORMAT": starting, inbuf_datalen %d "
               "(%d pending in tls object).",
-              conn->base_.s,(int)connection_get_inbuf_len(TO_CONN(conn)),
+              conn->base_.s,
+              (int)connection_get_inbuf_len(TO_CONN(conn)),
               tor_tls_get_pending_bytes(conn->tls));
     if (connection_fetch_var_cell_from_buf(conn, &var_cell)) {
       if (!var_cell)
@@ -2154,7 +2160,7 @@ connection_or_send_versions(or_connection_t *conn, int v3_plus)
 /** Send a NETINFO cell on <b>conn</b>, telling the other server what we know
  * about their address, our address, and the current time. */
 MOCK_IMPL(int,
-connection_or_send_netinfo,(or_connection_t *conn))
+connection_or_send_netinfo, (or_connection_t *conn))
 {
   cell_t cell;
   time_t now = time(NULL);
@@ -2694,7 +2700,7 @@ connection_or_compute_authenticate_cell_body(or_connection_t *conn,
 /** Send an AUTHENTICATE cell on the connection <b>conn</b>.  Return 0 on
  * success, -1 on failure */
 MOCK_IMPL(int,
-connection_or_send_authenticate_cell,(or_connection_t *conn, int authtype))
+connection_or_send_authenticate_cell, (or_connection_t *conn, int authtype))
 {
   var_cell_t *cell;
   crypto_pk_t *pk = tor_tls_get_my_client_auth_key();

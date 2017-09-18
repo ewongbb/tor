@@ -60,7 +60,7 @@ config_expand_abbrev(const config_format_t *fmt, const char *option,
     return option;
   for (i=0; fmt->abbrevs[i].abbreviated; ++i) {
     /* Abbreviations are case insensitive. */
-    if (!strcasecmp(option,fmt->abbrevs[i].abbreviated) &&
+    if (!strcasecmp(option, fmt->abbrevs[i].abbreviated) &&
         (command_line || !fmt->abbrevs[i].commandline_only)) {
       if (warn_obsolete && fmt->abbrevs[i].warn) {
         log_warn(LD_CONFIG,
@@ -647,7 +647,7 @@ config_get_assigned_option(const config_format_t *fmt, const void *options,
     default:
       tor_free(result->key);
       tor_free(result);
-      log_warn(LD_BUG,"Unknown type %d for known key '%s'",
+      log_warn(LD_BUG, "Unknown type %d for known key '%s'",
                var->type, key);
       return NULL;
     }

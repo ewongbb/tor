@@ -426,8 +426,8 @@ list_sk_digests_for_authority_id, (const char *digest))
  * download_status_t or NULL if none exists. */
 
 MOCK_IMPL(download_status_t *,
-download_status_for_authority_id_and_sk,(const char *id_digest,
-                                         const char *sk_digest))
+download_status_for_authority_id_and_sk, (const char *id_digest,
+                                          const char *sk_digest))
 {
   download_status_t *dl = NULL;
   cert_list_t *cl = NULL;
@@ -585,14 +585,14 @@ trusted_dirs_load_certs_from_string(const char *contents, int source,
       added_trusted_cert = 1;
       log_info(LD_DIR, "Adding %s certificate for directory authority %s with "
                "signing key %s", from_store ? "cached" : "downloaded",
-               ds->nickname, hex_str(cert->signing_key_digest,DIGEST_LEN));
+               ds->nickname, hex_str(cert->signing_key_digest, DIGEST_LEN));
     } else {
       int adding = we_want_to_fetch_unknown_auth_certs(get_options());
       log_info(LD_DIR, "%s %s certificate for unrecognized directory "
                "authority with signing key %s",
                adding ? "Adding" : "Not adding",
                from_store ? "cached" : "downloaded",
-               hex_str(cert->signing_key_digest,DIGEST_LEN));
+               hex_str(cert->signing_key_digest, DIGEST_LEN));
       if (!adding) {
         authority_cert_free(cert);
         continue;
@@ -1487,7 +1487,7 @@ router_rebuild_store(int flags, desc_store_t *store)
                  "Otherwise, it's a bug.", fname);
       }
     } else {
-      log_warn(LD_FS, "Unable to mmap new descriptor file at '%s'.",fname);
+      log_warn(LD_FS, "Unable to mmap new descriptor file at '%s'.", fname);
     }
   }
 
@@ -1570,7 +1570,7 @@ router_reload_router_list_impl(desc_store_t *store)
     contents = read_file_to_str(fname, RFTS_BIN|RFTS_IGNORE_MISSING, &st);
   if (contents) {
     if (extrainfo)
-      router_load_extrainfo_from_string(contents, NULL,SAVED_IN_JOURNAL,
+      router_load_extrainfo_from_string(contents, NULL, SAVED_IN_JOURNAL,
                                         NULL, 0);
     else
       router_load_routers_from_string(contents, NULL, SAVED_IN_JOURNAL,
@@ -2835,21 +2835,21 @@ router_choose_random_node(smartlist_t *excludedsmartlist,
            "We found %d running nodes.",
             smartlist_len(sl));
 
-  smartlist_subtract(sl,excludednodes);
+  smartlist_subtract(sl, excludednodes);
   log_debug(LD_CIRC,
             "We removed %d excludednodes, leaving %d nodes.",
             smartlist_len(excludednodes),
             smartlist_len(sl));
 
   if (excludedsmartlist) {
-    smartlist_subtract(sl,excludedsmartlist);
+    smartlist_subtract(sl, excludedsmartlist);
     log_debug(LD_CIRC,
               "We removed %d excludedsmartlist, leaving %d nodes.",
               smartlist_len(excludedsmartlist),
               smartlist_len(sl));
   }
   if (excludedset) {
-    routerset_subtract_nodes(sl,excludedset);
+    routerset_subtract_nodes(sl, excludedset);
     log_debug(LD_CIRC,
               "We removed excludedset, leaving %d nodes.",
               smartlist_len(sl));
@@ -2915,7 +2915,7 @@ hex_digest_nickname_decode(const char *hexdigest,
                                     hexdigest[HEX_DIGEST_LEN] == '~') &&
            len <= HEX_DIGEST_LEN+1+MAX_NICKNAME_LEN) {
     *nickname_qualifier_char_out = hexdigest[HEX_DIGEST_LEN];
-    strlcpy(nickname_out, hexdigest+HEX_DIGEST_LEN+1 , MAX_NICKNAME_LEN+1);
+    strlcpy(nickname_out, hexdigest+HEX_DIGEST_LEN+1, MAX_NICKNAME_LEN+1);
   } else if (len == HEX_DIGEST_LEN) {
     ;
   } else {
@@ -2984,7 +2984,8 @@ hexdigest_to_digest(const char *hexdigest, char *digest)
   if (hexdigest[0]=='$')
     ++hexdigest;
   if (strlen(hexdigest) < HEX_DIGEST_LEN ||
-      base16_decode(digest,DIGEST_LEN,hexdigest,HEX_DIGEST_LEN) != DIGEST_LEN)
+      base16_decode(digest, DIGEST_LEN, hexdigest,
+                    HEX_DIGEST_LEN) != DIGEST_LEN)
     return -1;
   return 0;
 }
@@ -3027,7 +3028,7 @@ router_get_by_descriptor_digest(const char *digest)
  * 20-byte extra-info digest is <b>digest</b>.  Return NULL if no such router
  * is known. */
 MOCK_IMPL(signed_descriptor_t *,
-router_get_by_extrainfo_digest,(const char *digest))
+router_get_by_extrainfo_digest, (const char *digest))
 {
   tor_assert(digest);
 
@@ -3040,7 +3041,7 @@ router_get_by_extrainfo_digest,(const char *digest))
  * extra-info-digest is <b>digest</b>. Return NULL if no such extra-info
  * document is known. */
 MOCK_IMPL(signed_descriptor_t *,
-extrainfo_get_by_descriptor_digest,(const char *digest))
+extrainfo_get_by_descriptor_digest, (const char *digest))
 {
   extrainfo_t *ei;
   tor_assert(digest);
@@ -3301,10 +3302,12 @@ dump_routerlist_mem_usage(int severity)
                     olddescs += sd->signed_descriptor_len);
 
   tor_log(severity, LD_DIR,
-      "In %d live descriptors: "U64_FORMAT" bytes.  "
-      "In %d old descriptors: "U64_FORMAT" bytes.",
-      smartlist_len(routerlist->routers), U64_PRINTF_ARG(livedescs),
-      smartlist_len(routerlist->old_routers), U64_PRINTF_ARG(olddescs));
+          "In %d live descriptors: "U64_FORMAT" bytes.  "
+          "In %d old descriptors: "U64_FORMAT" bytes.",
+          smartlist_len(routerlist->routers),
+          U64_PRINTF_ARG(livedescs),
+          smartlist_len(routerlist->old_routers),
+          U64_PRINTF_ARG(olddescs));
 }
 
 /** Debugging helper: If <b>idx</b> is nonnegative, assert that <b>ri</b> is
@@ -3379,7 +3382,8 @@ routerlist_insert(routerlist_t *rl, routerinfo_t *ri)
  * corresponding router in rl-\>routers or rl-\>old_routers.  Return the status
  * of inserting <b>ei</b>.  Free <b>ei</b> if it isn't inserted. */
 MOCK_IMPL(STATIC was_router_added_t,
-extrainfo_insert,(routerlist_t *rl, extrainfo_t *ei, int warn_if_incompatible))
+extrainfo_insert, (routerlist_t *rl, extrainfo_t *ei,
+                   int warn_if_incompatible))
 {
   was_router_added_t r;
   const char *compatibility_error_msg;
@@ -3428,7 +3432,7 @@ extrainfo_insert,(routerlist_t *rl, extrainfo_t *ei, int warn_if_incompatible))
     base16_encode(d1, sizeof(d1), ri->cache_info.identity_digest, DIGEST_LEN);
     base16_encode(d2, sizeof(d2), ei->cache_info.identity_digest, DIGEST_LEN);
 
-    log_fn(severity,LD_DIR,
+    log_fn(severity, LD_DIR,
            "router info incompatible with extra info (ri id: %s, ei id %s, "
            "reason: %s)", d1, d2, compatibility_error_msg);
 
@@ -3667,8 +3671,8 @@ routerlist_replace(routerlist_t *rl, routerinfo_t *ri_old,
   }
 
   same_descriptors = tor_memeq(ri_old->cache_info.signed_descriptor_digest,
-                              ri_new->cache_info.signed_descriptor_digest,
-                              DIGEST_LEN);
+                               ri_new->cache_info.signed_descriptor_digest,
+                               DIGEST_LEN);
 
   if (should_cache_old_descriptors() &&
       ri_old->purpose == ROUTER_PURPOSE_GENERAL &&
@@ -3775,7 +3779,7 @@ routerlist_reset_warnings(void)
 /** Return 1 if the signed descriptor of this router is older than
  *  <b>seconds</b> seconds.  Otherwise return 0. */
 MOCK_IMPL(int,
-router_descriptor_is_older_than,(const routerinfo_t *router, int seconds))
+router_descriptor_is_older_than, (const routerinfo_t *router, int seconds))
 {
   return router->cache_info.published_on < approx_time() - seconds;
 }
@@ -4239,7 +4243,7 @@ routerlist_remove_old_routers(void)
  done:
   digestset_free(retain);
   router_rebuild_store(RRS_DONT_REMOVE_OLD, &routerlist->desc_store);
-  router_rebuild_store(RRS_DONT_REMOVE_OLD,&routerlist->extrainfo_store);
+  router_rebuild_store(RRS_DONT_REMOVE_OLD, &routerlist->extrainfo_store);
 }
 
 /** We just added a new set of descriptors. Take whatever extra steps
@@ -4373,7 +4377,7 @@ router_load_routers_from_string(const char *s, const char *eos,
         smartlist_string_remove(requested_fingerprints, fp);
       } else {
         char *requested =
-          smartlist_join_strings(requested_fingerprints," ",0,NULL);
+          smartlist_join_strings(requested_fingerprints, " ", 0, NULL);
         log_warn(LD_DIR,
                  "We received a router descriptor with a fingerprint (%s) "
                  "that we never requested. (We asked for: %s.) Dropping.",
@@ -4474,7 +4478,7 @@ router_load_extrainfo_from_string(const char *s, const char *eos,
         if (sd) {
           log_info(LD_GENERAL, "Marking extrainfo with descriptor %s as "
                    "unparseable, and therefore undownloadable",
-                   hex_str((char*)d,DIGEST_LEN));
+                   hex_str((char*)d, DIGEST_LEN));
           download_status_mark_impossible(&sd->ei_dl_status);
         }
       }
@@ -4833,7 +4837,7 @@ list_pending_microdesc_downloads(digest256map_t *result)
 }
 
 /** For every certificate we are currently downloading by (identity digest,
- * signing key digest) pair, set result[fp_pair] to (void *1).
+ * signing key digest) pair, set result[fp_pair] to (void *)1.
  */
 static void
 list_pending_fpsk_downloads(fp_pair_map_t *result)
@@ -4873,9 +4877,9 @@ list_pending_fpsk_downloads(fp_pair_map_t *result)
  * otherwise, download from an appropriate random directory server.
  */
 MOCK_IMPL(STATIC void,
-initiate_descriptor_downloads,(const routerstatus_t *source,
-                               int purpose, smartlist_t *digests,
-                               int lo, int hi, int pds_flags))
+initiate_descriptor_downloads, (const routerstatus_t *source,
+                                int purpose, smartlist_t *digests,
+                                int lo, int hi, int pds_flags))
 {
   char *resource, *cp;
   int digest_len, enc_digest_len;

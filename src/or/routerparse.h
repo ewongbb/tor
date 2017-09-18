@@ -127,8 +127,8 @@ STATIC routerstatus_t *routerstatus_parse_entry_from_string(
                                      vote_routerstatus_t *vote_rs,
                                      int consensus_method,
                                      consensus_flavor_t flav);
-MOCK_DECL(STATIC void,dump_desc,(const char *desc, const char *type));
-MOCK_DECL(STATIC int, router_compute_hash_final,(char *digest,
+MOCK_DECL(STATIC void, dump_desc, (const char *desc, const char *type));
+MOCK_DECL(STATIC int, router_compute_hash_final, (char *digest,
                            const char *start, size_t len,
                            digest_algorithm_t alg));
 MOCK_DECL(STATIC int, signed_digest_equals,

@@ -39,25 +39,25 @@ test_pt_parsing(void *arg)
   mp->transports = smartlist_new();
 
   /* incomplete cmethod */
-  strlcpy(line,"CMETHOD trebuchet",sizeof(line));
+  strlcpy(line, "CMETHOD trebuchet", sizeof(line));
   tt_int_op(parse_cmethod_line(line, mp), OP_LT, 0);
 
   reset_mp(mp);
 
   /* wrong proxy type */
-  strlcpy(line,"CMETHOD trebuchet dog 127.0.0.1:1999",sizeof(line));
+  strlcpy(line, "CMETHOD trebuchet dog 127.0.0.1:1999", sizeof(line));
   tt_int_op(parse_cmethod_line(line, mp), OP_LT, 0);
 
   reset_mp(mp);
 
   /* wrong addrport */
-  strlcpy(line,"CMETHOD trebuchet socks4 abcd",sizeof(line));
+  strlcpy(line, "CMETHOD trebuchet socks4 abcd", sizeof(line));
   tt_int_op(parse_cmethod_line(line, mp), OP_LT, 0);
 
   reset_mp(mp);
 
   /* correct line */
-  strlcpy(line,"CMETHOD trebuchet socks5 127.0.0.1:1999",sizeof(line));
+  strlcpy(line, "CMETHOD trebuchet socks5 127.0.0.1:1999", sizeof(line));
   tt_int_op(parse_cmethod_line(line, mp), OP_EQ, 0);
   tt_int_op(smartlist_len(mp->transports), OP_EQ, 1);
   transport = smartlist_get(mp->transports, 0);
@@ -69,24 +69,24 @@ test_pt_parsing(void *arg)
   /* test registered SOCKS version of transport */
   tt_int_op(transport->socks_version, OP_EQ, PROXY_SOCKS5);
   /* test registered name of transport */
-  tt_str_op(transport->name,OP_EQ, "trebuchet");
+  tt_str_op(transport->name, OP_EQ, "trebuchet");
 
   reset_mp(mp);
 
   /* incomplete smethod */
-  strlcpy(line,"SMETHOD trebuchet",sizeof(line));
+  strlcpy(line, "SMETHOD trebuchet", sizeof(line));
   tt_int_op(parse_smethod_line(line, mp), OP_LT, 0);
 
   reset_mp(mp);
 
   /* wrong addr type */
-  strlcpy(line,"SMETHOD trebuchet abcd",sizeof(line));
+  strlcpy(line, "SMETHOD trebuchet abcd", sizeof(line));
   tt_int_op(parse_smethod_line(line, mp), OP_LT, 0);
 
   reset_mp(mp);
 
   /* cowwect */
-  strlcpy(line,"SMETHOD trebuchy 127.0.0.2:2999",sizeof(line));
+  strlcpy(line, "SMETHOD trebuchy 127.0.0.2:2999", sizeof(line));
   tt_int_op(parse_smethod_line(line, mp), OP_EQ, 0);
   tt_int_op(smartlist_len(mp->transports), OP_EQ, 1);
   transport = smartlist_get(mp->transports, 0);
@@ -96,12 +96,12 @@ test_pt_parsing(void *arg)
   /* test registered port of transport */
   tt_uint_op(transport->port, OP_EQ, 2999);
   /* test registered name of transport */
-  tt_str_op(transport->name,OP_EQ, "trebuchy");
+  tt_str_op(transport->name, OP_EQ, "trebuchy");
 
   reset_mp(mp);
 
   /* Include some arguments. Good ones. */
-  strlcpy(line,"SMETHOD trebuchet 127.0.0.1:9999 "
+  strlcpy(line, "SMETHOD trebuchet 127.0.0.1:9999 "
           "ARGS:counterweight=3,sling=snappy",
           sizeof(line));
   tt_int_op(parse_smethod_line(line, mp), OP_EQ, 0);
@@ -118,15 +118,15 @@ test_pt_parsing(void *arg)
   reset_mp(mp);
 
   /* unsupported version */
-  strlcpy(line,"VERSION 666",sizeof(line));
+  strlcpy(line, "VERSION 666", sizeof(line));
   tt_int_op(parse_version(line, mp), OP_LT, 0);
 
   /* incomplete VERSION */
-  strlcpy(line,"VERSION ",sizeof(line));
+  strlcpy(line, "VERSION ", sizeof(line));
   tt_int_op(parse_version(line, mp), OP_LT, 0);
 
   /* correct VERSION */
-  strlcpy(line,"VERSION 1",sizeof(line));
+  strlcpy(line, "VERSION 1", sizeof(line));
   tt_int_op(parse_version(line, mp), OP_EQ, 0);
 
  done:
@@ -201,32 +201,32 @@ test_pt_protocol(void *arg)
 
   /* various wrong protocol runs: */
 
-  strlcpy(line,"VERSION 1",sizeof(line));
+  strlcpy(line, "VERSION 1", sizeof(line));
   handle_proxy_line(line, mp);
   tt_assert(mp->conf_state == PT_PROTO_ACCEPTING_METHODS);
 
-  strlcpy(line,"VERSION 1",sizeof(line));
+  strlcpy(line, "VERSION 1", sizeof(line));
   handle_proxy_line(line, mp);
   tt_assert(mp->conf_state == PT_PROTO_BROKEN);
 
   reset_mp(mp);
 
-  strlcpy(line,"CMETHOD trebuchet socks5 127.0.0.1:1999",sizeof(line));
+  strlcpy(line, "CMETHOD trebuchet socks5 127.0.0.1:1999", sizeof(line));
   handle_proxy_line(line, mp);
   tt_assert(mp->conf_state == PT_PROTO_BROKEN);
 
   reset_mp(mp);
 
   /* correct protocol run: */
-  strlcpy(line,"VERSION 1",sizeof(line));
+  strlcpy(line, "VERSION 1", sizeof(line));
   handle_proxy_line(line, mp);
   tt_assert(mp->conf_state == PT_PROTO_ACCEPTING_METHODS);
 
-  strlcpy(line,"CMETHOD trebuchet socks5 127.0.0.1:1999",sizeof(line));
+  strlcpy(line, "CMETHOD trebuchet socks5 127.0.0.1:1999", sizeof(line));
   handle_proxy_line(line, mp);
   tt_assert(mp->conf_state == PT_PROTO_ACCEPTING_METHODS);
 
-  strlcpy(line,"CMETHODS DONE",sizeof(line));
+  strlcpy(line, "CMETHODS DONE", sizeof(line));
   handle_proxy_line(line, mp);
   tt_assert(mp->conf_state == PT_PROTO_CONFIGURED);
 
@@ -538,7 +538,7 @@ struct testcase_t pt_tests[] = {
     NULL, NULL },
   { "get_extrainfo_string", test_pt_get_extrainfo_string, TT_FORK,
     NULL, NULL },
-  { "configure_proxy",test_pt_configure_proxy, TT_FORK,
+  { "configure_proxy", test_pt_configure_proxy, TT_FORK,
     NULL, NULL },
   { "get_pt_proxy_uri", test_get_pt_proxy_uri, TT_FORK,
     NULL, NULL },

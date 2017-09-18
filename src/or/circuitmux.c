@@ -942,8 +942,8 @@ circuitmux_num_circuits(circuitmux_t *cmux)
  */
 
 MOCK_IMPL(void,
-circuitmux_attach_circuit,(circuitmux_t *cmux, circuit_t *circ,
-                           cell_direction_t direction))
+circuitmux_attach_circuit, (circuitmux_t *cmux, circuit_t *circ,
+                            cell_direction_t direction))
 {
   channel_t *chan = NULL;
   uint64_t channel_id;
@@ -1091,7 +1091,7 @@ circuitmux_attach_circuit,(circuitmux_t *cmux, circuit_t *circ,
  */
 
 MOCK_IMPL(void,
-circuitmux_detach_circuit,(circuitmux_t *cmux, circuit_t *circ))
+circuitmux_detach_circuit, (circuitmux_t *cmux, circuit_t *circ))
 {
   chanid_circid_muxinfo_t search, *hashent = NULL;
   /*

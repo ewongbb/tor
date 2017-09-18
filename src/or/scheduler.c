@@ -267,7 +267,7 @@ scheduler_evt_callback(evutil_socket_t fd, short events, void *arg)
 /** Mark a channel as no longer ready to accept writes */
 
 MOCK_IMPL(void,
-scheduler_channel_doesnt_want_writes,(channel_t *chan))
+scheduler_channel_doesnt_want_writes, (channel_t *chan))
 {
   tor_assert(chan);
 
@@ -307,7 +307,7 @@ scheduler_channel_doesnt_want_writes,(channel_t *chan))
 /** Mark a channel as having waiting cells */
 
 MOCK_IMPL(void,
-scheduler_channel_has_waiting_cells,(channel_t *chan))
+scheduler_channel_has_waiting_cells, (channel_t *chan))
 {
   int became_pending = 0;
 
@@ -392,7 +392,7 @@ scheduler_retrigger(void)
 /** Notify the scheduler of a channel being closed */
 
 MOCK_IMPL(void,
-scheduler_release_channel,(channel_t *chan))
+scheduler_release_channel, (channel_t *chan))
 {
   tor_assert(chan);
   tor_assert(channels_pending);
