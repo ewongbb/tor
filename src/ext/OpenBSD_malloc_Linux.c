@@ -3,7 +3,7 @@
  * Launching: LD_PRELOAD=/path/to/malloc.so firefox
  */
 
-/*	$OpenBSD: malloc.c,v 1.83 2006/05/14 19:53:40 otto Exp $	*/
+/*	$OpenBSD: malloc.c, v 1.83 2006/05/14 19:53:40 otto Exp $	*/
 
 /*
  * ----------------------------------------------------------------------------
@@ -260,7 +260,7 @@ void		utrace(struct ut *, int);
 	if (malloc_utrace) \
 		{struct ut u; u.p=a; u.s = b; u.r=c; utrace(&u, sizeof u);}
 #else				/* !__FreeBSD__ */
-#define UTRACE(a,b,c)
+#define UTRACE(a, b, c)
 #endif
 
 /* Status of malloc. */
@@ -1967,7 +1967,7 @@ calloc(size_t num, size_t size)
 	void *p;
 	
 	if (num && SIZE_MAX / num < size) {
-		fprintf(stderr,"OOOOPS");
+		fprintf(stderr, "OOOOPS");
 		errno = ENOMEM;
 		return NULL;
 	}

@@ -190,7 +190,7 @@ test_cntev_append_cell_stats(void *arg)
                                include_if_non_zero,
                                number_to_include);
   cp = smartlist_pop_last(event_parts);
-  tt_str_op("Z=create:4,relay:1", OP_EQ, cp);
+  tt_str_op("Z=create:4, relay:1", OP_EQ, cp);
 
  done:
   tor_free(cp);
@@ -234,7 +234,7 @@ test_cntev_format_cell_stats(void *arg)
    * queue. */
   cell_stats->added_cells_exitward[CELL_CREATE2] = 5;
   format_cell_stats(&event_string, TO_CIRCUIT(ocirc), cell_stats);
-  tt_str_op("ID=2 OutboundQueue=3 OutboundConn=1 OutboundAdded=relay:4,"
+  tt_str_op("ID=2 OutboundQueue=3 OutboundConn=1 OutboundAdded=relay:4, "
             "create2:5", OP_EQ, event_string);
   tor_free(event_string);
 
@@ -243,7 +243,7 @@ test_cntev_format_cell_stats(void *arg)
   cell_stats->total_time_exitward[CELL_RELAY] = 6;
   cell_stats->removed_cells_exitward[CELL_RELAY] = 7;
   format_cell_stats(&event_string, TO_CIRCUIT(ocirc), cell_stats);
-  tt_str_op("ID=2 OutboundQueue=3 OutboundConn=1 OutboundAdded=relay:4,"
+  tt_str_op("ID=2 OutboundQueue=3 OutboundConn=1 OutboundAdded=relay:4, "
             "create2:5 OutboundRemoved=relay:7 OutboundTime=relay:6",
             OP_EQ, event_string);
   tor_free(event_string);

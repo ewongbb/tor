@@ -148,7 +148,7 @@ socks_request_set_socks5_error(socks_request_t *req,
                   socks5_reply_status_t reason)
 {
    req->replylen = 10;
-   memset(req->reply,0,10);
+   memset(req->reply, 0, 10);
 
    req->reply[0] = 0x05;   // VER field.
    req->reply[1] = reason; // REP field.
@@ -279,13 +279,13 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
           req->reply[1] = SOCKS_USER_PASS; /* tell client to use "user/pass"
                                               auth method */
           req->socks_version = 5; /* remember we've already negotiated auth */
-          log_debug(LD_APP,"socks5: accepted method 2 (username/password)");
+          log_debug(LD_APP, "socks5: accepted method 2 (username/password)");
           r=0;
         } else if (have_no_auth) {
           req->reply[1] = SOCKS_NO_AUTH; /* tell client to use "none" auth
                                             method */
           req->socks_version = 5; /* remember we've already negotiated auth */
-          log_debug(LD_APP,"socks5: accepted method 0 (no authentication)");
+          log_debug(LD_APP, "socks5: accepted method 0 (no authentication)");
           r=0;
         } else {
           log_warn(LD_APP,
@@ -306,7 +306,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
         return -1;
       }
       /* we know the method; read in the request */
-      log_debug(LD_APP,"socks5: checking request");
+      log_debug(LD_APP, "socks5: checking request");
       if (datalen < 7) {/* basic info plus >=1 for addr plus 2 for port */
         *want_length_out = 7;
         return 0; /* not yet */
@@ -316,9 +316,9 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
           req->command != SOCKS_COMMAND_RESOLVE &&
           req->command != SOCKS_COMMAND_RESOLVE_PTR) {
         /* not a connect or resolve or a resolve_ptr? we don't support it. */
-        socks_request_set_socks5_error(req,SOCKS5_COMMAND_NOT_SUPPORTED);
+        socks_request_set_socks5_error(req, SOCKS5_COMMAND_NOT_SUPPORTED);
 
-        log_warn(LD_APP,"socks5: command %d not recognized. Rejecting.",
+        log_warn(LD_APP, "socks5: command %d not recognized. Rejecting.",
                  req->command);
         return -1;
       }
@@ -327,7 +327,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
         case 4: /* IPv6 address */ {
           const int is_v6 = *(data+3) == 4;
           const unsigned addrlen = is_v6 ? 16 : 4;
-          log_debug(LD_APP,"socks5: ipv4 address type");
+          log_debug(LD_APP, "socks5: ipv4 address type");
           if (datalen < 6+addrlen) {/* ip/port there? */
             *want_length_out = 6+addrlen;
             return 0; /* not yet */
@@ -345,14 +345,14 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
             log_warn(LD_APP,
                      "socks5 IP takes %d bytes, which doesn't fit in %d. "
                      "Rejecting.",
-                     (int)strlen(tmpbuf)+1,(int)MAX_SOCKS_ADDR_LEN);
+                     (int)strlen(tmpbuf)+1, (int)MAX_SOCKS_ADDR_LEN);
             return -1;
           }
-          strlcpy(req->address,tmpbuf,sizeof(req->address));
+          strlcpy(req->address, tmpbuf, sizeof(req->address));
           req->port = ntohs(get_uint16(data+4+addrlen));
           *drain_out = 6+addrlen;
           if (req->command != SOCKS_COMMAND_RESOLVE_PTR &&
-              !addressmap_have_mapping(req->address,0)) {
+              !addressmap_have_mapping(req->address, 0)) {
             log_unsafe_socks_warning(5, req->address, req->port, safe_socks);
             if (safe_socks) {
               socks_request_set_socks5_error(req, SOCKS5_NOT_ALLOWED);
@@ -362,7 +362,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
           return 1;
         }
         case 3: /* fqdn */
-          log_debug(LD_APP,"socks5: fqdn address type");
+          log_debug(LD_APP, "socks5: fqdn address type");
           if (req->command == SOCKS_COMMAND_RESOLVE_PTR) {
             socks_request_set_socks5_error(req,
                                            SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED);
@@ -379,10 +379,10 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
             socks_request_set_socks5_error(req, SOCKS5_GENERAL_ERROR);
             log_warn(LD_APP,
                      "socks5 hostname is %d bytes, which doesn't fit in "
-                     "%d. Rejecting.", len+1,MAX_SOCKS_ADDR_LEN);
+                     "%d. Rejecting.", len+1, MAX_SOCKS_ADDR_LEN);
             return -1;
           }
-          memcpy(req->address,data+5,len);
+          memcpy(req->address, data+5, len);
           req->address[len] = 0;
           req->port = ntohs(get_uint16(data+5+len));
           *drain_out = 5+len+2;
@@ -405,7 +405,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
         default: /* unsupported */
           socks_request_set_socks5_error(req,
                                          SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED);
-          log_warn(LD_APP,"socks5: unsupported address type %d. Rejecting.",
+          log_warn(LD_APP, "socks5: unsupported address type %d. Rejecting.",
                    (int) *(data+3));
           return -1;
       }
@@ -428,7 +428,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
           req->command != SOCKS_COMMAND_RESOLVE) {
         /* not a connect or resolve? we don't support it. (No resolve_ptr with
          * socks4.) */
-        log_warn(LD_APP,"socks4: command %d not recognized. Rejecting.",
+        log_warn(LD_APP, "socks4: command %d not recognized. Rejecting.",
                  req->command);
         return -1;
       }
@@ -436,15 +436,15 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
       req->port = ntohs(get_uint16(data+2));
       destip = ntohl(get_uint32(data+4));
       if ((!req->port && req->command!=SOCKS_COMMAND_RESOLVE) || !destip) {
-        log_warn(LD_APP,"socks4: Port or DestIP is zero. Rejecting.");
+        log_warn(LD_APP, "socks4: Port or DestIP is zero. Rejecting.");
         return -1;
       }
       if (destip >> 8) {
-        log_debug(LD_APP,"socks4: destip not in form 0.0.0.x.");
+        log_debug(LD_APP, "socks4: destip not in form 0.0.0.x.");
         in.s_addr = htonl(destip);
-        tor_inet_ntoa(&in,tmpbuf,sizeof(tmpbuf));
+        tor_inet_ntoa(&in, tmpbuf, sizeof(tmpbuf));
         if (strlen(tmpbuf)+1 > MAX_SOCKS_ADDR_LEN) {
-          log_debug(LD_APP,"socks4 addr (%d bytes) too long. Rejecting.",
+          log_debug(LD_APP, "socks4 addr (%d bytes) too long. Rejecting.",
                     (int)strlen(tmpbuf));
           return -1;
         }
@@ -462,7 +462,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
           log_debug(LD_APP, "Socks4 user name too long; rejecting.");
           return -1;
         }
-        log_debug(LD_APP,"socks4: Username not here yet.");
+        log_debug(LD_APP, "socks4: Username not here yet.");
         *want_length_out = datalen+1024; /* More than we need, but safe */
         return 0;
       }
@@ -471,7 +471,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
 
       startaddr = NULL;
       if (socks4_prot != socks4a &&
-          !addressmap_have_mapping(tmpbuf,0)) {
+          !addressmap_have_mapping(tmpbuf, 0)) {
         log_unsafe_socks_warning(4, tmpbuf, req->port, safe_socks);
 
         if (safe_socks)
@@ -479,7 +479,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
       }
       if (socks4_prot == socks4a) {
         if (next+1 == data+datalen) {
-          log_debug(LD_APP,"socks4: No part of destaddr here yet.");
+          log_debug(LD_APP, "socks4: No part of destaddr here yet.");
           *want_length_out = datalen + 1024; /* More than we need, but safe */
           return 0;
         }
@@ -487,15 +487,15 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
         next = memchr(startaddr, 0, data + datalen - startaddr);
         if (!next) {
           if (datalen >= 1024) {
-            log_debug(LD_APP,"socks4: Destaddr too long.");
+            log_debug(LD_APP, "socks4: Destaddr too long.");
             return -1;
           }
-          log_debug(LD_APP,"socks4: Destaddr not all here yet.");
+          log_debug(LD_APP, "socks4: Destaddr not all here yet.");
           *want_length_out = datalen + 1024; /* More than we need, but safe */
           return 0;
         }
         if (MAX_SOCKS_ADDR_LEN <= next-startaddr) {
-          log_warn(LD_APP,"socks4: Destaddr too long. Rejecting.");
+          log_warn(LD_APP, "socks4: Destaddr too long. Rejecting.");
           return -1;
         }
         // tor_assert(next < buf->cur+buf_datalen(buf));
@@ -506,7 +506,7 @@ parse_socks(const char *data, size_t datalen, socks_request_t *req,
                      "Tor to take care of the DNS resolution itself if "
                      "necessary. This is good.", req->port);
       }
-      log_debug(LD_APP,"socks4: Everything is here. Success.");
+      log_debug(LD_APP, "socks4: Everything is here. Success.");
       strlcpy(req->address, startaddr ? startaddr : tmpbuf,
               sizeof(req->address));
       if (!string_is_valid_hostname(req->address)) {

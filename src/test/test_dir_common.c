@@ -152,7 +152,7 @@ dir_common_gen_routerstatus_for_v3ns(int idx, time_t now)
     vrs->microdesc = tor_malloc_zero(sizeof(vote_microdesc_hash_t));
     method_list = make_consensus_method_list(MIN_SUPPORTED_CONSENSUS_METHOD,
                                              MAX_SUPPORTED_CONSENSUS_METHOD,
-                                             ",");
+                                             ", ");
     tor_asprintf(&vrs->microdesc->microdesc_hash_line,
                  "m %s "
                  "sha256=xyzajkldsdsajdadlsdjaslsdksdjlsdjsdaskdaaa%d\n",
@@ -248,7 +248,7 @@ dir_common_add_rs_and_parse(networkstatus_t *vote, networkstatus_t **vote_out,
       smartlist_add(vote->routerstatus_list, vrs);
       router_added =
         router_add_to_routerlist(dir_common_generate_ri_from_rs(vrs),
-                                 &msg,0,0);
+                                 &msg, 0, 0);
       tt_assert(router_added >= 0);
       ++idx;
     }
@@ -289,8 +289,8 @@ dir_common_construct_vote_1(networkstatus_t **vote, authority_cert_t *cert,
   (*vote)->vote_seconds = 100;
   (*vote)->dist_seconds = 200;
   smartlist_split_string((*vote)->supported_methods, "1 2 3", NULL, 0, -1);
-  (*vote)->client_versions = tor_strdup("0.1.2.14,0.1.2.15");
-  (*vote)->server_versions = tor_strdup("0.1.2.14,0.1.2.15,0.1.2.16");
+  (*vote)->client_versions = tor_strdup("0.1.2.14, 0.1.2.15");
+  (*vote)->server_versions = tor_strdup("0.1.2.14, 0.1.2.15, 0.1.2.16");
   smartlist_split_string((*vote)->known_flags,
                      "Authority Exit Fast Guard Running Stable V2Dir Valid",
                      0, SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
@@ -388,8 +388,8 @@ dir_common_construct_vote_3(networkstatus_t **vote, authority_cert_t *cert,
   (*vote)->vote_seconds = 100;
   (*vote)->dist_seconds = 250;
   smartlist_split_string((*vote)->supported_methods, "1 2 3 4", NULL, 0, -1);
-  (*vote)->client_versions = tor_strdup("0.1.2.14,0.1.2.17");
-  (*vote)->server_versions = tor_strdup("0.1.2.10,0.1.2.15,0.1.2.16");
+  (*vote)->client_versions = tor_strdup("0.1.2.14, 0.1.2.17");
+  (*vote)->server_versions = tor_strdup("0.1.2.10, 0.1.2.15, 0.1.2.16");
   smartlist_split_string((*vote)->known_flags,
                      "Authority Exit Fast Guard Running Stable V2Dir Valid",
                      0, SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);

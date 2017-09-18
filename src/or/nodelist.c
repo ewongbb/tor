@@ -183,7 +183,7 @@ node_get_mutable_by_ed25519_id(const ed25519_public_key_t *ed_id)
 /** Return the node_t whose identity is <b>identity_digest</b>, or NULL
  * if no such node exists. */
 MOCK_IMPL(const node_t *,
-node_get_by_id,(const char *identity_digest))
+node_get_by_id, (const char *identity_digest))
 {
   return node_get_mutable_by_id(identity_digest);
 }
@@ -191,7 +191,7 @@ node_get_by_id,(const char *identity_digest))
 /** Return the node_t whose ed25519 identity is <b>ed_id</b>, or NULL
  * if no such node exists. */
 MOCK_IMPL(const node_t *,
-node_get_by_ed25519_id,(const ed25519_public_key_t *ed_id))
+node_get_by_ed25519_id, (const ed25519_public_key_t *ed_id))
 {
   return node_get_mutable_by_ed25519_id(ed_id);
 }
@@ -516,7 +516,7 @@ nodelist_set_consensus(networkstatus_t *ns)
     node->rs = rs;
     if (ns->flavor == FLAV_MICRODESC) {
       if (node->md == NULL ||
-          tor_memneq(node->md->digest,rs->descriptor_digest,DIGEST256_LEN)) {
+          tor_memneq(node->md->digest, rs->descriptor_digest, DIGEST256_LEN)) {
         node_remove_from_ed25519_map(node);
         if (node->md)
           node->md->held_by_nodes--;
@@ -797,7 +797,7 @@ nodelist_assert_ok(void)
  * MUST NOT modify the list. (You can set and clear flags in the nodes if
  * you must, but you must not add or remove nodes.) */
 MOCK_IMPL(smartlist_t *,
-nodelist_get_list,(void))
+nodelist_get_list, (void))
 {
   init_nodelist();
   return the_nodelist->nodes;
@@ -835,7 +835,7 @@ node_get_by_hex_id(const char *hex_id, unsigned flags)
  * have specified a router by nickname, unless the NNF_NO_WARN_UNNAMED bit is
  * set in <b>flags</b>. */
 MOCK_IMPL(const node_t *,
-node_get_by_nickname,(const char *nickname, unsigned flags))
+node_get_by_nickname, (const char *nickname, unsigned flags))
 {
   const int warn_if_unnamed = !(flags & NNF_NO_WARN_UNNAMED);
 
@@ -1887,7 +1887,7 @@ router_set_status(const char *digest, int up)
   node = node_get_mutable_by_id(digest);
   if (node) {
 #if 0
-    log_debug(LD_DIR,"Marking router %s as %s.",
+    log_debug(LD_DIR, "Marking router %s as %s.",
               node_describe(node), up ? "up" : "down");
 #endif
     if (!up && node_is_me(node) && !net_is_disabled())
@@ -1925,7 +1925,7 @@ static char dir_info_status[512] = "";
  * To obtain the final weighted bandwidth, we multiply the
  * weighted bandwidth fraction for each position (guard, middle, exit). */
 MOCK_IMPL(int,
-router_have_minimum_dir_info,(void))
+router_have_minimum_dir_info, (void))
 {
   static int logged_delay=0;
   const char *delay_fetches_msg = NULL;
@@ -2177,9 +2177,9 @@ compute_frac_paths_available(const networkstatus_t *consensus,
               np,
               nu);
 
-    f_myexit= frac_nodes_with_descriptors(myexits,WEIGHT_FOR_EXIT);
+    f_myexit= frac_nodes_with_descriptors(myexits, WEIGHT_FOR_EXIT);
     f_myexit_unflagged=
-              frac_nodes_with_descriptors(myexits_unflagged,WEIGHT_FOR_EXIT);
+              frac_nodes_with_descriptors(myexits_unflagged, WEIGHT_FOR_EXIT);
 
     log_debug(LD_NET,
               "f_exit: %.2f, f_myexit: %.2f, f_myexit_unflagged: %.2f",
@@ -2240,7 +2240,7 @@ count_loading_descriptors_progress(void)
   time_t now = time(NULL);
   const or_options_t *options = get_options();
   const networkstatus_t *consensus =
-    networkstatus_get_reasonably_live_consensus(now,usable_consensus_flavor());
+    networkstatus_get_reasonably_live_consensus(now, usable_consensus_flavor());
   double paths, fraction;
 
   if (!consensus)
@@ -2250,7 +2250,7 @@ count_loading_descriptors_progress(void)
                                        &num_present, &num_usable,
                                        NULL);
 
-  fraction = paths / get_frac_paths_needed_for_circs(options,consensus);
+  fraction = paths / get_frac_paths_needed_for_circs(options, consensus);
   if (fraction > 1.0)
     return 0; /* it's not the number of descriptors holding us back */
   return BOOTSTRAP_STATUS_LOADING_DESCRIPTORS + (int)
@@ -2284,7 +2284,7 @@ update_router_have_minimum_dir_info(void)
   int res;
   const or_options_t *options = get_options();
   const networkstatus_t *consensus =
-    networkstatus_get_reasonably_live_consensus(now,usable_consensus_flavor());
+    networkstatus_get_reasonably_live_consensus(now, usable_consensus_flavor());
   int using_md;
 
   if (!consensus) {
@@ -2315,7 +2315,7 @@ update_router_have_minimum_dir_info(void)
                                                 &num_present, &num_usable,
                                                 &status);
 
-    if (paths < get_frac_paths_needed_for_circs(options,consensus)) {
+    if (paths < get_frac_paths_needed_for_circs(options, consensus)) {
       tor_snprintf(dir_info_status, sizeof(dir_info_status),
                    "We need more %sdescriptors: we have %d/%d, and "
                    "can only build %d%% of likely paths. (We have %s.)",

@@ -126,7 +126,7 @@ onion_skin_TAP_server_handshake(
                                            TAP_ONIONSKIN_CHALLENGE_LEN,
                                            onion_skin,
                                            TAP_ONIONSKIN_CHALLENGE_LEN,
-                                           PK_PKCS1_OAEP_PADDING,0);
+                                           PK_PKCS1_OAEP_PADDING, 0);
     if (len>0)
       break;
   }

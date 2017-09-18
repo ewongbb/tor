@@ -69,7 +69,7 @@ tor_sleep_msec(int msec)
 #endif
 
 /** Set *timeval to the current time of day.  On error, log and terminate.
- * (Same as gettimeofday(timeval,NULL), but never returns -1.)
+ * (Same as gettimeofday(timeval, NULL), but never returns -1.)
  */
 void
 tor_gettimeofday(struct timeval *timeval)
@@ -89,7 +89,7 @@ tor_gettimeofday(struct timeval *timeval)
   GetSystemTimeAsFileTime(&ft.ft_ft);
   if (ft.ft_64 < EPOCH_BIAS) {
     /* LCOV_EXCL_START */
-    log_err(LD_GENERAL,"System time is before 1970; failing.");
+    log_err(LD_GENERAL, "System time is before 1970; failing.");
     exit(1);
     /* LCOV_EXCL_STOP */
   }
@@ -99,7 +99,7 @@ tor_gettimeofday(struct timeval *timeval)
 #elif defined(HAVE_GETTIMEOFDAY)
   if (gettimeofday(timeval, NULL)) {
     /* LCOV_EXCL_START */
-    log_err(LD_GENERAL,"gettimeofday failed.");
+    log_err(LD_GENERAL, "gettimeofday failed.");
     /* If gettimeofday dies, we have either given a bad timezone (we didn't),
        or segfaulted.*/
     exit(1);

@@ -100,7 +100,7 @@ fscalar_product(felem output, const felem in, const limb scalar) {
 static inline void force_inline
 fmul(felem output, const felem in2, const felem in) {
   uint128_t t[5];
-  limb r0,r1,r2,r3,r4,s0,s1,s2,s3,s4,c;
+  limb r0, r1, r2, r3, r4, s0, s1, s2, s3, s4, c;
 
   r0 = in[0];
   r1 = in[1];
@@ -149,8 +149,8 @@ fmul(felem output, const felem in2, const felem in) {
 static inline void force_inline
 fsquare_times(felem output, const felem in, limb count) {
   uint128_t t[5];
-  limb r0,r1,r2,r3,r4,c;
-  limb d0,d1,d2,d4,d419;
+  limb r0, r1, r2, r3, r4, c;
+  limb d0, d1, d2, d4, d419;
 
   r0 = in[0];
   r1 = in[1];
@@ -403,7 +403,7 @@ cmult(limb *resultx, limb *resultz, const u8 *n, const limb *q) {
 // -----------------------------------------------------------------------------
 static void
 crecip(felem out, const felem z) {
-  felem a,t0,b,c;
+  felem a, t0, b, c;
 
   /* 2 */ fsquare_times(a, z, 1); // a = 2
   /* 8 */ fsquare_times(t0, a, 2);

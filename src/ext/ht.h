@@ -212,7 +212,7 @@ ht_string_hash(const char *s)
 #endif
 
 #define HT_BUCKET_NUM_(head, field, elm, hashfn)                        \
-  (HT_ELT_HASH_(elm,field,hashfn) % head->hth_table_length)
+  (HT_ELT_HASH_(elm, field, hashfn) % head->hth_table_length)
 
 /* Helper: alias for the bucket containing 'elm'. */
 #define HT_BUCKET_(head, field, elm, hashfn)                            \
@@ -312,7 +312,7 @@ ht_string_hash(const char *s)
   {                                                                     \
     struct type **p, *r;                                                \
     HT_SET_HASH_(elm, field, hashfn);                                   \
-    p = name##_HT_FIND_P_(head,elm);                                    \
+    p = name##_HT_FIND_P_(head, elm);                                    \
     if (!p || !*p)                                                      \
       return NULL;                                                      \
     r = *p;                                                             \
@@ -358,7 +358,7 @@ ht_string_hash(const char *s)
     while (b < head->hth_table_length) {                                \
       if (head->hth_table[b]) {                                         \
         HT_ASSERT_(b ==                                                 \
-                HT_BUCKET_NUM_(head,field,head->hth_table[b],hashfn));  \
+                HT_BUCKET_NUM_(head, field, head->hth_table[b], hashfn));  \
         return &head->hth_table[b];                                     \
       }                                                                 \
       ++b;                                                              \
@@ -374,15 +374,15 @@ ht_string_hash(const char *s)
   name##_HT_NEXT(struct name *head, struct type **elm)                  \
   {                                                                     \
     if ((*elm)->field.hte_next) {                                       \
-      HT_ASSERT_(HT_BUCKET_NUM_(head,field,*elm,hashfn) ==              \
-             HT_BUCKET_NUM_(head,field,(*elm)->field.hte_next,hashfn)); \
+      HT_ASSERT_(HT_BUCKET_NUM_(head, field, *elm, hashfn) ==              \
+             HT_BUCKET_NUM_(head, field, (*elm)->field.hte_next, hashfn)); \
       return &(*elm)->field.hte_next;                                   \
     } else {                                                            \
-      unsigned b = HT_BUCKET_NUM_(head,field,*elm,hashfn)+1;            \
+      unsigned b = HT_BUCKET_NUM_(head, field, *elm, hashfn)+1;            \
       while (b < head->hth_table_length) {                              \
         if (head->hth_table[b]) {                                       \
           HT_ASSERT_(b ==                                               \
-                 HT_BUCKET_NUM_(head,field,head->hth_table[b],hashfn)); \
+                 HT_BUCKET_NUM_(head, field, head->hth_table[b], hashfn)); \
           return &head->hth_table[b];                                   \
         }                                                               \
         ++b;                                                            \
@@ -524,7 +524,7 @@ ht_string_hash(const char *s)
       for (elm = head->hth_table[i]; elm; elm = elm->field.hte_next) {  \
         if (HT_ELT_HASH_(elm, field, hashfn) != hashfn(elm))            \
           return 1000 + i;                                              \
-        if (HT_BUCKET_NUM_(head,field,elm,hashfn) != i)                 \
+        if (HT_BUCKET_NUM_(head, field, elm, hashfn) != i)                 \
           return 10000 + i;                                             \
         ++n;                                                            \
       }                                                                 \
@@ -542,7 +542,7 @@ ht_string_hash(const char *s)
     if ((b) && (a) > SIZE_MAX / (b))                                    \
       return NULL;                                                      \
     if (arg)                                                            \
-      return reallocfn((arg),(a)*(b));                                  \
+      return reallocfn((arg), (a)*(b));                                  \
     else                                                                \
       return mallocfn((a)*(b));                                         \
   }                                                                     \

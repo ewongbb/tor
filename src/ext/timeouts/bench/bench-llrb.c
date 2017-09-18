@@ -86,7 +86,7 @@ struct { struct type *rbe_left, *rbe_right, *rbe_parent; _Bool rbe_color; }
 #define LLRB_ISRED(elm, field) ((elm) && LLRB_COLOR((elm), field) == LLRB_RED)
 
 #define LLRB_PROTOTYPE(name, type, field, cmp) \
-	LLRB_PROTOTYPE_INTERNAL(name, type, field, cmp,)
+	LLRB_PROTOTYPE_INTERNAL(name, type, field, cmp, )
 #define LLRB_PROTOTYPE_STATIC(name, type, field, cmp) \
 	LLRB_PROTOTYPE_INTERNAL(name, type, field, cmp, LLRB_STATIC)
 #define LLRB_PROTOTYPE_INTERNAL(name, type, field, cmp, attr) \
@@ -98,7 +98,7 @@ attr struct type *name##_LLRB_MAX(struct type *); \
 attr struct type *name##_LLRB_NEXT(struct type *);
 
 #define LLRB_GENERATE(name, type, field, cmp) \
-	LLRB_GENERATE_INTERNAL(name, type, field, cmp,)
+	LLRB_GENERATE_INTERNAL(name, type, field, cmp, )
 #define LLRB_GENERATE_STATIC(name, type, field, cmp) \
 	LLRB_GENERATE_INTERNAL(name, type, field, cmp, LLRB_STATIC)
 #define LLRB_GENERATE_INTERNAL(name, type, field, cmp, attr) \

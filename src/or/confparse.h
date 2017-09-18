@@ -16,7 +16,7 @@ typedef enum config_type_t {
   CONFIG_TYPE_PORT,         /**< A port from 1...65535, 0 for "not set", or
                              * "auto".  */
   CONFIG_TYPE_INTERVAL,     /**< A number of seconds, with optional units*/
-  CONFIG_TYPE_MSEC_INTERVAL,/**< A number of milliseconds, with optional
+  CONFIG_TYPE_MSEC_INTERVAL, /**< A number of milliseconds, with optional
                               * units */
   CONFIG_TYPE_MEMUNIT,      /**< A number of bytes, with optional units*/
   CONFIG_TYPE_DOUBLE,       /**< A floating-point value */
@@ -69,7 +69,7 @@ typedef struct config_var_t {
 /** Type of a callback to validate whether a given configuration is
  * well-formed and consistent. See options_trial_assign() for documentation
  * of arguments. */
-typedef int (*validate_fn_t)(void*,void*,void*,int,char**);
+typedef int (*validate_fn_t)(void*, void*, void*, int, char**);
 
 /** Information on the keys, value types, key-to-struct-member mappings,
  * variable descriptions, validation functions, and abbreviations for a
@@ -95,7 +95,7 @@ typedef struct config_format_t {
 #define CONFIG_CHECK(fmt, cfg) STMT_BEGIN                               \
     tor_assert(fmt && cfg);                                             \
     tor_assert((fmt)->magic ==                                          \
-               *(uint32_t*)STRUCT_VAR_P(cfg,fmt->magic_offset));        \
+               *(uint32_t*)STRUCT_VAR_P(cfg, fmt->magic_offset));        \
   STMT_END
 
 #define CAL_USE_DEFAULTS      (1u<<0)

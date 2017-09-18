@@ -10,9 +10,9 @@
 #define ED25519_SUFFIX 
 #endif
 
-#define ED25519_FN3(fn,suffix) fn##suffix
-#define ED25519_FN2(fn,suffix) ED25519_FN3(fn,suffix)
-#define ED25519_FN(fn)         ED25519_FN2(fn,ED25519_SUFFIX)
+#define ED25519_FN3(fn, suffix) fn##suffix
+#define ED25519_FN2(fn, suffix) ED25519_FN3(fn, suffix)
+#define ED25519_FN(fn)         ED25519_FN2(fn, ED25519_SUFFIX)
 
 #include "ed25519-donna.h"
 #include "ed25519.h"
@@ -75,18 +75,18 @@ ED25519_FN(ed25519_sign) (const unsigned char *m, size_t mlen, const ed25519_sec
 	ge25519_scalarmult_base_niels(&R, ge25519_niels_base_multiples, r);
 	ge25519_pack(RS, &R);
 
-	/* S = H(R,A,m).. */
+	/* S = H(R, A, m).. */
 	ed25519_hram(hram, RS, pk, m, mlen);
 	expand256_modm(S, hram, 64);
 
-	/* S = H(R,A,m)a */
+	/* S = H(R, A, m)a */
 	expand256_modm(a, extsk, 32);
 	mul256_modm(S, S, a);
 
-	/* S = (r + H(R,A,m)a) */
+	/* S = (r + H(R, A, m)a) */
 	add256_modm(S, S, r);
 
-	/* S = (r + H(R,A,m)a) mod L */	
+	/* S = (r + H(R, A, m)a) mod L */	
 	contract256_modm(RS + 32, S);
 }
 
@@ -100,18 +100,18 @@ ED25519_FN(ed25519_sign_open) (const unsigned char *m, size_t mlen, const ed2551
 	if ((RS[63] & 224) || !ge25519_unpack_negative_vartime(&A, pk))
 		return -1;
 
-	/* hram = H(R,A,m) */
+	/* hram = H(R, A, m) */
 	ed25519_hram(hash, RS, pk, m, mlen);
 	expand256_modm(hram, hash, 64);
 
 	/* S */
 	expand256_modm(S, RS + 32, 32);
 
-	/* SB - H(R,A,m)A */
+	/* SB - H(R, A, m)A */
 	ge25519_double_scalarmult_vartime(&R, &A, hram, S);
 	ge25519_pack(checkR, &R);
 
-	/* check that R = SB - H(R,A,m)A */
+	/* check that R = SB - H(R, A, m)A */
 	return ed25519_verify(RS, checkR, 32) ? 0 : -1;
 }
 

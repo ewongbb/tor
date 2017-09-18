@@ -70,18 +70,18 @@ int control_event_networkstatus_changed(smartlist_t *statuses);
 int control_event_newconsensus(const networkstatus_t *consensus);
 int control_event_networkstatus_changed_single(const routerstatus_t *rs);
 int control_event_general_status(int severity, const char *format, ...)
-  CHECK_PRINTF(2,3);
+  CHECK_PRINTF(2, 3);
 int control_event_client_status(int severity, const char *format, ...)
-  CHECK_PRINTF(2,3);
+  CHECK_PRINTF(2, 3);
 int control_event_server_status(int severity, const char *format, ...)
-  CHECK_PRINTF(2,3);
+  CHECK_PRINTF(2, 3);
 
 int control_event_general_error(const char *format, ...)
-  CHECK_PRINTF(1,2);
+  CHECK_PRINTF(1, 2);
 int control_event_client_error(const char *format, ...)
-  CHECK_PRINTF(1,2);
+  CHECK_PRINTF(1, 2);
 int control_event_server_error(const char *format, ...)
-  CHECK_PRINTF(1,2);
+  CHECK_PRINTF(1, 2);
 
 int control_event_guard(const char *nickname, const char *digest,
                         const char *status);
@@ -99,7 +99,7 @@ void enable_control_logging(void);
 void monitor_owning_controller_process(const char *process_spec);
 
 int control_event_bootstrap(bootstrap_status_t status, int progress);
-MOCK_DECL(void, control_event_bootstrap_prob_or,(const char *warn,
+MOCK_DECL(void, control_event_bootstrap_prob_or, (const char *warn,
                                                  int reason,
                                                  or_connection_t *or_conn));
 void control_event_bootstrap_problem(const char *warn, const char *reason,
@@ -110,7 +110,7 @@ void control_event_transport_launched(const char *mode,
                                       const char *transport_name,
                                       tor_addr_t *addr, uint16_t port);
 const char *rend_auth_type_to_string(rend_auth_type_t auth_type);
-MOCK_DECL(const char *, node_describe_longname_by_id,(const char *id_digest));
+MOCK_DECL(const char *, node_describe_longname_by_id, (const char *id_digest));
 void control_event_hs_descriptor_requested(const rend_data_t *rend_query,
                                            const char *desc_id_base32,
                                            const char *hs_dir);
@@ -219,10 +219,10 @@ STATIC size_t read_escaped_data(const char *data, size_t len, char **out);
 
 #ifdef TOR_UNIT_TESTS
 MOCK_DECL(STATIC void,
-          send_control_event_string,(uint16_t event, const char *msg));
+          send_control_event_string, (uint16_t event, const char *msg));
 
 MOCK_DECL(STATIC void,
-          queue_control_event_string,(uint16_t event, char *msg));
+          queue_control_event_string, (uint16_t event, char *msg));
 
 void control_testing_set_global_event_mask(uint64_t mask);
 #endif

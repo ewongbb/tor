@@ -386,7 +386,7 @@ main(int argc, char **argv)
 		.try_removing = 0,
 		.finalize = 2,
 		};
-	DO_N(300,check_randomized(&cfg1));
+	DO_N(300, check_randomized(&cfg1));
 
 	struct rand_cfg cfg2 = {
 		.min_timeout = 20,
@@ -399,7 +399,7 @@ main(int argc, char **argv)
 		.try_removing = 0,
 		.finalize = 2,
 		};
-	DO_N(300,check_randomized(&cfg2));
+	DO_N(300, check_randomized(&cfg2));
 
 	struct rand_cfg cfg2b = {
 		.min_timeout = 20,
@@ -412,7 +412,7 @@ main(int argc, char **argv)
 		.try_removing = 0,
 		.finalize = 1,
 		};
-	DO_N(300,check_randomized(&cfg2b));
+	DO_N(300, check_randomized(&cfg2b));
 
 	struct rand_cfg cfg2c = {
 		.min_timeout = 20,
@@ -425,7 +425,7 @@ main(int argc, char **argv)
 		.try_removing = 0,
 		.finalize = 0,
 		};
-	DO_N(300,check_randomized(&cfg2c));
+	DO_N(300, check_randomized(&cfg2c));
 
 	struct rand_cfg cfg3 = {
 		.min_timeout = 2000,
@@ -438,7 +438,7 @@ main(int argc, char **argv)
 		.try_removing = 0,
 		.finalize = 2,
 		};
-	DO_N(10,check_randomized(&cfg3));
+	DO_N(10, check_randomized(&cfg3));
 
 	struct rand_cfg cfg3b = {
 		.min_timeout = ((uint64_t)1) << 50,
@@ -451,7 +451,7 @@ main(int argc, char **argv)
 		.try_removing = 0,
 		.finalize = 2,
 		};
-	DO_N(10,check_randomized(&cfg3b));
+	DO_N(10, check_randomized(&cfg3b));
 
 	struct rand_cfg cfg4 = {
 		.min_timeout = 2000,
@@ -464,11 +464,11 @@ main(int argc, char **argv)
 		.try_removing = 3,
 		.finalize = 2,
 		};
-	DO_N(10,check_randomized(&cfg4));
+	DO_N(10, check_randomized(&cfg4));
 
 	const timeout_t primes[] = {
-		2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,
-		59,61,67,71,73,79,83,89,97
+		2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53,
+		59, 61, 67, 71, 73, 79, 83, 89, 97
 	};
 	const timeout_t factors_of_1337[] = {
 		1, 7, 191, 1337

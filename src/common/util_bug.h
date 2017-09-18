@@ -91,7 +91,7 @@ extern int bug_macro_deadcode_dummy__;
 // magic coverity-only preprocessor thing.
 // We use this "deadcode_dummy__" trick to prevent coverity from
 // complaining about unreachable bug cases.
-#nodef BUG(x) ((x)?(__coverity_panic__(),1):(0+bug_macro_deadcode_dummy__))
+#nodef BUG(x) ((x)?(__coverity_panic__(), 1):(0+bug_macro_deadcode_dummy__))
 #endif
 
 #if defined(__COVERITY__) || defined(__clang_analyzer__)
@@ -107,7 +107,7 @@ extern int bug_macro_deadcode_dummy__;
 #define tor_assert_nonfatal_once(cond) tor_assert((cond))
 #define BUG(cond)                                                       \
   (PREDICT_UNLIKELY(cond) ?                                             \
-   (tor_assertion_failed_(SHORT_FILE__,__LINE__,__func__,"!("#cond")"), \
+   (tor_assertion_failed_(SHORT_FILE__, __LINE__, __func__, "!("#cond")"), \
     abort(), 1)                                                         \
    : 0)
 #elif defined(TOR_UNIT_TESTS) && defined(DISABLE_ASSERTS_IN_UNIT_TESTS)
@@ -141,12 +141,12 @@ extern int bug_macro_deadcode_dummy__;
   STMT_END
 #define BUG(cond)                                                       \
   (PREDICT_UNLIKELY(cond) ?                                             \
-   (tor_bug_occurred_(SHORT_FILE__,__LINE__,__func__,"!("#cond")",0), 1) \
+   (tor_bug_occurred_(SHORT_FILE__, __LINE__, __func__, "!("#cond")", 0), 1) \
    : 0)
 #endif
 
 #ifdef __GNUC__
-#define IF_BUG_ONCE__(cond,var)                                         \
+#define IF_BUG_ONCE__(cond, var)                                         \
   if (( {                                                               \
       static int var = 0;                                               \
       int bool_result = (cond);                                         \
@@ -157,7 +157,7 @@ extern int bug_macro_deadcode_dummy__;
       }                                                                 \
       PREDICT_UNLIKELY(bool_result); } ))
 #else
-#define IF_BUG_ONCE__(cond,var)                                         \
+#define IF_BUG_ONCE__(cond, var)                                         \
   static int var = 0;                                                   \
   if (PREDICT_UNLIKELY(cond) ?                                          \
       (var ? 1 :                                                        \

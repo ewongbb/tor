@@ -342,7 +342,7 @@ static void timeouts_sched(struct timeouts *T, struct timeout *to, timeout_t exp
 		rem = timeout_rem(T, to);
 
 		/* rem is nonzero since:
-		 *   rem == timeout_rem(T,to),
+		 *   rem == timeout_rem(T, to),
 		 *       == to->expires - T->curtime
 		 *   and above we have expires > T->curtime.
 		 */

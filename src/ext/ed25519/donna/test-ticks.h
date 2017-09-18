@@ -39,7 +39,7 @@ get_ticks(void) {
 #endif
 }
 
-#define timeit(x,minvar)         \
+#define timeit(x, minvar)         \
 	ticks = get_ticks();         \
  	x;                           \
 	ticks = get_ticks() - ticks; \

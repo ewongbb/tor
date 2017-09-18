@@ -68,7 +68,7 @@ static int n_skipped = 0; /**< Number of tests that have been skipped. */
 
 static int opt_forked = 0; /**< True iff we're called from inside a win32 fork*/
 static int opt_nofork = 0; /**< Suppress calls to fork() for debugging. */
-static int opt_verbosity = 1; /**< -==quiet,0==terse,1==normal,2==verbose */
+static int opt_verbosity = 1; /**< -==quiet, 0==terse, 1==normal, 2==verbose */
 static const char *verbosity_flag = "";
 
 static const struct testlist_alias_t *cfg_aliases=NULL;
@@ -283,7 +283,7 @@ tinytest_set_flag_(struct testgroup_t *groups, const char *arg, int set, unsigne
 	char fullname[LONGEST_TEST_NAME];
 	int found=0;
 	if (strstr(arg, ".."))
-		length = strstr(arg,"..")-arg;
+		length = strstr(arg, "..")-arg;
 	for (i=0; groups[i].prefix; ++i) {
 		for (j=0; groups[i].cases[j].name; ++j) {
 			struct testcase_t *testcase = &groups[i].cases[j];
@@ -341,7 +341,7 @@ process_test_alias(struct testgroup_t *groups, const char *test)
 			return n;
 		}
 	}
-	printf("No such test alias as @%s!",test);
+	printf("No such test alias as @%s!", test);
 	return -1;
 }
 
@@ -411,7 +411,7 @@ tinytest_main(int c, const char **v, struct testgroup_t *groups)
 			} else if (!strcmp(v[i], "--list-tests")) {
 				usage(groups, 1);
 			} else {
-				printf("Unknown option %s.  Try --help\n",v[i]);
+				printf("Unknown option %s.  Try --help\n", v[i]);
 				return -1;
 			}
 		} else {
@@ -442,7 +442,7 @@ tinytest_main(int c, const char **v, struct testgroup_t *groups)
 
 	if (n_bad)
 		printf("%d/%d TESTS FAILED. (%d skipped)\n", n_bad,
-		       n_bad+n_ok,n_skipped);
+		       n_bad+n_ok, n_skipped);
 	else if (opt_verbosity >= 1)
 		printf("%d tests ok.  (%d skipped)\n", n_ok, n_skipped);
 

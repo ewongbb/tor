@@ -386,15 +386,15 @@ rotate_onion_key(void)
       goto error;
   }
   if (!(prkey = crypto_pk_new())) {
-    log_err(LD_GENERAL,"Error constructing rotated onion key");
+    log_err(LD_GENERAL, "Error constructing rotated onion key");
     goto error;
   }
   if (crypto_pk_generate_key(prkey)) {
-    log_err(LD_BUG,"Error generating onion key");
+    log_err(LD_BUG, "Error generating onion key");
     goto error;
   }
   if (crypto_pk_write_private_key_to_filename(prkey, fname)) {
-    log_err(LD_FS,"Couldn't write generated onion key to \"%s\".", fname);
+    log_err(LD_FS, "Couldn't write generated onion key to \"%s\".", fname);
     goto error;
   }
   tor_free(fname);
@@ -410,7 +410,7 @@ rotate_onion_key(void)
   }
   if (curve25519_keypair_write_to_file(&new_curve25519_keypair, fname,
                                        "onion") < 0) {
-    log_err(LD_FS,"Couldn't write curve25519 onion key to \"%s\".",fname);
+    log_err(LD_FS, "Couldn't write curve25519 onion key to \"%s\".", fname);
     goto error;
   }
   log_info(LD_GENERAL, "Rotating onion key");
@@ -471,14 +471,14 @@ init_key_from_file(const char *fname, int generate, int severity,
   crypto_pk_t *prkey = NULL;
 
   if (!(prkey = crypto_pk_new())) {
-    tor_log(severity, LD_GENERAL,"Error constructing key");
+    tor_log(severity, LD_GENERAL, "Error constructing key");
     goto error;
   }
 
   switch (file_status(fname)) {
     case FN_DIR:
     case FN_ERROR:
-      tor_log(severity, LD_FS,"Can't read key from \"%s\"", fname);
+      tor_log(severity, LD_FS, "Can't read key from \"%s\"", fname);
       goto error;
     /* treat empty key files as if the file doesn't exist, and,
      * if generate is set, replace the empty file in
@@ -500,11 +500,11 @@ init_key_from_file(const char *fname, int generate, int severity,
         log_info(LD_GENERAL, "No key found in \"%s\"; generating fresh key.",
                  fname);
         if (crypto_pk_generate_key(prkey)) {
-          tor_log(severity, LD_GENERAL,"Error generating onion key");
+          tor_log(severity, LD_GENERAL, "Error generating onion key");
           goto error;
         }
         if (crypto_pk_check_key(prkey) <= 0) {
-          tor_log(severity, LD_GENERAL,"Generated key seems invalid");
+          tor_log(severity, LD_GENERAL, "Generated key seems invalid");
           goto error;
         }
         log_info(LD_GENERAL, "Generated key seems valid");
@@ -523,7 +523,7 @@ init_key_from_file(const char *fname, int generate, int severity,
       return prkey;
     case FN_FILE:
       if (crypto_pk_read_private_key_from_filename(prkey, fname)) {
-        tor_log(severity, LD_GENERAL,"Error loading private key.");
+        tor_log(severity, LD_GENERAL, "Error loading private key.");
         goto error;
       }
       return prkey;
@@ -552,7 +552,7 @@ init_curve25519_keypair_from_file(curve25519_keypair_t *keys_out,
   switch (file_status(fname)) {
     case FN_DIR:
     case FN_ERROR:
-      tor_log(severity, LD_FS,"Can't read key from \"%s\"", fname);
+      tor_log(severity, LD_FS, "Can't read key from \"%s\"", fname);
       goto error;
     /* treat empty key files as if the file doesn't exist, and, if generate
      * is set, replace the empty file in curve25519_keypair_write_to_file() */
@@ -588,12 +588,12 @@ init_curve25519_keypair_from_file(curve25519_keypair_t *keys_out,
       {
         char *tag_in=NULL;
         if (curve25519_keypair_read_from_file(keys_out, &tag_in, fname) < 0) {
-          tor_log(severity, LD_GENERAL,"Error loading private key.");
+          tor_log(severity, LD_GENERAL, "Error loading private key.");
           tor_free(tag_in);
           goto error;
         }
         if (!tag_in || strcmp(tag_in, tag)) {
-          tor_log(severity, LD_GENERAL,"Unexpected tag %s on private key.",
+          tor_log(severity, LD_GENERAL, "Unexpected tag %s on private key.",
               escaped(tag_in));
           tor_free(tag_in);
           goto error;
@@ -825,18 +825,18 @@ router_write_fingerprint(int hashed)
   int result = -1;
 
   keydir = get_datadir_fname(fname);
-  log_info(LD_GENERAL,"Dumping %sfingerprint to \"%s\"...",
+  log_info(LD_GENERAL, "Dumping %sfingerprint to \"%s\"...",
            hashed ? "hashed " : "", keydir);
   if (!hashed) {
     if (crypto_pk_get_fingerprint(get_server_identity_key(),
                                   fingerprint, 0) < 0) {
-      log_err(LD_GENERAL,"Error computing fingerprint");
+      log_err(LD_GENERAL, "Error computing fingerprint");
       goto done;
     }
   } else {
     if (crypto_pk_get_hashed_fingerprint(get_server_identity_key(),
                                          fingerprint) < 0) {
-      log_err(LD_GENERAL,"Error computing hashed fingerprint");
+      log_err(LD_GENERAL, "Error computing hashed fingerprint");
       goto done;
     }
   }
@@ -900,7 +900,7 @@ init_keys_client(void)
   set_client_identity_key(prkey);
   /* Create a TLS context. */
   if (router_initialize_tls_context() < 0) {
-    log_err(LD_GENERAL,"Error creating TLS context for Tor client.");
+    log_err(LD_GENERAL, "Error creating TLS context for Tor client.");
     return -1;
   }
   return 0;
@@ -972,7 +972,7 @@ init_keys(void)
 
   /* 1b. Read identity key. Make it if none is found. */
   keydir = get_datadir_fname2("keys", "secret_id_key");
-  log_info(LD_GENERAL,"Reading/making identity key \"%s\"...",keydir);
+  log_info(LD_GENERAL, "Reading/making identity key \"%s\"...", keydir);
   prkey = init_key_from_file(keydir, 1, LOG_ERR, 1);
   tor_free(keydir);
   if (!prkey) return -1;
@@ -994,13 +994,13 @@ init_keys(void)
   }
 
   /* 1d. Load all ed25519 keys */
-  const int new_signing_key = load_ed_keys(options,now);
+  const int new_signing_key = load_ed_keys(options, now);
   if (new_signing_key < 0)
     return -1;
 
   /* 2. Read onion key.  Make it if none is found. */
   keydir = get_datadir_fname2("keys", "secret_onion_key");
-  log_info(LD_GENERAL,"Reading/making onion key \"%s\"...",keydir);
+  log_info(LD_GENERAL, "Reading/making onion key \"%s\"...", keydir);
   prkey = init_key_from_file(keydir, 1, LOG_ERR, 1);
   tor_free(keydir);
   if (!prkey) return -1;
@@ -1059,14 +1059,14 @@ init_keys(void)
 
   /* 3. Initialize link key and TLS context. */
   if (router_initialize_tls_context() < 0) {
-    log_err(LD_GENERAL,"Error initializing TLS context");
+    log_err(LD_GENERAL, "Error initializing TLS context");
     return -1;
   }
 
   /* 3b. Get an ed25519 link certificate.  Note that we need to do this
    * after we set up the TLS context */
   if (generate_ed_link_cert(options, now, new_signing_key > 0) < 0) {
-    log_err(LD_GENERAL,"Couldn't make link cert");
+    log_err(LD_GENERAL, "Couldn't make link cert");
     return -1;
   }
 
@@ -1078,14 +1078,14 @@ init_keys(void)
     routerinfo_t *ri;
     /* We need to add our own fingerprint so it gets recognized. */
     if (dirserv_add_own_fingerprint(get_server_identity_key())) {
-      log_err(LD_GENERAL,"Error adding own fingerprint to set of relays");
+      log_err(LD_GENERAL, "Error adding own fingerprint to set of relays");
       return -1;
     }
     if (mydesc) {
       was_router_added_t added;
       ri = router_parse_entry_from_string(mydesc, NULL, 1, 0, NULL, NULL);
       if (!ri) {
-        log_err(LD_GENERAL,"Generated a routerinfo we couldn't parse.");
+        log_err(LD_GENERAL, "Generated a routerinfo we couldn't parse.");
         return -1;
       }
       added = dirserv_add_descriptor(ri, &m, "self");
@@ -1121,7 +1121,7 @@ init_keys(void)
     return 0;
   /* 6. [authdirserver only] load approved-routers file */
   if (dirserv_load_fingerprint_file() < 0) {
-    log_err(LD_GENERAL,"Error loading fingerprints");
+    log_err(LD_GENERAL, "Error loading fingerprints");
     return -1;
   }
   /* 6b. [authdirserver only] add own key to approved directories. */
@@ -1140,7 +1140,7 @@ init_keys(void)
                                 v3_digest,
                                 type, 0.0);
     if (!ds) {
-      log_err(LD_GENERAL,"We want to be a directory authority, but we "
+      log_err(LD_GENERAL, "We want to be a directory authority, but we "
               "couldn't add ourselves to the authority list. Failing.");
       return -1;
     }
@@ -1501,7 +1501,7 @@ router_orport_found_reachable(void)
   const or_options_t *options = get_options();
   if (!can_reach_or_port && me) {
     char *address = tor_dup_ip(me->addr);
-    log_notice(LD_OR,"Self-testing indicates your ORPort is reachable from "
+    log_notice(LD_OR, "Self-testing indicates your ORPort is reachable from "
                "the outside. Excellent.%s",
                options->PublishServerDescriptor_ != NO_DIRINFO
                && check_whether_dirport_reachable(options) ?
@@ -1528,7 +1528,7 @@ router_dirport_found_reachable(void)
   const or_options_t *options = get_options();
   if (!can_reach_dir_port && me) {
     char *address = tor_dup_ip(me->addr);
-    log_notice(LD_DIRSERV,"Self-testing indicates your DirPort is reachable "
+    log_notice(LD_DIRSERV, "Self-testing indicates your DirPort is reachable "
                "from the outside. Excellent.%s",
                options->PublishServerDescriptor_ != NO_DIRINFO
                && check_whether_orport_reachable(options) ?
@@ -1561,7 +1561,7 @@ router_perform_bandwidth_test(int num_circs, time_t now)
   int cells_per_circuit = max_cells / num_circs;
   origin_circuit_t *circ = NULL;
 
-  log_notice(LD_OR,"Performing bandwidth self-test...done.");
+  log_notice(LD_OR, "Performing bandwidth self-test...done.");
   while ((circ = circuit_get_next_by_pk_and_purpose(circ, NULL,
                                               CIRCUIT_PURPOSE_TESTING))) {
     /* dump cells_per_circuit drop cells onto this circ */
@@ -1650,7 +1650,7 @@ authdir_mode_bridge(const or_options_t *options)
 /** Return true iff we are trying to be a server.
  */
 MOCK_IMPL(int,
-server_mode,(const or_options_t *options))
+server_mode, (const or_options_t *options))
 {
   if (options->ClientOnly) return 0;
   return (options->ORPort_set);
@@ -1659,7 +1659,7 @@ server_mode,(const or_options_t *options))
 /** Return true iff we are trying to be a non-bridge server.
  */
 MOCK_IMPL(int,
-public_server_mode,(const or_options_t *options))
+public_server_mode, (const or_options_t *options))
 {
   if (!server_mode(options)) return 0;
   return (!options->BridgeRelay);
@@ -1684,7 +1684,7 @@ static int server_is_advertised=0;
 /** Return true iff we have published our descriptor lately.
  */
 MOCK_IMPL(int,
-advertised_server_mode,(void))
+advertised_server_mode, (void))
 {
   return server_is_advertised;
 }
@@ -1954,7 +1954,7 @@ router_compare_to_my_exit_policy(const tor_addr_t *addr, uint16_t port)
 /** Return true iff my exit policy is reject *:*.  Return -1 if we don't
  * have a descriptor */
 MOCK_IMPL(int,
-router_my_exit_policy_is_reject_star,(void))
+router_my_exit_policy_is_reject_star, (void))
 {
   if (!router_get_my_routerinfo()) /* make sure routerinfo exists */
     return -1;
@@ -2002,7 +2002,7 @@ router_is_me(const routerinfo_t *router)
 /** Return a routerinfo for this OR, rebuilding a fresh one if
  * necessary.  Return NULL on error, or if called on an OP. */
 MOCK_IMPL(const routerinfo_t *,
-router_get_my_routerinfo,(void))
+router_get_my_routerinfo, (void))
 {
   if (!server_mode(get_options()))
     return NULL;
@@ -2025,7 +2025,7 @@ router_get_my_descriptor(void)
   body = signed_descriptor_get_body(&me->cache_info);
   /* Make sure this is nul-terminated. */
   tor_assert(!body[me->cache_info.signed_descriptor_len]);
-  log_debug(LD_GENERAL,"my desc is '%s'", body);
+  log_debug(LD_GENERAL, "my desc is '%s'", body);
   return body;
 }
 
@@ -2064,7 +2064,7 @@ static int router_guess_address_from_dir_headers(uint32_t *guess);
  * don't try to get any new answers.
  */
 MOCK_IMPL(int,
-router_pick_published_address,(const or_options_t *options, uint32_t *addr,
+router_pick_published_address, (const or_options_t *options, uint32_t *addr,
                                int cache_only))
 {
   /* First, check the cached output from resolve_my_address(). */
@@ -2075,7 +2075,7 @@ router_pick_published_address,(const or_options_t *options, uint32_t *addr,
   /* Second, consider doing a resolve attempt right here. */
   if (!cache_only) {
     if (resolve_my_address(LOG_INFO, options, addr, NULL, NULL) >= 0) {
-      log_info(LD_CONFIG,"Success: chose address '%s'.", fmt_addr32(*addr));
+      log_info(LD_CONFIG, "Success: chose address '%s'.", fmt_addr32(*addr));
       return 0;
     }
   }
@@ -2262,7 +2262,7 @@ router_build_fresh_descriptor(routerinfo_t **r, extrainfo_t **e)
     /* DNS is screwed up; don't claim to be an exit. */
     policies_exit_policy_append_reject_star(&ri->exit_policy);
   } else {
-    policies_parse_exit_policy_from_options(options,ri->addr,&ri->ipv6_addr,
+    policies_parse_exit_policy_from_options(options, ri->addr, &ri->ipv6_addr,
                                             &ri->exit_policy);
   }
   ri->policy_is_reject_star =
@@ -2312,7 +2312,7 @@ router_build_fresh_descriptor(routerinfo_t **r, extrainfo_t **e)
        } else {
          char *fp = tor_malloc(HEX_DIGEST_LEN+2);
          fp[0] = '$';
-         base16_encode(fp+1,HEX_DIGEST_LEN+1,
+         base16_encode(fp+1, HEX_DIGEST_LEN+1,
                        member->identity, DIGEST_LEN);
          smartlist_add(ri->declared_family, fp);
          if (smartlist_contains_string(warned_nonexistent_family, name))
@@ -2585,7 +2585,7 @@ check_descriptor_ipaddress_changed(time_t now)
   /* XXXX ipv6 */
   prev = router_get_my_routerinfo()->addr;
   if (resolve_my_address(LOG_INFO, options, &cur, &method, &hostname) < 0) {
-    log_info(LD_CONFIG,"options->Address didn't resolve into an IP.");
+    log_info(LD_CONFIG, "options->Address didn't resolve into an IP.");
     return;
   }
 
@@ -2739,7 +2739,7 @@ router_dump_router_to_string(routerinfo_t *router,
 
   /* Make sure the identity key matches the one in the routerinfo. */
   if (!crypto_pk_eq_keys(ident_key, router->identity_pkey)) {
-    log_warn(LD_BUG,"Tried to sign a router with a private key that didn't "
+    log_warn(LD_BUG, "Tried to sign a router with a private key that didn't "
              "match router's public key!");
     goto err;
   }
@@ -2756,7 +2756,7 @@ router_dump_router_to_string(routerinfo_t *router,
 
   /* record our fingerprint, so we can include it in the descriptor */
   if (crypto_pk_get_fingerprint(router->identity_pkey, fingerprint, 1)<0) {
-    log_err(LD_BUG,"Error computing fingerprint");
+    log_err(LD_BUG, "Error computing fingerprint");
     goto err;
   }
 
@@ -2768,12 +2768,12 @@ router_dump_router_to_string(routerinfo_t *router,
                     (const char*)router->cache_info.signing_key_cert->encoded,
                     router->cache_info.signing_key_cert->encoded_len,
                     BASE64_ENCODE_MULTILINE) < 0) {
-      log_err(LD_BUG,"Couldn't base64-encode signing key certificate!");
+      log_err(LD_BUG, "Couldn't base64-encode signing key certificate!");
       goto err;
     }
     if (ed25519_public_to_base64(ed_fp_base64,
                        &router->cache_info.signing_key_cert->signing_key)<0) {
-      log_err(LD_BUG,"Couldn't base64-encode identity key\n");
+      log_err(LD_BUG, "Couldn't base64-encode identity key\n");
       goto err;
     }
     tor_asprintf(&ed_cert_line, "identity-ed25519\n"
@@ -2786,15 +2786,15 @@ router_dump_router_to_string(routerinfo_t *router,
 
   /* PEM-encode the onion key */
   if (crypto_pk_write_public_key_to_string(router->onion_pkey,
-                                           &onion_pkey,&onion_pkeylen)<0) {
-    log_warn(LD_BUG,"write onion_pkey to string failed!");
+                                           &onion_pkey, &onion_pkeylen)<0) {
+    log_warn(LD_BUG, "write onion_pkey to string failed!");
     goto err;
   }
 
   /* PEM-encode the identity key */
   if (crypto_pk_write_public_key_to_string(router->identity_pkey,
-                                        &identity_pkey,&identity_pkeylen)<0) {
-    log_warn(LD_BUG,"write identity_pkey to string failed!");
+                                        &identity_pkey, &identity_pkeylen)<0) {
+    log_warn(LD_BUG, "write identity_pkey to string failed!");
     goto err;
   }
 
@@ -2809,13 +2809,13 @@ router_dump_router_to_string(routerinfo_t *router,
                             router->identity_pkey,
                             &tap_cc_len);
     if (!tap_cc) {
-      log_warn(LD_BUG,"make_tap_onion_key_crosscert failed!");
+      log_warn(LD_BUG, "make_tap_onion_key_crosscert failed!");
       goto err;
     }
 
     if (base64_encode(buf, sizeof(buf), (const char*)tap_cc, tap_cc_len,
                       BASE64_ENCODE_MULTILINE) < 0) {
-      log_warn(LD_BUG,"base64_encode(rsa_crosscert) failed!");
+      log_warn(LD_BUG, "base64_encode(rsa_crosscert) failed!");
       tor_free(tap_cc);
       goto err;
     }
@@ -2840,7 +2840,7 @@ router_dump_router_to_string(routerinfo_t *router,
                          router->cache_info.published_on,
                          get_onion_key_lifetime(), &sign);
     if (!cert) {
-      log_warn(LD_BUG,"make_ntor_onion_key_crosscert failed!");
+      log_warn(LD_BUG, "make_ntor_onion_key_crosscert failed!");
       goto err;
     }
     tor_assert(sign == 0 || sign == 1);
@@ -2848,7 +2848,7 @@ router_dump_router_to_string(routerinfo_t *router,
     if (base64_encode(buf, sizeof(buf),
                       (const char*)cert->encoded, cert->encoded_len,
                       BASE64_ENCODE_MULTILINE)<0) {
-      log_warn(LD_BUG,"base64_encode(ntor_crosscert) failed!");
+      log_warn(LD_BUG, "base64_encode(ntor_crosscert) failed!");
       tor_cert_free(cert);
       goto err;
     }
@@ -2972,7 +2972,7 @@ router_dump_router_to_string(routerinfo_t *router,
   if (!router->exit_policy || !smartlist_len(router->exit_policy)) {
     smartlist_add_strdup(chunks, "reject *:*\n");
   } else if (router->exit_policy) {
-    char *exit_policy = router_dump_exit_policy_to_string(router,1,0);
+    char *exit_policy = router_dump_exit_policy_to_string(router, 1, 0);
 
     if (!exit_policy)
       goto err;
@@ -3217,7 +3217,7 @@ extrainfo_dump_to_string(char **s_out, extrainfo_t *extrainfo,
                  (const char*)extrainfo->cache_info.signing_key_cert->encoded,
                  extrainfo->cache_info.signing_key_cert->encoded_len,
                  BASE64_ENCODE_MULTILINE) < 0) {
-      log_err(LD_BUG,"Couldn't base64-encode signing key certificate!");
+      log_err(LD_BUG, "Couldn't base64-encode signing key certificate!");
       goto err;
     }
     tor_asprintf(&ed_cert_line, "identity-ed25519\n"
@@ -3400,7 +3400,7 @@ is_legal_nickname(const char *s)
   tor_assert(s);
   len = strlen(s);
   return len > 0 && len <= MAX_NICKNAME_LEN &&
-    strspn(s,LEGAL_NICKNAME_CHARACTERS) == len;
+    strspn(s, LEGAL_NICKNAME_CHARACTERS) == len;
 }
 
 /** Return true iff <b>s</b> is a valid server nickname or
@@ -3436,7 +3436,7 @@ is_legal_hexdigest(const char *s)
     }
   }
   return (len >= HEX_DIGEST_LEN &&
-          strspn(s,HEX_CHARACTERS)==HEX_DIGEST_LEN);
+          strspn(s, HEX_CHARACTERS)==HEX_DIGEST_LEN);
 }
 
 /** Use <b>buf</b> (which must be at least NODE_DESC_BUF_LEN bytes long) to

@@ -53,7 +53,7 @@ test_strcmp(void *data)
 	(void)data; /* This testcase takes no data. */
 
 	/* Let's make sure the empty string is equal to itself */
-	if (strcmp("","")) {
+	if (strcmp("", "")) {
 		/* This macro tells tinytest to stop the current test
 		 * and go straight to the "end" label. */
 		tt_abort_msg("The empty string was not equal to itself");

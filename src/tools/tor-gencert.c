@@ -252,7 +252,7 @@ generate_key(int bits)
 {
   RSA *rsa = NULL;
   crypto_pk_t *env = crypto_pk_new();
-  if (crypto_pk_generate_key_with_bits(env,bits)<0)
+  if (crypto_pk_generate_key_with_bits(env, bits)<0)
     goto done;
   rsa = crypto_pk_get_rsa_(env);
   rsa = RSAPrivateKey_dup(rsa);
@@ -514,7 +514,7 @@ generate_certificate(void)
           "dir-key-certification\n", sizeof(buf));
 
   signed_len = strlen(buf);
-  SHA1((const unsigned char*)buf,signed_len,(unsigned char*)digest);
+  SHA1((const unsigned char*)buf, signed_len, (unsigned char*)digest);
 
   rsa = EVP_PKEY_get1_RSA(identity_key);
   r = RSA_private_encrypt(DIGEST_LEN, (unsigned char*)digest,

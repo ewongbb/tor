@@ -163,7 +163,7 @@ keypin_check_and_add_impl(const uint8_t *rsa_id_digest,
   ent = HT_FIND(rsamap, &the_rsa_map, &search);
   if (ent) {
     tor_assert(fast_memeq(ent->rsa_id, rsa_id_digest, sizeof(ent->rsa_id)));
-    if (tor_memeq(ent->ed25519_key, ed25519_id_key,sizeof(ent->ed25519_key))) {
+    if (tor_memeq(ent->ed25519_key, ed25519_id_key, sizeof(ent->ed25519_key))) {
       return KEYPIN_FOUND; /* Match on both keys. Great. */
     } else {
       if (!replace)
@@ -233,7 +233,7 @@ keypin_add_or_replace_entry_in_map(keypin_ent_t *ent)
      *
      * We respond by having this entry (ent) supersede all entries that it
      * contradicts (ent2 and/or ent3). In other words, if we receive
-     * <rsa,ed>, we remove all <rsa,ed'> and all <rsa',ed>, for rsa'!=rsa
+     * <rsa, ed>, we remove all <rsa, ed'> and all <rsa', ed>, for rsa'!=rsa
      * and ed'!= ed.
      */
     const keypin_ent_t *t;
@@ -487,8 +487,8 @@ keypin_clear(void)
   }
   bad_entries += HT_SIZE(&the_ed_map);
 
-  HT_CLEAR(edmap,&the_ed_map);
-  HT_CLEAR(rsamap,&the_rsa_map);
+  HT_CLEAR(edmap, &the_ed_map);
+  HT_CLEAR(rsamap, &the_rsa_map);
 
   if (bad_entries) {
     log_warn(LD_BUG, "Found %d discrepencies in the keypin database.",

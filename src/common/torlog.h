@@ -165,7 +165,7 @@ void set_log_time_granularity(int granularity_msec);
 void truncate_logs(void);
 
 void tor_log(int severity, log_domain_mask_t domain, const char *format, ...)
-  CHECK_PRINTF(3,4);
+  CHECK_PRINTF(3, 4);
 
 void tor_log_err_sigsafe(const char *m, ...);
 int tor_log_get_sigsafe_err_fds(const int **out);
@@ -178,12 +178,12 @@ extern int log_global_min_severity_;
 
 void log_fn_(int severity, log_domain_mask_t domain,
              const char *funcname, const char *format, ...)
-  CHECK_PRINTF(4,5);
+  CHECK_PRINTF(4, 5);
 struct ratelim_t;
 void log_fn_ratelim_(struct ratelim_t *ratelim, int severity,
                      log_domain_mask_t domain, const char *funcname,
                      const char *format, ...)
-  CHECK_PRINTF(5,6);
+  CHECK_PRINTF(5, 6);
 
 #if defined(__GNUC__) && __GNUC__ <= 3
 
@@ -222,22 +222,22 @@ void log_fn_ratelim_(struct ratelim_t *ratelim, int severity,
     if (PREDICT_UNLIKELY(log_global_min_severity_ == LOG_DEBUG))            \
       log_fn_(LOG_DEBUG, domain, __FUNCTION__, args, ##__VA_ARGS__); \
   STMT_END
-#define log_info(domain, args,...)                                      \
+#define log_info(domain, args, ...)                                      \
   log_fn_(LOG_INFO, domain, __FUNCTION__, args, ##__VA_ARGS__)
-#define log_notice(domain, args,...)                                    \
+#define log_notice(domain, args, ...)                                    \
   log_fn_(LOG_NOTICE, domain, __FUNCTION__, args, ##__VA_ARGS__)
-#define log_warn(domain, args,...)                                      \
+#define log_warn(domain, args, ...)                                      \
   log_fn_(LOG_WARN, domain, __FUNCTION__, args, ##__VA_ARGS__)
-#define log_err(domain, args,...)                                       \
+#define log_err(domain, args, ...)                                       \
   log_fn_(LOG_ERR, domain, __FUNCTION__, args, ##__VA_ARGS__)
 /** Log a message at level <b>severity</b>, using a pretty-printed version
  * of the current function name. */
-#define log_fn(severity, domain, args,...)                              \
+#define log_fn(severity, domain, args, ...)                              \
   log_fn_(severity, domain, __FUNCTION__, args, ##__VA_ARGS__)
 /** As log_fn, but use <b>ratelim</b> (an instance of ratelim_t) to control
  * the frequency at which messages can appear.
  */
-#define log_fn_ratelim(ratelim, severity, domain, args,...)      \
+#define log_fn_ratelim(ratelim, severity, domain, args, ...)      \
   log_fn_ratelim_(ratelim, severity, domain, __FUNCTION__, \
                   args, ##__VA_ARGS__)
 #endif
@@ -245,7 +245,7 @@ void log_fn_ratelim_(struct ratelim_t *ratelim, int severity,
 #ifdef LOG_PRIVATE
 MOCK_DECL(STATIC void, logv, (int severity, log_domain_mask_t domain,
     const char *funcname, const char *suffix, const char *format,
-    va_list ap) CHECK_PRINTF(5,0));
+    va_list ap) CHECK_PRINTF(5, 0));
 #endif
 
 # define TOR_TORLOG_H

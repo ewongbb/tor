@@ -421,7 +421,7 @@ test_entry_guard_parse_from_state_maximal(void *arg)
             "confirmed_on=2016-11-14T00:01:30 "
             "confirmed_idx=333 "
             "and the green grass grew all around "
-            "rsa_id=all,around");
+            "rsa_id=all, around");
   tt_assert(eg);
 
   test_mem_op_hex(eg->identity, OP_EQ,
@@ -436,7 +436,7 @@ test_entry_guard_parse_from_state_maximal(void *arg)
   tt_i64_op(eg->confirmed_on_date, OP_EQ, 1479081690);
   tt_int_op(eg->confirmed_idx, OP_EQ, 333);
   tt_str_op(eg->extra_state_fields, OP_EQ,
-            "and the green grass grew all around rsa_id=all,around");
+            "and the green grass grew all around rsa_id=all, around");
 
   tt_int_op(eg->last_tried_to_connect, OP_EQ, 0);
   tt_int_op(eg->is_reachable, OP_EQ, GUARD_REACHABLE_MAYBE);
@@ -503,7 +503,7 @@ test_entry_guard_parse_from_state_partial_failure(void *arg)
             "confirmed_on=2016-11-14T00:01:30zz "
             "confirmed_idx=idx "
             "and the green grass grew all around "
-            "rsa_id=all,around");
+            "rsa_id=all, around");
   tt_assert(eg);
 
   test_mem_op_hex(eg->identity, OP_EQ,
@@ -518,7 +518,7 @@ test_entry_guard_parse_from_state_partial_failure(void *arg)
   tt_int_op(eg->confirmed_idx, OP_EQ, -1);
   tt_str_op(eg->extra_state_fields, OP_EQ,
             "stuff in the middle and the green grass grew all around "
-            "rsa_id=all,around");
+            "rsa_id=all, around");
 
   tt_int_op(eg->last_tried_to_connect, OP_EQ, 0);
   tt_int_op(eg->is_reachable, OP_EQ, GUARD_REACHABLE_MAYBE);
@@ -647,7 +647,7 @@ test_entry_guard_parse_from_state_full(void *arg)
 
   config_line_t *ln;
   for (ln = lines; ln; ln = ln->next) {
-    smartlist_add_asprintf(text, "%s %s\n",ln->key, ln->value);
+    smartlist_add_asprintf(text, "%s %s\n", ln->key, ln->value);
   }
   joined = smartlist_join_strings(text, "", 0, NULL);
   tt_str_op(joined, OP_EQ,
@@ -1168,7 +1168,7 @@ test_entry_guard_update_from_consensus_status(void *arg)
   update_approx_time(start + 300);
   sampled_guards_update_from_consensus(gs);
 
-  /* guards 1..5 are now unlisted; 0,6,7.. are listed. */
+  /* guards 1..5 are now unlisted; 0, 6, 7.. are listed. */
   tt_i64_op(smartlist_len(gs->sampled_entry_guards), OP_EQ, n_sampled_pre);
   for (i = 1; i < 6; ++i) {
     entry_guard_t *g = smartlist_get(gs->sampled_entry_guards, i);
@@ -1178,7 +1178,7 @@ test_entry_guard_update_from_consensus_status(void *arg)
     else
       tt_i64_op(g->unlisted_since_date, OP_EQ, start+60);
   }
-  for (i = 0; i < n_sampled_pre; i = (!i) ? 6 : i+1) { /* 0,6,7,8, ... */
+  for (i = 0; i < n_sampled_pre; i = (!i) ? 6 : i+1) { /* 0, 6, 7, 8, ... */
     entry_guard_t *g = smartlist_get(gs->sampled_entry_guards, i);
     tt_assert(g->currently_listed);
     tt_i64_op(g->unlisted_since_date, OP_EQ, 0);
@@ -2166,7 +2166,7 @@ test_entry_guard_select_and_cancel(void *arg)
 {
   (void) arg;
   const int N_PRIMARY = DFLT_N_PRIMARY_GUARDS;
-  int i,r;
+  int i, r;
   const node_t *node = NULL;
   circuit_guard_state_t *guard;
   guard_selection_t *gs = guard_selection_new("default", GS_TYPE_NORMAL);

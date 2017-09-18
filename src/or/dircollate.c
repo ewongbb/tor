@@ -123,7 +123,7 @@ dircollator_add_routerstatus(dircollator_t *dc,
   if (! vrs->has_ed25519_listing)
     return;
 
-  /* Now add it to the appropriate <Ed,RSA-SHA-Id> array. */
+  /* Now add it to the appropriate <Ed, RSA-SHA-Id> array. */
   ddmap_entry_t search, *found;
   memset(&search, 0, sizeof(search));
   ddmap_entry_set_digests(&search, (const uint8_t *)id, ed);
@@ -252,12 +252,12 @@ dircollator_collate_by_rsa(dircollator_t *dc)
  * entry in <b>dc</b> by ed25519 key and by RSA key.
  *
  * The rule is, approximately:
- *    If a (ed,rsa) identity is listed by more than half of authorities,
+ *    If a (ed, rsa) identity is listed by more than half of authorities,
  *    include it.  And include all (rsa)-only votes about that node as
  *    matching.
  *
- *    Otherwise, if an (*,rsa) or (rsa) identity is listed by more than
- *    half of the authorities, and no (ed,rsa) pair for the same RSA key
+ *    Otherwise, if an (*, rsa) or (rsa) identity is listed by more than
+ *    half of the authorities, and no (ed, rsa) pair for the same RSA key
  *    has been already been included based on the rule above, include
  *    that RSA identity.
  */
@@ -269,7 +269,7 @@ dircollator_collate_by_ed25519(dircollator_t *dc)
 
   ddmap_entry_t **iter;
 
-  /* Go over all <ed,rsa> pairs */
+  /* Go over all <ed, rsa> pairs */
   HT_FOREACH(iter, double_digest_map, &dc->by_both_ids) {
     ddmap_entry_t *ent = *iter;
     int n = 0, i;
@@ -278,7 +278,7 @@ dircollator_collate_by_ed25519(dircollator_t *dc)
         ++n;
     }
 
-    /* If not enough authorties listed this exact <ed,rsa> pair,
+    /* If not enough authorties listed this exact <ed, rsa> pair,
      * don't include it. */
     if (n <= total_authorities / 2)
       continue;

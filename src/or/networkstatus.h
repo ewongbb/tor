@@ -50,7 +50,7 @@ MOCK_DECL(download_status_t *,
   (consensus_flavor_t flavor));
 
 MOCK_DECL(smartlist_t *, router_get_descriptor_digests, (void));
-MOCK_DECL(download_status_t *,router_get_dl_status_by_descriptor_digest,
+MOCK_DECL(download_status_t *, router_get_dl_status_by_descriptor_digest,
           (const char *d));
 
 const routerstatus_t *router_get_consensus_status_by_id(const char *digest);
@@ -67,15 +67,15 @@ int we_want_to_fetch_unknown_auth_certs(const or_options_t *options);
 void networkstatus_consensus_download_failed(int status_code,
                                              const char *flavname);
 void update_consensus_networkstatus_fetch_time(time_t now);
-int should_delay_dir_fetches(const or_options_t *options,const char **msg_out);
+int should_delay_dir_fetches(const or_options_t *options, const char **msg_out);
 void update_networkstatus_downloads(time_t now);
 void update_certificate_downloads(time_t now);
 int consensus_is_waiting_for_certs(void);
 int client_would_use_router(const routerstatus_t *rs, time_t now);
-MOCK_DECL(networkstatus_t *,networkstatus_get_latest_consensus,(void));
-MOCK_DECL(networkstatus_t *,networkstatus_get_latest_consensus_by_flavor,
+MOCK_DECL(networkstatus_t *, networkstatus_get_latest_consensus, (void));
+MOCK_DECL(networkstatus_t *, networkstatus_get_latest_consensus_by_flavor,
           (consensus_flavor_t f));
-MOCK_DECL(networkstatus_t *, networkstatus_get_live_consensus,(time_t now));
+MOCK_DECL(networkstatus_t *, networkstatus_get_live_consensus, (time_t now));
 int networkstatus_is_live(const networkstatus_t *ns, time_t now);
 int networkstatus_consensus_reasonably_live(const networkstatus_t *consensus,
                                             time_t now);
@@ -83,10 +83,10 @@ int networkstatus_valid_until_is_reasonably_live(time_t valid_until,
                                                  time_t now);
 networkstatus_t *networkstatus_get_reasonably_live_consensus(time_t now,
                                                              int flavor);
-MOCK_DECL(int, networkstatus_consensus_is_bootstrapping,(time_t now));
+MOCK_DECL(int, networkstatus_consensus_is_bootstrapping, (time_t now));
 int networkstatus_consensus_can_use_multiple_directories(
                                                 const or_options_t *options);
-MOCK_DECL(int, networkstatus_consensus_can_use_extra_fallbacks,(
+MOCK_DECL(int, networkstatus_consensus_can_use_extra_fallbacks, (
                                                 const or_options_t *options));
 int networkstatus_consensus_is_already_downloading(const char *resource);
 

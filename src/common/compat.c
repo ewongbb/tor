@@ -168,7 +168,7 @@ tor_open_cloexec(const char *path, int flags, unsigned mode)
 #ifdef FD_CLOEXEC
   if (fd >= 0) {
     if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1) {
-      log_warn(LD_FS,"Couldn't set FD_CLOEXEC: %s", strerror(errno));
+      log_warn(LD_FS, "Couldn't set FD_CLOEXEC: %s", strerror(errno));
       close(fd);
       return -1;
     }
@@ -177,7 +177,7 @@ tor_open_cloexec(const char *path, int flags, unsigned mode)
   return fd;
 }
 
-/** As fopen(path,mode), but ensures that the O_CLOEXEC bit is set on the
+/** As fopen(path, mode), but ensures that the O_CLOEXEC bit is set on the
  * underlying file handle. */
 FILE *
 tor_fopen_cloexec(const char *path, const char *mode)
@@ -186,7 +186,7 @@ tor_fopen_cloexec(const char *path, const char *mode)
 #ifdef FD_CLOEXEC
   if (result != NULL) {
     if (fcntl(fileno(result), F_SETFD, FD_CLOEXEC) == -1) {
-      log_warn(LD_FS,"Couldn't set FD_CLOEXEC: %s", strerror(errno));
+      log_warn(LD_FS, "Couldn't set FD_CLOEXEC: %s", strerror(errno));
       fclose(result);
       return NULL;
     }
@@ -232,7 +232,7 @@ tor_mmap_file(const char *filename)
   if (fd<0) {
     int save_errno = errno;
     int severity = (errno == ENOENT) ? LOG_INFO : LOG_WARN;
-    log_fn(severity, LD_FS,"Could not open \"%s\" for mmap(): %s",filename,
+    log_fn(severity, LD_FS, "Could not open \"%s\" for mmap(): %s", filename,
            strerror(errno));
     errno = save_errno;
     return NULL;
@@ -259,7 +259,7 @@ tor_mmap_file(const char *filename)
   size += (size%page_size) ? page_size-(size%page_size) : 0;
 
   if (st.st_size > SSIZE_T_CEILING || (off_t)size < st.st_size) {
-    log_warn(LD_FS, "File \"%s\" is too large. Ignoring.",filename);
+    log_warn(LD_FS, "File \"%s\" is too large. Ignoring.", filename);
     errno = EFBIG;
     close(fd);
     return NULL;
@@ -267,7 +267,7 @@ tor_mmap_file(const char *filename)
   if (!size) {
     /* Zero-length file. If we call mmap on it, it will succeed but
      * return NULL, and bad things will happen. So just fail. */
-    log_info(LD_FS,"File \"%s\" is empty. Ignoring.",filename);
+    log_info(LD_FS, "File \"%s\" is empty. Ignoring.", filename);
     errno = ERANGE;
     close(fd);
     return NULL;
@@ -277,7 +277,7 @@ tor_mmap_file(const char *filename)
   close(fd);
   if (string == MAP_FAILED) {
     int save_errno = errno;
-    log_warn(LD_FS,"Could not mmap file \"%s\": %s", filename,
+    log_warn(LD_FS, "Could not mmap file \"%s\": %s", filename,
              strerror(errno));
     errno = save_errno;
     return NULL;
@@ -324,9 +324,9 @@ tor_mmap_file(const char *filename)
   uint64_t real_size;
   res->mmap_handle = NULL;
 #ifdef UNICODE
-  mbstowcs(tfilename,filename,MAX_PATH);
+  mbstowcs(tfilename, filename, MAX_PATH);
 #else
-  strlcpy(tfilename,filename,MAX_PATH);
+  strlcpy(tfilename, filename, MAX_PATH);
 #endif
   file_handle = CreateFile(tfilename,
                            GENERIC_READ, FILE_SHARE_READ,
@@ -341,17 +341,17 @@ tor_mmap_file(const char *filename)
   size_low = GetFileSize(file_handle, &size_high);
 
   if (size_low == INVALID_FILE_SIZE && GetLastError() != NO_ERROR) {
-    log_warn(LD_FS,"Error getting size of \"%s\".",filename);
+    log_warn(LD_FS, "Error getting size of \"%s\".", filename);
     goto win_err;
   }
   if (size_low == 0 && size_high == 0) {
-    log_info(LD_FS,"File \"%s\" is empty. Ignoring.",filename);
+    log_info(LD_FS, "File \"%s\" is empty. Ignoring.", filename);
     empty = 1;
     goto err;
   }
   real_size = (((uint64_t)size_high)<<32) | size_low;
   if (real_size > SIZE_MAX) {
-    log_warn(LD_FS,"File \"%s\" is too big to map; not trying.",filename);
+    log_warn(LD_FS, "File \"%s\" is too big to map; not trying.", filename);
     goto err;
   }
   res->size = real_size;
@@ -464,8 +464,8 @@ tor_snprintf(char *str, size_t size, const char *format, ...)
 {
   va_list ap;
   int r;
-  va_start(ap,format);
-  r = tor_vsnprintf(str,size,format,ap);
+  va_start(ap, format);
+  r = tor_vsnprintf(str, size, format, ap);
   va_end(ap);
   return r;
 }
@@ -663,40 +663,40 @@ const uint32_t TOR_ISLOWER_TABLE[8] = { 0, 0, 0, 0x7fffffe, 0, 0, 0, 0 };
  * equivalents.  Used by tor_toupper() and tor_tolower(). */
 /**@{*/
 const uint8_t TOR_TOUPPER_TABLE[256] = {
-  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-  16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,
-  32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,
-  48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,
-  64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,
-  80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,
-  96,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,
-  80,81,82,83,84,85,86,87,88,89,90,123,124,125,126,127,
-  128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,
-  144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,
-  160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,
-  176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,
-  192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,
-  208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,
-  224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,
-  240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+  48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+  64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+  80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+  96, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+  80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 123, 124, 125, 126, 127,
+  128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143,
+  144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+  160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175,
+  176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191,
+  192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+  208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223,
+  224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+  240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255,
 };
 const uint8_t TOR_TOLOWER_TABLE[256] = {
-  0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
-  16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,
-  32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,
-  48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,
-  64,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,
-  112,113,114,115,116,117,118,119,120,121,122,91,92,93,94,95,
-  96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,
-  112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,
-  128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,
-  144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,
-  160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,
-  176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,
-  192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,
-  208,209,210,211,212,213,214,215,216,217,218,219,220,221,222,223,
-  224,225,226,227,228,229,230,231,232,233,234,235,236,237,238,239,
-  240,241,242,243,244,245,246,247,248,249,250,251,252,253,254,255,
+  0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+  32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+  48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
+  64, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+  112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 91, 92, 93, 94, 95,
+  96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111,
+  112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127,
+  128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143,
+  144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159,
+  160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175,
+  176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191,
+  192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207,
+  208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223,
+  224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239,
+  240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255,
 };
 /**@}*/
 
@@ -785,7 +785,7 @@ uint16_t
 get_uint16(const void *cp)
 {
   uint16_t v;
-  memcpy(&v,cp,2);
+  memcpy(&v, cp, 2);
   return v;
 }
 /**
@@ -797,7 +797,7 @@ uint32_t
 get_uint32(const void *cp)
 {
   uint32_t v;
-  memcpy(&v,cp,4);
+  memcpy(&v, cp, 4);
   return v;
 }
 /**
@@ -809,7 +809,7 @@ uint64_t
 get_uint64(const void *cp)
 {
   uint64_t v;
-  memcpy(&v,cp,8);
+  memcpy(&v, cp, 8);
   return v;
 }
 
@@ -820,7 +820,7 @@ get_uint64(const void *cp)
 void
 set_uint16(void *cp, uint16_t v)
 {
-  memcpy(cp,&v,2);
+  memcpy(cp, &v, 2);
 }
 /**
  * Set a 32-bit value beginning at <b>cp</b> to <b>v</b>. Equivalent to
@@ -829,7 +829,7 @@ set_uint16(void *cp, uint16_t v)
 void
 set_uint32(void *cp, uint32_t v)
 {
-  memcpy(cp,&v,4);
+  memcpy(cp, &v, 4);
 }
 /**
  * Set a 64-bit value beginning at <b>cp</b> to <b>v</b>. Equivalent to
@@ -838,7 +838,7 @@ set_uint32(void *cp, uint32_t v)
 void
 set_uint64(void *cp, uint64_t v)
 {
-  memcpy(cp,&v,8);
+  memcpy(cp, &v, 8);
 }
 
 /**
@@ -867,7 +867,7 @@ replace_file(const char *from, const char *to)
       errno = EISDIR;
       return -1;
     }
-  return tor_rename(from,to);
+  return tor_rename(from, to);
 #endif
 }
 
@@ -915,7 +915,7 @@ tor_lockfile_lock(const char *filename, int blocking, int *locked_out)
   log_info(LD_FS, "Locking \"%s\"", filename);
   fd = tor_open_cloexec(filename, O_RDWR|O_CREAT|O_TRUNC, 0600);
   if (fd < 0) {
-    log_warn(LD_FS,"Couldn't open \"%s\" for locking: %s", filename,
+    log_warn(LD_FS, "Couldn't open \"%s\" for locking: %s", filename,
              strerror(errno));
     return NULL;
   }
@@ -924,7 +924,7 @@ tor_lockfile_lock(const char *filename, int blocking, int *locked_out)
   _lseek(fd, 0, SEEK_SET);
   if (_locking(fd, blocking ? _LK_LOCK : _LK_NBLCK, 1) < 0) {
     if (errno != EACCES && errno != EDEADLOCK)
-      log_warn(LD_FS,"Couldn't lock \"%s\": %s", filename, strerror(errno));
+      log_warn(LD_FS, "Couldn't lock \"%s\": %s", filename, strerror(errno));
     else
       *locked_out = 1;
     close(fd);
@@ -933,7 +933,7 @@ tor_lockfile_lock(const char *filename, int blocking, int *locked_out)
 #elif defined(HAVE_FLOCK)
   if (flock(fd, LOCK_EX|(blocking ? 0 : LOCK_NB)) < 0) {
     if (errno != EWOULDBLOCK)
-      log_warn(LD_FS,"Couldn't lock \"%s\": %s", filename, strerror(errno));
+      log_warn(LD_FS, "Couldn't lock \"%s\": %s", filename, strerror(errno));
     else
       *locked_out = 1;
     close(fd);
@@ -972,7 +972,7 @@ tor_lockfile_unlock(tor_lockfile_t *lockfile)
 #ifdef _WIN32
   _lseek(lockfile->fd, 0, SEEK_SET);
   if (_locking(lockfile->fd, _LK_UNLCK, 1) < 0) {
-    log_warn(LD_FS,"Error unlocking \"%s\": %s", lockfile->filename,
+    log_warn(LD_FS, "Error unlocking \"%s\": %s", lockfile->filename,
              strerror(errno));
   }
 #elif defined(HAVE_FLOCK)
@@ -1128,7 +1128,7 @@ tor_close_socket_simple(tor_socket_t s)
 /** As tor_close_socket_simple(), but keeps track of the number
  * of open sockets. Returns 0 on success, -1 on failure. */
 MOCK_IMPL(int,
-tor_close_socket,(tor_socket_t s))
+tor_close_socket, (tor_socket_t s))
 {
   int r = tor_close_socket_simple(s);
 
@@ -1191,17 +1191,17 @@ mark_socket_open(tor_socket_t s)
 
 /** As socket(), but counts the number of open sockets. */
 MOCK_IMPL(tor_socket_t,
-tor_open_socket,(int domain, int type, int protocol))
+tor_open_socket, (int domain, int type, int protocol))
 {
   return tor_open_socket_with_extensions(domain, type, protocol, 1, 0);
 }
 
 /** Mockable wrapper for connect(). */
 MOCK_IMPL(tor_socket_t,
-tor_connect_socket,(tor_socket_t sock, const struct sockaddr *address,
+tor_connect_socket, (tor_socket_t sock, const struct sockaddr *address,
                      socklen_t address_len))
 {
-  return connect(sock,address,address_len);
+  return connect(sock, address, address_len);
 }
 
 /** As socket(), but creates a nonblocking socket and
@@ -1253,7 +1253,7 @@ tor_open_socket_with_extensions(int domain, int type, int protocol,
 #if defined(FD_CLOEXEC)
   if (cloexec) {
     if (fcntl(s, F_SETFD, FD_CLOEXEC) == -1) {
-      log_warn(LD_FS,"Couldn't set FD_CLOEXEC: %s", strerror(errno));
+      log_warn(LD_FS, "Couldn't set FD_CLOEXEC: %s", strerror(errno));
       tor_close_socket_simple(s);
       return TOR_INVALID_SOCKET;
     }
@@ -1376,7 +1376,7 @@ get_n_open_sockets(void)
 
 /** Mockable wrapper for getsockname(). */
 MOCK_IMPL(int,
-tor_getsockname,(tor_socket_t sock, struct sockaddr *address,
+tor_getsockname, (tor_socket_t sock, struct sockaddr *address,
                  socklen_t *address_len))
 {
    return getsockname(sock, address, address_len);
@@ -1411,7 +1411,7 @@ set_socket_nonblocking(tor_socket_t sock)
 
 /**
  * Allocate a pair of connected sockets.  (Like socketpair(family,
- * type,protocol,fd), but works on systems that don't have
+ * type, protocol, fd), but works on systems that don't have
  * socketpair.)
  *
  * Currently, only (AF_UNIX, SOCK_STREAM, 0) sockets are supported.
@@ -1714,14 +1714,14 @@ set_max_file_descriptors(rlim_t limit, int *max_out)
     return -1;
   }
   if (rlim.rlim_max < limit) {
-    log_warn(LD_CONFIG,"We need %lu file descriptors available, and we're "
+    log_warn(LD_CONFIG, "We need %lu file descriptors available, and we're "
              "limited to %lu. Please change your ulimit -n.",
              (unsigned long)limit, (unsigned long)rlim.rlim_max);
     return -1;
   }
 
   if (rlim.rlim_max > rlim.rlim_cur) {
-    log_info(LD_NET,"Raising max file descriptors from %lu to %lu.",
+    log_info(LD_NET, "Raising max file descriptors from %lu to %lu.",
              (unsigned long)rlim.rlim_cur, (unsigned long)rlim.rlim_max);
   }
   /* Set the current limit value so if the attempt to set the limit to the
@@ -1756,7 +1756,7 @@ set_max_file_descriptors(rlim_t limit, int *max_out)
     }
 #endif /* OPEN_MAX */
     if (bad) {
-      log_warn(LD_CONFIG,"Couldn't set maximum number of file descriptors: %s",
+      log_warn(LD_CONFIG, "Couldn't set maximum number of file descriptors: %s",
                strerror(errno));
       return -1;
     }
@@ -1858,7 +1858,7 @@ log_credential_status(void)
 
     s = smartlist_join_strings(elts, " ", 0, NULL);
 
-    log_fn(CREDENTIAL_LOG_LEVEL, LD_GENERAL, "Supplementary groups are: %s",s);
+    log_fn(CREDENTIAL_LOG_LEVEL, LD_GENERAL, "Supplementary groups are: %s", s);
 
     tor_free(s);
     SMARTLIST_FOREACH(elts, char *, cp, tor_free(cp));
@@ -2102,7 +2102,7 @@ switch_id(const char *user, const unsigned flags)
   }
 #endif
 
-  /* Properly switch egid,gid,euid,uid here or bail out */
+  /* Properly switch egid, gid, euid, uid here or bail out */
   if (setgroups(1, &pw->pw_gid)) {
     log_warn(LD_GENERAL, "Error setting groups to gid %d: \"%s\".",
              (int)pw->pw_gid, strerror(errno));
@@ -2199,7 +2199,7 @@ switch_id(const char *user, const unsigned flags)
     /* Re-enable core dumps if we're not running as root. */
     log_info(LD_CONFIG, "Re-enabling coredumps");
     if (prctl(PR_SET_DUMPABLE, 1)) {
-      log_warn(LD_CONFIG, "Unable to re-enable coredumps: %s",strerror(errno));
+      log_warn(LD_CONFIG, "Unable to re-enable coredumps: %s", strerror(errno));
     }
   }
 #endif
@@ -2257,7 +2257,7 @@ tor_disable_debugger_attach(void)
   // XXX: TODO - Mac OS X has dtrace and this may be disabled.
   // XXX: TODO - Windows probably has something similar
   if (r == 0 && attempted) {
-    log_debug(LD_CONFIG,"Debugger attachment disabled for "
+    log_debug(LD_CONFIG, "Debugger attachment disabled for "
               "unprivileged users.");
     return 1;
   } else if (attempted) {
@@ -2277,7 +2277,7 @@ get_user_homedir(const char *username)
   tor_assert(username);
 
   if (!(pw = tor_getpwnam(username))) {
-    log_err(LD_CONFIG,"User \"%s\" not found.", username);
+    log_err(LD_CONFIG, "User \"%s\" not found.", username);
     return NULL;
   }
   return tor_strdup(pw->pw_dir);
@@ -2450,21 +2450,21 @@ get_environment(void)
  * this function is merely a mockable wrapper for POSIX gethostname().)
  */
 MOCK_IMPL(int,
-tor_gethostname,(char *name, size_t namelen))
+tor_gethostname, (char *name, size_t namelen))
 {
-   return gethostname(name,namelen);
+   return gethostname(name, namelen);
 }
 
 /** Set *addr to the IP address (in dotted-quad notation) stored in *str.
  * Return 1 on success, 0 if *str is badly formatted.
- * (Like inet_aton(str,addr), but works on Windows and Solaris.)
+ * (Like inet_aton(str, addr), but works on Windows and Solaris.)
  */
 int
 tor_inet_aton(const char *str, struct in_addr* addr)
 {
-  unsigned a,b,c,d;
+  unsigned a, b, c, d;
   char more;
-  if (tor_sscanf(str, "%3u.%3u.%3u.%3u%c", &a,&b,&c,&d,&more) != 4)
+  if (tor_sscanf(str, "%3u.%3u.%3u.%3u%c", &a, &b, &c, &d, &more) != 4)
     return 0;
   if (a > 255) return 0;
   if (b > 255) return 0;
@@ -2479,7 +2479,7 @@ tor_inet_aton(const char *str, struct in_addr* addr)
  * address and store it in the <b>len</b>-byte buffer <b>dst</b>.  Returns
  * <b>dst</b> on success, NULL on failure.
  *
- * (Like inet_ntop(af,src,dst,len), but works on platforms that don't have it:
+ * (Like inet_ntop(af, src, dst, len), but works on platforms that don't have it:
  * Tor sometimes needs to format ipv6 addresses even on platforms without ipv6
  * support.) */
 const char *
@@ -2568,7 +2568,7 @@ tor_inet_ntop(int af, const void *src, char *dst, size_t len)
  * struct in_addr or a struct in6_addr, as appropriate).  Return 1 on success,
  * 0 on a bad parse, and -1 on a bad <b>af</b>.
  *
- * (Like inet_pton(af,src,dst) but works on platforms that don't have it: Tor
+ * (Like inet_pton(af, src, dst) but works on platforms that don't have it: Tor
  * sometimes needs to format ipv6 addresses even on platforms without ipv6
  * support.) */
 int
@@ -2587,7 +2587,7 @@ tor_inet_pton(int af, const char *src, void *dst)
     else if (!dot)
       eow = src+strlen(src);
     else {
-      unsigned byte1,byte2,byte3,byte4;
+      unsigned byte1, byte2, byte3, byte4;
       char more;
       for (eow = dot-1; eow > src && TOR_ISDIGIT(*eow); --eow)
         ;
@@ -2598,7 +2598,7 @@ tor_inet_pton(int af, const char *src, void *dst)
       /* We use "scanf" because some platform inet_aton()s are too lax
        * about IPv4 addresses of the form "1.2.3" */
       if (tor_sscanf(eow, "%3u.%3u.%3u.%3u%c",
-                     &byte1,&byte2,&byte3,&byte4,&more) != 4)
+                     &byte1, &byte2, &byte3, &byte4, &more) != 4)
         return 0;
 
       if (byte1 > 255 || byte2 > 255 || byte3 > 255 || byte4 > 255)
@@ -2683,7 +2683,7 @@ tor_inet_pton(int af, const char *src, void *dst)
  */
 
 MOCK_IMPL(int,
-tor_lookup_hostname,(const char *name, uint32_t *addr))
+tor_lookup_hostname, (const char *name, uint32_t *addr))
 {
   tor_addr_t myaddr;
   int ret;
@@ -2707,7 +2707,7 @@ static int uname_result_is_set = 0;
 /** Return a pointer to a description of our platform.
  */
 MOCK_IMPL(const char *,
-get_uname,(void))
+get_uname, (void))
 {
 #ifdef HAVE_UNAME
   struct utsname u;
@@ -2768,12 +2768,12 @@ get_uname,(void))
           if (info.dwMajorVersion > 6 ||
               (info.dwMajorVersion==6 && info.dwMinorVersion>2))
             tor_snprintf(uname_result, sizeof(uname_result),
-                         "Very recent version of Windows [major=%d,minor=%d]",
-                         (int)info.dwMajorVersion,(int)info.dwMinorVersion);
+                         "Very recent version of Windows [major=%d, minor=%d]",
+                         (int)info.dwMajorVersion, (int)info.dwMinorVersion);
           else
             tor_snprintf(uname_result, sizeof(uname_result),
-                         "Unrecognized version of Windows [major=%d,minor=%d]",
-                         (int)info.dwMajorVersion,(int)info.dwMinorVersion);
+                         "Unrecognized version of Windows [major=%d, minor=%d]",
+                         (int)info.dwMajorVersion, (int)info.dwMinorVersion);
         }
 #ifdef VER_NT_SERVER
       if (info.wProductType == VER_NT_SERVER ||
@@ -3246,13 +3246,13 @@ network_init(void)
    * gethostbyname to work. */
   WSADATA WSAData;
   int r;
-  r = WSAStartup(0x101,&WSAData);
+  r = WSAStartup(0x101, &WSAData);
   if (r) {
-    log_warn(LD_NET,"Error initializing windows network layer: code was %d",r);
+    log_warn(LD_NET, "Error initializing windows network layer: code was %d", r);
     return -1;
   }
   if (sizeof(SOCKET) != sizeof(tor_socket_t)) {
-    log_warn(LD_BUG,"The tor_socket_t type does not match SOCKET in size; Tor "
+    log_warn(LD_BUG, "The tor_socket_t type does not match SOCKET in size; Tor "
              "might not work. (Sizes are %d and %d respectively.)",
              (int)sizeof(tor_socket_t), (int)sizeof(SOCKET));
   }
@@ -3293,7 +3293,7 @@ format_win32_error(DWORD err)
     else
       len = n * 2 + 1;
     result = tor_malloc(len);
-    wcstombs(result,str,len);
+    wcstombs(result, str, len);
     result[len-1] = '\0';
 #else
     result = tor_strdup(str);
@@ -3331,7 +3331,7 @@ get_total_system_memory_impl(void)
   char *s = NULL;
   const char *cp;
   size_t file_size=0;
-  if (-1 == (fd = tor_open_cloexec("/proc/meminfo",O_RDONLY,0)))
+  if (-1 == (fd = tor_open_cloexec("/proc/meminfo", O_RDONLY, 0)))
     return 0;
   s = read_file_to_str_until_eof(fd, 65536, &file_size);
   if (!s)
@@ -3369,7 +3369,7 @@ get_total_system_memory_impl(void)
   uint64_t memsize = 0;
   size_t len = sizeof(memsize);
   int mib[2] = {CTL_HW, INT64_HW_MEM};
-  if (sysctl(mib,2,&memsize,&len,NULL,0))
+  if (sysctl(mib, 2, &memsize, &len, NULL, 0))
     return 0;
 
   return memsize;
@@ -3380,7 +3380,7 @@ get_total_system_memory_impl(void)
   size_t memsize=0;
   size_t len = sizeof(memsize);
   int mib[2] = {CTL_HW, HW_USERMEM};
-  if (sysctl(mib,2,&memsize,&len,NULL,0))
+  if (sysctl(mib, 2, &memsize, &len, NULL, 0))
     return 0;
 
   return memsize;

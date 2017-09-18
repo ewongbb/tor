@@ -47,7 +47,7 @@ I5gQozM65ENelfxYlysBjJ52xSDBd8C4f/p9umdzaaaCmzXG/nhzAgMBAAE=\r\n\
 -----END RSA PUBLIC KEY-----\r\n\
 secret-id-part anmjoxxwiupreyajjt5yasimfmwcnxlf\r\n\
 publication-time 2015-03-11 19:00:00\r\n\
-protocol-versions 2,3\r\n\
+protocol-versions 2, 3\r\n\
 introduction-points\r\n\
 -----BEGIN MESSAGE-----\r\n\
 aW50cm9kdWN0aW9uLXBvaW50IDd1bnd4cmg2dG5kNGh6eWt1Z3EzaGZzdHduc2ll\r\n\
@@ -109,7 +109,7 @@ I5gQozM65ENelfxYlysBjJ52xSDBd8C4f/p9umdzaaaCmzXG/nhzAgMBAAE=\n\
 -----END RSA PUBLIC KEY-----\n\
 secret-id-part anmjoxxwiupreyajjt5yasimfmwcnxlf\n\
 publication-time 2015-03-11 19:00:00\n\
-protocol-versions 2,3\n\
+protocol-versions 2, 3\n\
 introduction-points\n\
 -----BEGIN MESSAGE-----\n\
 aW50cm9kdWN0aW9uLXBvaW50IDd1bnd4cmg2dG5kNGh6eWt1Z3EzaGZzdHduc2ll\n\
@@ -263,7 +263,7 @@ test_hs_desc_event(void *arg)
   expected_msg = "650 HS_DESC REQUESTED "STR_HS_ADDR" NO_AUTH "\
                   STR_HSDIR_EXIST_LONGNAME " " STR_DESC_ID_BASE32 "\r\n";
   tt_assert(received_msg);
-  tt_str_op(received_msg,OP_EQ, expected_msg);
+  tt_str_op(received_msg, OP_EQ, expected_msg);
   tor_free(received_msg);
 
   /* test received event */
@@ -273,7 +273,7 @@ test_hs_desc_event(void *arg)
   expected_msg = "650 HS_DESC RECEIVED "STR_HS_ADDR" BASIC_AUTH "\
                   STR_HSDIR_EXIST_LONGNAME " " STR_DESC_ID_BASE32"\r\n";
   tt_assert(received_msg);
-  tt_str_op(received_msg,OP_EQ, expected_msg);
+  tt_str_op(received_msg, OP_EQ, expected_msg);
   tor_free(received_msg);
 
   /* test failed event */
@@ -284,7 +284,7 @@ test_hs_desc_event(void *arg)
   expected_msg = "650 HS_DESC FAILED "STR_HS_ADDR" STEALTH_AUTH "\
                   STR_HSDIR_NONE_EXIST_LONGNAME" REASON=QUERY_REJECTED\r\n";
   tt_assert(received_msg);
-  tt_str_op(received_msg,OP_EQ, expected_msg);
+  tt_str_op(received_msg, OP_EQ, expected_msg);
   tor_free(received_msg);
 
   /* test invalid auth type */
@@ -296,7 +296,7 @@ test_hs_desc_event(void *arg)
                   STR_HSDIR_EXIST_LONGNAME " " STR_DESC_ID_BASE32\
                   " REASON=QUERY_REJECTED\r\n";
   tt_assert(received_msg);
-  tt_str_op(received_msg,OP_EQ, expected_msg);
+  tt_str_op(received_msg, OP_EQ, expected_msg);
   tor_free(received_msg);
 
   /* test no HSDir fingerprint type */
@@ -306,7 +306,7 @@ test_hs_desc_event(void *arg)
   expected_msg = "650 HS_DESC FAILED "STR_HS_ADDR" NO_AUTH " \
                  "UNKNOWN REASON=QUERY_NO_HSDIR\r\n";
   tt_assert(received_msg);
-  tt_str_op(received_msg,OP_EQ, expected_msg);
+  tt_str_op(received_msg, OP_EQ, expected_msg);
   tor_free(received_msg);
 
   /* Test invalid content with no HSDir fingerprint. */

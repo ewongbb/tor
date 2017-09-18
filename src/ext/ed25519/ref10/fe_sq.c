@@ -6,17 +6,17 @@ h = f * f
 Can overlap h with f.
 
 Preconditions:
-   |f| bounded by 1.65*2^26,1.65*2^25,1.65*2^26,1.65*2^25,etc.
+   |f| bounded by 1.65*2^26, 1.65*2^25, 1.65*2^26, 1.65*2^25, etc.
 
 Postconditions:
-   |h| bounded by 1.01*2^25,1.01*2^24,1.01*2^25,1.01*2^24,etc.
+   |h| bounded by 1.01*2^25, 1.01*2^24, 1.01*2^25, 1.01*2^24, etc.
 */
 
 /*
 See fe_mul.c for discussion of implementation strategy.
 */
 
-void fe_sq(fe h,const fe f)
+void fe_sq(fe h, const fe f)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -117,24 +117,24 @@ void fe_sq(fe h,const fe f)
   crypto_int64 carry8;
   crypto_int64 carry9;
 
-  carry0 = (h0 + (crypto_int64) (1<<25)) >> 26; h1 += carry0; h0 -= SHL64(carry0,26);
-  carry4 = (h4 + (crypto_int64) (1<<25)) >> 26; h5 += carry4; h4 -= SHL64(carry4,26);
+  carry0 = (h0 + (crypto_int64) (1<<25)) >> 26; h1 += carry0; h0 -= SHL64(carry0, 26);
+  carry4 = (h4 + (crypto_int64) (1<<25)) >> 26; h5 += carry4; h4 -= SHL64(carry4, 26);
 
-  carry1 = (h1 + (crypto_int64) (1<<24)) >> 25; h2 += carry1; h1 -= SHL64(carry1,25);
-  carry5 = (h5 + (crypto_int64) (1<<24)) >> 25; h6 += carry5; h5 -= SHL64(carry5,25);
+  carry1 = (h1 + (crypto_int64) (1<<24)) >> 25; h2 += carry1; h1 -= SHL64(carry1, 25);
+  carry5 = (h5 + (crypto_int64) (1<<24)) >> 25; h6 += carry5; h5 -= SHL64(carry5, 25);
 
-  carry2 = (h2 + (crypto_int64) (1<<25)) >> 26; h3 += carry2; h2 -= SHL64(carry2,26);
-  carry6 = (h6 + (crypto_int64) (1<<25)) >> 26; h7 += carry6; h6 -= SHL64(carry6,26);
+  carry2 = (h2 + (crypto_int64) (1<<25)) >> 26; h3 += carry2; h2 -= SHL64(carry2, 26);
+  carry6 = (h6 + (crypto_int64) (1<<25)) >> 26; h7 += carry6; h6 -= SHL64(carry6, 26);
 
-  carry3 = (h3 + (crypto_int64) (1<<24)) >> 25; h4 += carry3; h3 -= SHL64(carry3,25);
-  carry7 = (h7 + (crypto_int64) (1<<24)) >> 25; h8 += carry7; h7 -= SHL64(carry7,25);
+  carry3 = (h3 + (crypto_int64) (1<<24)) >> 25; h4 += carry3; h3 -= SHL64(carry3, 25);
+  carry7 = (h7 + (crypto_int64) (1<<24)) >> 25; h8 += carry7; h7 -= SHL64(carry7, 25);
 
-  carry4 = (h4 + (crypto_int64) (1<<25)) >> 26; h5 += carry4; h4 -= SHL64(carry4,26);
-  carry8 = (h8 + (crypto_int64) (1<<25)) >> 26; h9 += carry8; h8 -= SHL64(carry8,26);
+  carry4 = (h4 + (crypto_int64) (1<<25)) >> 26; h5 += carry4; h4 -= SHL64(carry4, 26);
+  carry8 = (h8 + (crypto_int64) (1<<25)) >> 26; h9 += carry8; h8 -= SHL64(carry8, 26);
 
-  carry9 = (h9 + (crypto_int64) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= SHL64(carry9,25);
+  carry9 = (h9 + (crypto_int64) (1<<24)) >> 25; h0 += carry9 * 19; h9 -= SHL64(carry9, 25);
 
-  carry0 = (h0 + (crypto_int64) (1<<25)) >> 26; h1 += carry0; h0 -= SHL64(carry0,26);
+  carry0 = (h0 + (crypto_int64) (1<<25)) >> 26; h1 += carry0; h0 -= SHL64(carry0, 26);
 
   h[0] = (crypto_int32) h0;
   h[1] = (crypto_int32) h1;

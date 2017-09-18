@@ -39,17 +39,17 @@
 
 #define ROTATE(x, b) (uint64_t)( ((x) << (b)) | ( (x) >> (64 - (b))) )
 
-#define HALF_ROUND(a,b,c,d,s,t)			\
+#define HALF_ROUND(a, b, c, d, s, t)			\
 	a += b; c += d;				\
 	b = ROTATE(b, s) ^ a;			\
 	d = ROTATE(d, t) ^ c;			\
 	a = ROTATE(a, 32);
 
-#define DOUBLE_ROUND(v0,v1,v2,v3)		\
-	HALF_ROUND(v0,v1,v2,v3,13,16);		\
-	HALF_ROUND(v2,v1,v0,v3,17,21);		\
-	HALF_ROUND(v0,v1,v2,v3,13,16);		\
-	HALF_ROUND(v2,v1,v0,v3,17,21);
+#define DOUBLE_ROUND(v0, v1, v2, v3)		\
+	HALF_ROUND(v0, v1, v2, v3, 13, 16);		\
+	HALF_ROUND(v2, v1, v0, v3, 17, 21);		\
+	HALF_ROUND(v0, v1, v2, v3, 13, 16);		\
+	HALF_ROUND(v2, v1, v0, v3, 17, 21);
 
 #if 0
 /* This does not seem to save very much runtime in the fast case, and it's
@@ -83,7 +83,7 @@ uint64_t siphash24(const void *src, unsigned long src_sz, const struct sipkey *k
 		mi = _le64toh(mi);
 #endif
 		v3 ^= mi;
-		DOUBLE_ROUND(v0,v1,v2,v3);
+		DOUBLE_ROUND(v0, v1, v2, v3);
 		v0 ^= mi;
 	}
 
@@ -99,11 +99,11 @@ uint64_t siphash24(const void *src, unsigned long src_sz, const struct sipkey *k
 		default:;
 	}
 	v3 ^= last7;
-	DOUBLE_ROUND(v0,v1,v2,v3);
+	DOUBLE_ROUND(v0, v1, v2, v3);
 	v0 ^= last7;
 	v2 ^= 0xff;
-	DOUBLE_ROUND(v0,v1,v2,v3);
-	DOUBLE_ROUND(v0,v1,v2,v3);
+	DOUBLE_ROUND(v0, v1, v2, v3);
+	DOUBLE_ROUND(v0, v1, v2, v3);
 	return v0 ^ v1 ^ v2 ^ v3;
 }
 

@@ -1812,7 +1812,7 @@ status_vote_current_consensus_ns_test(char **header, char **body,
   geoip_dirreq_stats_init(time(NULL));
 
   /* init geoip database */
-  geoip_parse_entry("10,50,AB", AF_INET);
+  geoip_parse_entry("10, 50, AB", AF_INET);
   tt_str_op("ab", OP_EQ, geoip_get_country_name(1));
 
   conn = new_dir_conn();
@@ -1870,7 +1870,7 @@ test_dir_handle_get_status_vote_current_consensus_ns(void* data)
   tt_assert(strstr(stats, "dirreq-v3-ips ab=8"));
   tt_assert(strstr(stats, "dirreq-v3-reqs ab=8"));
   tt_assert(strstr(stats, "dirreq-v3-direct-dl"
-                          " complete=0,timeout=0,running=4"));
+                          " complete=0, timeout=0, running=4"));
 
   hist = geoip_get_request_history();
   tt_assert(hist);
@@ -2562,14 +2562,14 @@ test_dir_handle_get_parse_accept_encoding(void *arg)
                                         "x-zstd, deflate, x-tor-lzma, gzip");
   tt_uint_op(B_NONE|B_ZLIB|B_ZSTD|B_LZMA|B_GZIP, OP_EQ, encodings);
 
-  encodings = parse_accept_encoding_header("x-zstd,deflate,x-tor-lzma,gzip");
+  encodings = parse_accept_encoding_header("x-zstd, deflate, x-tor-lzma, gzip");
   tt_uint_op(B_NONE|B_ZLIB|B_ZSTD|B_LZMA|B_GZIP, OP_EQ, encodings);
 
  done:
   ;
 }
 
-#define DIR_HANDLE_CMD(name,flags) \
+#define DIR_HANDLE_CMD(name, flags) \
   { #name, test_dir_handle_get_##name, (flags), NULL, NULL }
 
 struct testcase_t dir_handle_get_tests[] = {

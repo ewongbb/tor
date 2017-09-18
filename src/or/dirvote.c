@@ -322,7 +322,7 @@ format_networkstatus_vote(crypto_pk_t *private_signing_key,
     networkstatus_t *v;
     if (!(v = networkstatus_parse_vote_from_string(status, NULL,
                                                    v3_ns->type))) {
-      log_err(LD_BUG,"Generated a networkstatus %s we couldn't parse: "
+      log_err(LD_BUG, "Generated a networkstatus %s we couldn't parse: "
               "<<%s>>",
               v3_ns->type == NS_TYPE_VOTE ? "vote" : "opinion", status);
       goto err;
@@ -485,7 +485,7 @@ static int
 compare_vote_rs_(const void **_a, const void **_b)
 {
   const vote_routerstatus_t *a = *_a, *b = *_b;
-  return compare_vote_rs(a,b);
+  return compare_vote_rs(a, b);
 }
 
 /** Helper for sorting OR ports. */
@@ -707,7 +707,7 @@ compute_consensus_versions_list(smartlist_t *lst, int n_versioning)
   char *result;
   sort_version_list(lst, 0);
   get_frequent_members(good, lst, min);
-  result = smartlist_join_strings(good, ",", 0, NULL);
+  result = smartlist_join_strings(good, ", ", 0, NULL);
   smartlist_free(good);
   return result;
 }
@@ -818,7 +818,7 @@ dirvote_compute_params(smartlist_t *votes, int method, int total_authorities)
         int32_t median = median_int32(vals, i);
         char *out_string = tor_malloc(64+cur_param_len);
         memcpy(out_string, param, cur_param_len);
-        tor_snprintf(out_string+cur_param_len,64, "%ld", (long)median);
+        tor_snprintf(out_string+cur_param_len, 64, "%ld", (long)median);
         smartlist_add(output, out_string);
       }
 
@@ -835,7 +835,7 @@ dirvote_compute_params(smartlist_t *votes, int method, int total_authorities)
   return output;
 }
 
-#define RANGE_CHECK(a,b,c,d,e,f,g,mx) \
+#define RANGE_CHECK(a, b, c, d, e, f, g, mx) \
        ((a) >= 0 && (a) <= (mx) && (b) >= 0 && (b) <= (mx) && \
         (c) >= 0 && (c) <= (mx) && (d) >= 0 && (d) <= (mx) && \
         (e) >= 0 && (e) <= (mx) && (f) >= 0 && (f) <= (mx) && \
@@ -1188,7 +1188,7 @@ update_total_bandwidth_weights(const routerstatus_t *rs,
    *    Similarly, when calculating the bandwidth-weights line as in
    *    section 3.8.3 of dir-spec.txt, directory authorities should treat N
    *    as if fraction F of its bandwidth has the guard flag and (1-F) does
-   *    not.  So when computing the totals G,M,E,D, each relay N with guard
+   *    not.  So when computing the totals G, M, E, D, each relay N with guard
    *    visibility fraction F and bandwidth B should be added as follows:
    *
    *    G' = G + F*B, if N does not have the exit flag
@@ -1413,7 +1413,7 @@ networkstatus_compute_consensus(smartlist_t *votes,
       if (v->client_versions) {
         smartlist_t *cv = smartlist_new();
         ++n_versioning_clients;
-        smartlist_split_string(cv, v->client_versions, ",",
+        smartlist_split_string(cv, v->client_versions, ", ",
                                SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
         sort_version_list(cv, 1);
         smartlist_add_all(combined_client_versions, cv);
@@ -1422,7 +1422,7 @@ networkstatus_compute_consensus(smartlist_t *votes,
       if (v->server_versions) {
         smartlist_t *sv = smartlist_new();
         ++n_versioning_servers;
-        smartlist_split_string(sv, v->server_versions, ",",
+        smartlist_split_string(sv, v->server_versions, ", ",
                                SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
         sort_version_list(sv, 1);
         smartlist_add_all(combined_server_versions, sv);
@@ -1877,7 +1877,7 @@ networkstatus_compute_consensus(smartlist_t *votes,
       /* Copy bits of that into rs_out. */
       memset(&rs_out, 0, sizeof(rs_out));
       tor_assert(fast_memeq(current_rsa_id,
-                            rs->status.identity_digest,DIGEST_LEN));
+                            rs->status.identity_digest, DIGEST_LEN));
       memcpy(rs_out.identity_digest, current_rsa_id, DIGEST_LEN);
       memcpy(rs_out.descriptor_digest, rs->status.descriptor_digest,
              DIGEST_LEN);
@@ -2857,7 +2857,7 @@ get_voting_schedule(const or_options_t *options, time_t now, int severity)
     vote_delay = dist_delay = interval / 4;
 
   start = new_voting_schedule->interval_starts =
-    dirvote_get_start_of_next_interval(now,interval,
+    dirvote_get_start_of_next_interval(now, interval,
                                       options->TestingV3AuthVotingStartOffset);
   end = dirvote_get_start_of_next_interval(start+1, interval,
                                       options->TestingV3AuthVotingStartOffset);
@@ -2873,7 +2873,7 @@ get_voting_schedule(const or_options_t *options, time_t now, int severity)
   {
     char tbuf[ISO_TIME_LEN+1];
     format_iso_time(tbuf, new_voting_schedule->interval_starts);
-    tor_log(severity, LD_DIR,"Choosing expected valid-after time as %s: "
+    tor_log(severity, LD_DIR, "Choosing expected valid-after time as %s: "
             "consensus_set=%d, interval=%d",
             tbuf, consensus?1:0, interval);
   }
@@ -3549,7 +3549,7 @@ dirvote_add_signatures_to_pending_consensus(
   }
   r = networkstatus_add_detached_signatures(pc->consensus, sigs,
                                             source, severity, msg_out);
-  log_info(LD_DIR,"Added %d signatures to consensus.", r);
+  log_info(LD_DIR, "Added %d signatures to consensus.", r);
 
   if (r >= 1) {
     char *new_signatures =
@@ -3694,7 +3694,7 @@ dirvote_publish_consensus(void)
     tor_assert(name);
     if (!pending->consensus ||
       networkstatus_check_consensus_signature(pending->consensus, 1)<0) {
-      log_warn(LD_DIR, "Not enough info to publish pending %s consensus",name);
+      log_warn(LD_DIR, "Not enough info to publish pending %s consensus", name);
       continue;
     }
 
@@ -3908,7 +3908,7 @@ dirvote_format_microdesc_vote_line(char *out_buf, size_t out_buf_len,
   char *microdesc_consensus_methods =
     make_consensus_method_list(consensus_method_low,
                                consensus_method_high,
-                               ",");
+                               ", ");
   tor_assert(microdesc_consensus_methods);
 
   if (digest256_to_base64(d64, md->digest)<0)
@@ -4031,7 +4031,7 @@ vote_routerstatus_find_microdesc_hash(char *digest256_out,
   for (h = vrs->microdesc; h; h = h->next) {
     const char *cp = h->microdesc_hash_line;
     size_t num_len;
-    /* cp looks like \d+(,\d+)* (digesttype=val )+ .  Let's hunt for mstr in
+    /* cp looks like \d+(, \d+)* (digesttype=val )+ .  Let's hunt for mstr in
      * the first part. */
     while (1) {
       num_len = strspn(cp, "1234567890");
@@ -4047,7 +4047,7 @@ vote_routerstatus_find_microdesc_hash(char *digest256_out,
         strlcpy(buf, cp, sizeof(buf));
         return digest256_from_base64(digest256_out, buf);
       }
-      if (num_len == 0 || cp[num_len] != ',')
+      if (num_len == 0 || cp[num_len] != ', ')
         break;
       cp += num_len + 1;
     }

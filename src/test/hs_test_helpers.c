@@ -214,7 +214,7 @@ hs_helper_desc_equal(const hs_descriptor_t *desc1,
     for (int i = 0;
          i < smartlist_len(desc1->encrypted_data.intro_auth_types);
          i++) {
-      tt_str_op(smartlist_get(desc1->encrypted_data.intro_auth_types, i),OP_EQ,
+      tt_str_op(smartlist_get(desc1->encrypted_data.intro_auth_types, i), OP_EQ,
                 smartlist_get(desc2->encrypted_data.intro_auth_types, i));
     }
   }

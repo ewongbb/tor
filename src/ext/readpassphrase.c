@@ -1,4 +1,4 @@
-/*	$OpenBSD: readpassphrase.c,v 1.22 2010/01/13 10:20:54 dtucker Exp $	*/
+/*	$OpenBSD: readpassphrase.c, v 1.22 2010/01/13 10:20:54 dtucker Exp $	*/
 
 /*
  * Copyright (c) 2000-2002, 2007 Todd C. Miller <Todd.Miller@courtesan.com>

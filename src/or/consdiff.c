@@ -101,7 +101,7 @@ smartlist_add_linecpy(smartlist_t *lst, memarea_t *area, const char *s)
 /* This is a separate, mockable function so that we can override it when
  * fuzzing. */
 MOCK_IMPL(STATIC int,
-consensus_compute_digest,(const char *cons,
+consensus_compute_digest, (const char *cons,
                           consensus_digest_t *digest_out))
 {
   int r = crypto_digest256((char*)digest_out->sha3_256,
@@ -114,7 +114,7 @@ consensus_compute_digest,(const char *cons,
 /* This is a separate, mockable function so that we can override it when
  * fuzzing. */
 MOCK_IMPL(STATIC int,
-consensus_compute_digest_as_signed,(const char *cons,
+consensus_compute_digest_as_signed, (const char *cons,
                                     consensus_digest_t *digest_out))
 {
   return router_get_networkstatus_v3_sha3_as_signed(digest_out->sha3_256,
@@ -125,7 +125,7 @@ consensus_compute_digest_as_signed,(const char *cons,
 /* This is a separate, mockable function so that we can override it when
  * fuzzing. */
 MOCK_IMPL(STATIC int,
-consensus_digest_eq,(const uint8_t *d1,
+consensus_digest_eq, (const uint8_t *d1,
                      const uint8_t *d2))
 {
   return fast_memeq(d1, d2, DIGEST256_LEN);
@@ -592,7 +592,7 @@ preprocess_consensus(memarea_t *area,
     char buf[64];
     while (smartlist_len(cons) > dirsig_idx)
       smartlist_del(cons, dirsig_idx);
-    tor_snprintf(buf, sizeof(buf), "%d,$d", dirsig_idx+1);
+    tor_snprintf(buf, sizeof(buf), "%d, $d", dirsig_idx+1);
     return cdline_linecpy(area, buf);
   } else {
     return NULL;
@@ -652,7 +652,7 @@ gen_ed_diff(const smartlist_t *cons1_orig, const smartlist_t *cons2,
    * reach past len1 and len2 respectively, since next_router doesn't let that
    * happen. i1 and i2 are advanced by at least one line at each iteration as
    * long as they have not yet reached len1 and len2, so the loop is
-   * guaranteed to end, and each pair of (i1,i2) will be inspected at most
+   * guaranteed to end, and each pair of (i1, i2) will be inspected at most
    * once.
    */
   while (i1 < len1 || i2 < len2) {
@@ -780,7 +780,7 @@ gen_ed_diff(const smartlist_t *cons1_orig, const smartlist_t *cons2,
         tor_snprintf(buf, sizeof(buf), "%id", start1x+1);
         smartlist_add_linecpy(result, area, buf);
       } else {
-        tor_snprintf(buf, sizeof(buf), "%i,%id", start1x+1, start1x+deleted);
+        tor_snprintf(buf, sizeof(buf), "%i, %id", start1x+1, start1x+deleted);
         smartlist_add_linecpy(result, area, buf);
       }
     } else {
@@ -792,7 +792,7 @@ gen_ed_diff(const smartlist_t *cons1_orig, const smartlist_t *cons2,
         tor_snprintf(buf, sizeof(buf), "%ic", start1x+1);
         smartlist_add_linecpy(result, area, buf);
       } else {
-        tor_snprintf(buf, sizeof(buf), "%i,%ic", start1x+1, start1x+deleted);
+        tor_snprintf(buf, sizeof(buf), "%i, %ic", start1x+1, start1x+deleted);
         smartlist_add_linecpy(result, area, buf);
       }
 
@@ -882,7 +882,7 @@ apply_ed_diff(const smartlist_t *cons1, const smartlist_t *diff,
                "an ed command was missing a line number.");
       goto error_cleanup;
     }
-    if (*ptr == ',') {
+    if (*ptr == ', ') {
       /* Two-item range */
       had_range = 1;
       ++ptr;
@@ -902,7 +902,7 @@ apply_ed_diff(const smartlist_t *cons1, const smartlist_t *diff,
         goto error_cleanup;
       }
     } else {
-      /* We'll take <n1> as <n1>,<n1> for simplicity. */
+      /* We'll take <n1> as <n1>, <n1> for simplicity. */
       end = start;
     }
 

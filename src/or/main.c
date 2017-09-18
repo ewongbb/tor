@@ -275,7 +275,7 @@ connection_add_impl(connection_t *conn, int is_connecting)
     /* XXXX CHECK FOR NULL RETURN! */
   }
 
-  log_debug(LD_NET,"new conn type %s, socket %d, address %s, n_conns %d.",
+  log_debug(LD_NET, "new conn type %s, socket %d, address %s, n_conns %d.",
             conn_type_to_string(conn->type), (int)conn->s, conn->address,
             smartlist_len(connection_array));
 
@@ -313,7 +313,7 @@ connection_remove(connection_t *conn)
 
   tor_assert(conn);
 
-  log_debug(LD_NET,"removing socket %d (type %s), n_conns now %d",
+  log_debug(LD_NET, "removing socket %d (type %s), n_conns now %d",
             (int)conn->s, conn_type_to_string(conn->type),
             smartlist_len(connection_array));
 
@@ -437,14 +437,14 @@ get_connection_array, (void))
 /** Provides the traffic read and written over the life of the process. */
 
 MOCK_IMPL(uint64_t,
-get_bytes_read,(void))
+get_bytes_read, (void))
 {
   return stats_n_bytes_read;
 }
 
 /* DOCDOC get_bytes_written */
 MOCK_IMPL(uint64_t,
-get_bytes_written,(void))
+get_bytes_written, (void))
 {
   return stats_n_bytes_written;
 }
@@ -518,7 +518,7 @@ connection_check_event(connection_t *conn, struct event *ev)
 
 /** Tell the main loop to stop notifying <b>conn</b> of any read events. */
 MOCK_IMPL(void,
-connection_stop_reading,(connection_t *conn))
+connection_stop_reading, (connection_t *conn))
 {
   tor_assert(conn);
 
@@ -540,7 +540,7 @@ connection_stop_reading,(connection_t *conn))
 
 /** Tell the main loop to start notifying <b>conn</b> of any read events. */
 MOCK_IMPL(void,
-connection_start_reading,(connection_t *conn))
+connection_start_reading, (connection_t *conn))
 {
   tor_assert(conn);
 
@@ -573,7 +573,7 @@ connection_is_writing(connection_t *conn)
 
 /** Tell the main loop to stop notifying <b>conn</b> of any write events. */
 MOCK_IMPL(void,
-connection_stop_writing,(connection_t *conn))
+connection_stop_writing, (connection_t *conn))
 {
   tor_assert(conn);
 
@@ -596,7 +596,7 @@ connection_stop_writing,(connection_t *conn))
 
 /** Tell the main loop to start notifying <b>conn</b> of any write events. */
 MOCK_IMPL(void,
-connection_start_writing,(connection_t *conn))
+connection_start_writing, (connection_t *conn))
 {
   tor_assert(conn);
 
@@ -731,14 +731,14 @@ conn_read_callback(evutil_socket_t fd, short event, void *_conn)
   (void)fd;
   (void)event;
 
-  log_debug(LD_NET,"socket %d wants to read.",(int)conn->s);
+  log_debug(LD_NET, "socket %d wants to read.", (int)conn->s);
 
   /* assert_connection_ok(conn, time(NULL)); */
 
   if (connection_handle_read(conn) < 0) {
     if (!conn->marked_for_close) {
 #ifndef _WIN32
-      log_warn(LD_BUG,"Unhandled error on read for %s connection "
+      log_warn(LD_BUG, "Unhandled error on read for %s connection "
                "(fd %d); removing",
                conn_type_to_string(conn->type), (int)conn->s);
       tor_fragile_assert();
@@ -771,7 +771,7 @@ conn_write_callback(evutil_socket_t fd, short events, void *_conn)
   if (connection_handle_write(conn, 0) < 0) {
     if (!conn->marked_for_close) {
       /* this connection is broken. remove it. */
-      log_fn(LOG_WARN,LD_BUG,
+      log_fn(LOG_WARN, LD_BUG,
              "unhandled error on write for %s connection (fd %d); removing",
              conn_type_to_string(conn->type), (int)conn->s);
       tor_fragile_assert();
@@ -814,7 +814,7 @@ conn_close_if_marked(int i)
   assert_connection_ok(conn, now);
   /* assert_all_pending_dns_resolves_ok(); */
 
-  log_debug(LD_NET,"Cleaning up connection (fd "TOR_SOCKET_T_FORMAT").",
+  log_debug(LD_NET, "Cleaning up connection (fd "TOR_SOCKET_T_FORMAT").",
             conn->s);
 
   /* If the connection we are about to close was trying to connect to
@@ -863,7 +863,7 @@ conn_close_if_marked(int i)
                           TLS_WANT_WRITE here. But don't bother for now. */
         conn->hold_open_until_flushed && connection_wants_to_flush(conn)) {
       if (retval > 0) {
-        LOG_FN_CONN(conn, (LOG_INFO,LD_NET,
+        LOG_FN_CONN(conn, (LOG_INFO, LD_NET,
                            "Holding conn (fd %d) open for more flushing.",
                            (int)conn->s));
         conn->timestamp_lastwritten = now; /* reset so we can flush more */
@@ -1037,13 +1037,13 @@ run_connection_housekeeping(int i, time_t now)
        (!DIR_CONN_IS_SERVER(conn) &&
         conn->timestamp_lastread
             + options->TestingDirConnectionMaxStall < now))) {
-    log_info(LD_DIR,"Expiring wedged directory conn (fd %d, purpose %d)",
+    log_info(LD_DIR, "Expiring wedged directory conn (fd %d, purpose %d)",
              (int)conn->s, conn->purpose);
     /* This check is temporary; it's to let us know whether we should consider
      * parsing partial serverdesc responses. */
     if (conn->purpose == DIR_PURPOSE_FETCH_SERVERDESC &&
         connection_get_inbuf_len(conn) >= 1024) {
-      log_info(LD_DIR,"Trying to extract information from wedged server desc "
+      log_info(LD_DIR, "Trying to extract information from wedged server desc "
                "download.");
       connection_dir_reached_eof(TO_DIR_CONN(conn));
     } else {
@@ -1086,22 +1086,22 @@ run_connection_housekeeping(int i, time_t now)
   } else if (!connection_state_is_open(conn)) {
     if (past_keepalive) {
       /* We never managed to actually get this connection open and happy. */
-      log_info(LD_OR,"Expiring non-open OR connection to fd %d (%s:%d).",
-               (int)conn->s,conn->address, conn->port);
+      log_info(LD_OR, "Expiring non-open OR connection to fd %d (%s:%d).",
+               (int)conn->s, conn->address, conn->port);
       connection_or_close_normally(TO_OR_CONN(conn), 0);
     }
   } else if (we_are_hibernating() &&
              ! have_any_circuits &&
              !connection_get_outbuf_len(conn)) {
     /* We're hibernating, there's no circuits, and nothing to flush.*/
-    log_info(LD_OR,"Expiring non-used OR connection to fd %d (%s:%d) "
+    log_info(LD_OR, "Expiring non-used OR connection to fd %d (%s:%d) "
              "[Hibernating or exiting].",
-             (int)conn->s,conn->address, conn->port);
+             (int)conn->s, conn->address, conn->port);
     connection_or_close_normally(TO_OR_CONN(conn), 1);
   } else if (!have_any_circuits &&
              now - or_conn->idle_timeout >=
                                          chan->timestamp_last_had_circuits) {
-    log_info(LD_OR,"Expiring non-used OR connection "U64_FORMAT" to fd %d "
+    log_info(LD_OR, "Expiring non-used OR connection "U64_FORMAT" to fd %d "
              "(%s:%d) [no circuits for %d; timeout %d; %scanonical].",
              U64_PRINTF_ARG(chan->global_identifier),
              (int)conn->s, conn->address, conn->port,
@@ -1112,7 +1112,7 @@ run_connection_housekeeping(int i, time_t now)
   } else if (
       now >= or_conn->timestamp_lastempty + options->KeepalivePeriod*10 &&
       now >= conn->timestamp_lastwritten + options->KeepalivePeriod*10) {
-    log_fn(LOG_PROTOCOL_WARN,LD_PROTOCOL,
+    log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
            "Expiring stuck OR connection to fd %d (%s:%d). (%d bytes to "
            "flush; %d seconds since last write)",
            (int)conn->s, conn->address, conn->port,
@@ -1121,9 +1121,9 @@ run_connection_housekeeping(int i, time_t now)
     connection_or_close_normally(TO_OR_CONN(conn), 0);
   } else if (past_keepalive && !connection_get_outbuf_len(conn)) {
     /* send a padding cell */
-    log_fn(LOG_DEBUG,LD_OR,"Sending keepalive to (%s:%d)",
+    log_fn(LOG_DEBUG, LD_OR, "Sending keepalive to (%s:%d)",
            conn->address, conn->port);
-    memset(&cell,0,sizeof(cell_t));
+    memset(&cell, 0, sizeof(cell_t));
     cell.command = CELL_PADDING;
     connection_or_write_cell_to_buf(&cell, or_conn);
   } else {
@@ -1505,7 +1505,7 @@ rotate_onion_key_callback(time_t now, const or_options_t *options)
       return ONION_KEY_CONSENSUS_CHECK_INTERVAL;
     }
 
-    log_info(LD_GENERAL,"Rotating onion key.");
+    log_info(LD_GENERAL, "Rotating onion key.");
     rotate_onion_key();
     cpuworkers_rotate_keyinfo();
     if (router_rebuild_descriptor(1)<0) {
@@ -1564,7 +1564,7 @@ check_ed_keys_callback(time_t now, const or_options_t *options)
 }
 
 /**
- * Periodic callback: Every {LAZY,GREEDY}_DESCRIPTOR_RETRY_INTERVAL,
+ * Periodic callback: Every {LAZY, GREEDY}_DESCRIPTOR_RETRY_INTERVAL,
  * see about fetching descriptors, microdescriptors, and extrainfo
  * documents.
  */
@@ -1599,7 +1599,7 @@ rotate_x509_certificate_callback(time_t now, const or_options_t *options)
 
   /* 1b. Every MAX_SSL_KEY_LIFETIME_INTERNAL seconds, we change our
    * TLS context. */
-  log_info(LD_GENERAL,"Rotating tls context.");
+  log_info(LD_GENERAL, "Rotating tls context.");
   if (router_initialize_tls_context() < 0) {
     log_err(LD_BUG, "Error reinitializing TLS context");
     tor_assert_unreached();
@@ -2159,7 +2159,7 @@ second_elapsed_callback(periodic_timer_t *timer, void *arg)
   stats_prev_n_read = stats_n_bytes_read;
   stats_prev_n_written = stats_n_bytes_written;
 
-  control_event_bandwidth_used((uint32_t)bytes_read,(uint32_t)bytes_written);
+  control_event_bandwidth_used((uint32_t)bytes_read, (uint32_t)bytes_written);
   control_event_stream_bandwidth_used();
   control_event_conn_bandwidth_used();
   control_event_circ_bandwidth_used();
@@ -2176,7 +2176,7 @@ second_elapsed_callback(periodic_timer_t *timer, void *arg)
     const routerinfo_t *me = router_get_my_routerinfo();
     if (me && !check_whether_orport_reachable(options)) {
       char *address = tor_dup_ip(me->addr);
-      log_warn(LD_CONFIG,"Your server (%s:%d) has not managed to confirm that "
+      log_warn(LD_CONFIG, "Your server (%s:%d) has not managed to confirm that "
                "its ORPort is reachable. Relays do not publish descriptors "
                "until their ORPort and DirPort are reachable. Please check "
                "your firewalls, ports, address, /etc/hosts file, etc.",
@@ -2356,7 +2356,7 @@ do_hup(void)
   dmalloc_log_changed(0, 1, 0, 0);
 #endif
 
-  log_notice(LD_GENERAL,"Received reload signal (hup). Reloading config and "
+  log_notice(LD_GENERAL, "Received reload signal (hup). Reloading config and "
              "resetting internal state.");
   if (accounting_is_enabled(options))
     accounting_record_bandwidth_usage(time(NULL), get_or_state());
@@ -2367,7 +2367,7 @@ do_hup(void)
   if (options->ReloadTorrcOnSIGHUP) {
     /* no need to provide argc/v, they've been cached in init_from_config */
     if (options_init_from_torrc(0, NULL) < 0) {
-      log_err(LD_CONFIG,"Reading config failed--see warnings above. "
+      log_err(LD_CONFIG, "Reading config failed--see warnings above. "
               "For usage, try -h.");
       return -1;
     }
@@ -2448,7 +2448,7 @@ do_main_loop(void)
       log_warn(LD_GENERAL, "Couldn't set up any working nameservers. "
                "Network not up yet?  Will try again soon.");
     else {
-      log_err(LD_GENERAL,"Error initializing dns subsystem; exiting.  To "
+      log_err(LD_GENERAL, "Error initializing dns subsystem; exiting.  To "
               "retry instead, set the ServerDNSAllowBrokenResolvConf option.");
     }
   }
@@ -2479,11 +2479,11 @@ do_main_loop(void)
     char *fname = get_datadir_fname("key-pinning-journal");
     int r = 0;
     if (keypin_load_journal(fname)<0) {
-      log_err(LD_DIR, "Error loading key-pinning journal: %s",strerror(errno));
+      log_err(LD_DIR, "Error loading key-pinning journal: %s", strerror(errno));
       r = -1;
     }
     if (keypin_open_journal(fname)<0) {
-      log_err(LD_DIR, "Error opening key-pinning journal: %s",strerror(errno));
+      log_err(LD_DIR, "Error opening key-pinning journal: %s", strerror(errno));
       r = -1;
     }
     tor_free(fname);
@@ -2638,7 +2638,7 @@ run_main_loop_once(void)
     int e = tor_socket_errno(-1);
     /* let the program survive things like ^z */
     if (e != EINTR && !ERRNO_IS_EINPROGRESS(e)) {
-      log_err(LD_NET,"libevent call with %s failed: %s [%d]",
+      log_err(LD_NET, "libevent call with %s failed: %s [%d]",
               tor_libevent_get_method(), tor_socket_strerror(e), e);
       return -1;
 #ifndef _WIN32
@@ -2649,7 +2649,7 @@ run_main_loop_once(void)
 #endif
     } else {
       tor_assert_nonfatal_once(! ERRNO_IS_EINPROGRESS(e));
-      log_debug(LD_NET,"libevent call interrupted.");
+      log_debug(LD_NET, "libevent call interrupted.");
       /* You can't trust the results of this poll(). Go back to the
        * top of the big for loop. */
       return 1;
@@ -2707,13 +2707,13 @@ process_signal(int sig)
   switch (sig)
     {
     case SIGTERM:
-      log_notice(LD_GENERAL,"Catching signal TERM, exiting cleanly.");
+      log_notice(LD_GENERAL, "Catching signal TERM, exiting cleanly.");
       tor_cleanup();
       exit(0);
       break;
     case SIGINT:
       if (!server_mode(get_options())) { /* do it now */
-        log_notice(LD_GENERAL,"Interrupt: exiting cleanly.");
+        log_notice(LD_GENERAL, "Interrupt: exiting cleanly.");
         tor_cleanup();
         exit(0);
       }
@@ -2724,7 +2724,7 @@ process_signal(int sig)
       break;
 #ifdef SIGPIPE
     case SIGPIPE:
-      log_debug(LD_GENERAL,"Caught SIGPIPE. Ignoring.");
+      log_debug(LD_GENERAL, "Caught SIGPIPE. Ignoring.");
       break;
 #endif
     case SIGUSR1:
@@ -2734,7 +2734,7 @@ process_signal(int sig)
       break;
     case SIGUSR2:
       switch_logs_debug();
-      log_debug(LD_GENERAL,"Caught USR2, going to loglevel debug. "
+      log_debug(LD_GENERAL, "Caught USR2, going to loglevel debug. "
                 "Send HUP to change back.");
       control_event_signal(sig);
       break;
@@ -2743,7 +2743,7 @@ process_signal(int sig)
       sd_notify(0, "RELOADING=1");
 #endif
       if (do_hup() < 0) {
-        log_warn(LD_CONFIG,"Restart failed (config error?). Exiting.");
+        log_warn(LD_CONFIG, "Restart failed (config error?). Exiting.");
         tor_cleanup();
         exit(1);
       }
@@ -2782,7 +2782,7 @@ process_signal(int sig)
 
 /** Returns Tor's uptime. */
 MOCK_IMPL(long,
-get_uptime,(void))
+get_uptime, (void))
 {
   return stats_n_seconds_working;
 }
@@ -2821,19 +2821,19 @@ dumpstats(int severity)
         conn->state, conn_state_to_string(conn->type, conn->state),
         (int)(now - conn->timestamp_created));
     if (!connection_is_listener(conn)) {
-      tor_log(severity,LD_GENERAL,
+      tor_log(severity, LD_GENERAL,
           "Conn %d is to %s:%d.", i,
           safe_str_client(conn->address),
           conn->port);
-      tor_log(severity,LD_GENERAL,
+      tor_log(severity, LD_GENERAL,
           "Conn %d: %d bytes waiting on inbuf (len %d, last read %d secs ago)",
           i,
           (int)connection_get_inbuf_len(conn),
           (int)buf_allocation(conn->inbuf),
           (int)(now - conn->timestamp_lastread));
-      tor_log(severity,LD_GENERAL,
+      tor_log(severity, LD_GENERAL,
           "Conn %d: %d bytes waiting on outbuf "
-          "(len %d, last written %d secs ago)",i,
+          "(len %d, last written %d secs ago)", i,
           (int)connection_get_outbuf_len(conn),
           (int)buf_allocation(conn->outbuf),
           (int)(now - conn->timestamp_lastwritten));
@@ -2873,16 +2873,16 @@ dumpstats(int severity)
       U64_PRINTF_ARG(stats_n_relay_cells_delivered),
       U64_PRINTF_ARG(stats_n_destroy_cells_processed));
   if (stats_n_data_cells_packaged)
-    tor_log(severity,LD_NET,"Average packaged cell fullness: %2.3f%%",
+    tor_log(severity, LD_NET, "Average packaged cell fullness: %2.3f%%",
         100*(U64_TO_DBL(stats_n_data_bytes_packaged) /
              U64_TO_DBL(stats_n_data_cells_packaged*RELAY_PAYLOAD_SIZE)) );
   if (stats_n_data_cells_received)
-    tor_log(severity,LD_NET,"Average delivered cell fullness: %2.3f%%",
+    tor_log(severity, LD_NET, "Average delivered cell fullness: %2.3f%%",
         100*(U64_TO_DBL(stats_n_data_bytes_received) /
              U64_TO_DBL(stats_n_data_cells_received*RELAY_PAYLOAD_SIZE)) );
 
   cpuworker_log_onionskin_overhead(severity, ONION_HANDSHAKE_TYPE_TAP, "TAP");
-  cpuworker_log_onionskin_overhead(severity, ONION_HANDSHAKE_TYPE_NTOR,"ntor");
+  cpuworker_log_onionskin_overhead(severity, ONION_HANDSHAKE_TYPE_NTOR, "ntor");
 
   if (now - time_of_process_start >= 0)
     elapsed = now - time_of_process_start;
@@ -2905,7 +2905,7 @@ dumpstats(int severity)
   tor_log(severity, LD_NET, "--------------- Dumping memory information:");
   dumpmemusage(severity);
 
-  rep_hist_dump_stats(now,severity);
+  rep_hist_dump_stats(now, severity);
   rend_service_dump_stats(severity);
   dump_distinct_digest_count(severity);
 }
@@ -3121,13 +3121,13 @@ tor_init(int argc, char *argv[])
   }
 
   if (network_init()<0) {
-    log_err(LD_BUG,"Error initializing network; exiting.");
+    log_err(LD_BUG, "Error initializing network; exiting.");
     return -1;
   }
   atexit(exit_function);
 
-  if (options_init_from_torrc(argc,argv) < 0) {
-    log_err(LD_CONFIG,"Reading config failed--see warnings above.");
+  if (options_init_from_torrc(argc, argv) < 0) {
+    log_err(LD_CONFIG, "Reading config failed--see warnings above.");
     return -1;
   }
 
@@ -3143,7 +3143,7 @@ tor_init(int argc, char *argv[])
 
 #ifndef _WIN32
   if (geteuid()==0)
-    log_warn(LD_GENERAL,"You are running Tor as root. You don't need to, "
+    log_warn(LD_GENERAL, "You are running Tor as root. You don't need to, "
              "and you probably shouldn't.");
 #endif
 
@@ -3180,7 +3180,7 @@ try_locking(const or_options_t *options, int err_if_locked)
   if (lockfile)
     return 0;
   else {
-    char *fname = options_get_datadir_fname2_suffix(options, "lock",NULL,NULL);
+    char *fname = options_get_datadir_fname2_suffix(options, "lock", NULL, NULL);
     int already_locked = 0;
     tor_lockfile_t *lf = tor_lockfile_lock(fname, 0, &already_locked);
     tor_free(fname);
@@ -3368,11 +3368,11 @@ do_list_fingerprint(void)
   }
   tor_assert(nickname);
   if (init_keys() < 0) {
-    log_err(LD_GENERAL,"Error initializing keys; exiting.");
+    log_err(LD_GENERAL, "Error initializing keys; exiting.");
     return -1;
   }
   if (!(k = get_server_identity_key())) {
-    log_err(LD_GENERAL,"Error: missing identity key.");
+    log_err(LD_GENERAL, "Error: missing identity key.");
     return -1;
   }
   if (crypto_pk_get_fingerprint(k, buf, 1)<0) {
@@ -3398,7 +3398,7 @@ do_hash_password(void)
                 get_options()->command_arg, strlen(get_options()->command_arg),
                 key);
   base16_encode(output, sizeof(output), key, sizeof(key));
-  printf("16:%s\n",output);
+  printf("16:%s\n", output);
 }
 
 /** Entry point for configuration dumping: write the configuration to
@@ -3761,7 +3761,7 @@ tor_main(int argc, char *argv[])
     sandbox_cfg_t* cfg = sandbox_init_filter();
 
     if (sandbox_init(cfg)) {
-      log_err(LD_BUG,"Failed to create syscall sandbox filter");
+      log_err(LD_BUG, "Failed to create syscall sandbox filter");
       return -1;
     }
 
@@ -3804,7 +3804,7 @@ tor_main(int argc, char *argv[])
     break;
   case CMD_RUN_UNITTESTS: /* only set by test.c */
   default:
-    log_warn(LD_BUG,"Illegal command number %d: internal error.",
+    log_warn(LD_BUG, "Illegal command number %d: internal error.",
              get_options()->command);
     result = -1;
   }

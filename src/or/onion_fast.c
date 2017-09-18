@@ -104,7 +104,7 @@ fast_server_handshake(const uint8_t *key_in, /* DIGEST_LEN bytes */
  */
 int
 fast_client_handshake(const fast_handshake_state_t *handshake_state,
-                      const uint8_t *handshake_reply_out,/*DIGEST_LEN*2 bytes*/
+                      const uint8_t *handshake_reply_out, /*DIGEST_LEN*2 bytes*/
                       uint8_t *key_out,
                       size_t key_out_len,
                       const char **msg_out)

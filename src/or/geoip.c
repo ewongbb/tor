@@ -76,7 +76,7 @@ static char geoip6_digest[DIGEST_LEN];
  * country list if it is a valid 2-letter country code, otherwise
  * return -1. */
 MOCK_IMPL(country_t,
-geoip_get_country,(const char *country))
+geoip_get_country, (const char *country))
 {
   void *idxplus1_;
   intptr_t idx;
@@ -165,8 +165,8 @@ geoip_parse_entry(const char *line, sa_family_t family)
   char buf[512];
   if (family == AF_INET) {
     unsigned int low, high;
-    if (tor_sscanf(line,"%u,%u,%2s", &low, &high, c) == 3 ||
-        tor_sscanf(line,"\"%u\",\"%u\",\"%2s\",", &low, &high, c) == 3) {
+    if (tor_sscanf(line, "%u, %u, %2s", &low, &high, c) == 3 ||
+        tor_sscanf(line, "\"%u\", \"%u\", \"%2s\", ", &low, &high, c) == 3) {
       tor_addr_from_ipv4h(&low_addr, low);
       tor_addr_from_ipv4h(&high_addr, high);
     } else
@@ -177,10 +177,10 @@ geoip_parse_entry(const char *line, sa_family_t family)
     struct in6_addr low, high;
     char *strtok_state;
     strlcpy(buf, line, sizeof(buf));
-    low_str = tor_strtok_r(buf, ",", &strtok_state);
+    low_str = tor_strtok_r(buf, ", ", &strtok_state);
     if (!low_str)
       goto fail;
-    high_str = tor_strtok_r(NULL, ",", &strtok_state);
+    high_str = tor_strtok_r(NULL, ", ", &strtok_state);
     if (!high_str)
       goto fail;
     country = tor_strtok_r(NULL, "\n", &strtok_state);
@@ -293,14 +293,14 @@ init_geoip_countries(void)
  * failure.
  *
  * Recognized line formats for IPv4 are:
- *   INTIPLOW,INTIPHIGH,CC
+ *   INTIPLOW, INTIPHIGH, CC
  * and
- *   "INTIPLOW","INTIPHIGH","CC","CC3","COUNTRY NAME"
+ *   "INTIPLOW", "INTIPHIGH", "CC", "CC3", "COUNTRY NAME"
  * where INTIPLOW and INTIPHIGH are IPv4 addresses encoded as 4-byte unsigned
  * integers, and CC is a country code.
  *
  * Recognized line format for IPv6 is:
- *   IPV6LOW,IPV6HIGH,CC
+ *   IPV6LOW, IPV6HIGH, CC
  * where IPV6LOW and IPV6HIGH are IPv6 addresses and CC is a country code.
  *
  * It also recognizes, and skips over, blank lines and lines that start
@@ -414,7 +414,7 @@ geoip_get_country_by_ipv6(const struct in6_addr *addr)
  * geoip_get_n_countries().  To decode it, call geoip_get_country_name().
  */
 MOCK_IMPL(int,
-geoip_get_country_by_addr,(const tor_addr_t *addr))
+geoip_get_country_by_addr, (const tor_addr_t *addr))
 {
   if (tor_addr_family(addr) == AF_INET) {
     return geoip_get_country_by_ipv4(tor_addr_to_ipv4h(addr));
@@ -427,7 +427,7 @@ geoip_get_country_by_addr,(const tor_addr_t *addr))
 
 /** Return the number of countries recognized by the GeoIP country list. */
 MOCK_IMPL(int,
-geoip_get_n_countries,(void))
+geoip_get_n_countries, (void))
 {
   if (!geoip_countries)
     init_geoip_countries();
@@ -448,7 +448,7 @@ geoip_get_country_name(country_t num)
 
 /** Return true iff we have loaded a GeoIP database.*/
 MOCK_IMPL(int,
-geoip_is_loaded,(sa_family_t family))
+geoip_is_loaded, (sa_family_t family))
 {
   tor_assert(family == AF_INET || family == AF_INET6);
   if (geoip_countries == NULL)
@@ -860,7 +860,7 @@ geoip_get_transport_history(void)
    *  c) We concatenate string_chunks to form the final string.
    */
 
-  log_debug(LD_GENERAL,"Starting iteration for transport history. %d clients.",
+  log_debug(LD_GENERAL, "Starting iteration for transport history. %d clients.",
             HT_SIZE(&client_history));
 
   /* Loop through all clients. */
@@ -907,7 +907,7 @@ geoip_get_transport_history(void)
                                                granularity)));
   } SMARTLIST_FOREACH_END(transport_name);
 
-  the_string = smartlist_join_strings(string_chunks, ",", 0, NULL);
+  the_string = smartlist_join_strings(string_chunks, ", ", 0, NULL);
 
   log_debug(LD_GENERAL, "Final bridge-ip-transports string: '%s'", the_string);
 
@@ -966,7 +966,7 @@ geoip_get_dirreq_history(dirreq_type_t type)
   running = round_uint32_to_next_multiple_of(running,
                                              DIR_REQ_GRANULARITY);
   result = tor_malloc_zero(bufsize);
-  written = tor_snprintf(result, bufsize, "complete=%u,timeout=%u,"
+  written = tor_snprintf(result, bufsize, "complete=%u, timeout=%u, "
                          "running=%u", complete, timeouts, running);
   if (written < 0) {
     tor_free(result);
@@ -993,8 +993,8 @@ geoip_get_dirreq_history(dirreq_type_t type)
     } SMARTLIST_FOREACH_END(ent);
     median_uint32(dltimes, complete); /* sorts as a side effect. */
     written = tor_snprintf(result + written, bufsize - written,
-                           ",min=%u,d1=%u,d2=%u,q1=%u,d3=%u,d4=%u,md=%u,"
-                           "d6=%u,d7=%u,q3=%u,d8=%u,d9=%u,max=%u",
+                           ", min=%u, d1=%u, d2=%u, q1=%u, d3=%u, d4=%u, md=%u, "
+                           "d6=%u, d7=%u, q3=%u, d8=%u, d9=%u, max=%u",
                            dltimes[0],
                            dltimes[1*complete/10-1],
                            dltimes[2*complete/10-1],
@@ -1075,7 +1075,7 @@ geoip_get_client_history(geoip_client_action_t action,
                            round_to_next_multiple_of(ipv4_count, granularity));
     smartlist_add_asprintf(chunks, "v6=%u",
                            round_to_next_multiple_of(ipv6_count, granularity));
-    *ipver_str = smartlist_join_strings(chunks, ",", 0, NULL);
+    *ipver_str = smartlist_join_strings(chunks, ", ", 0, NULL);
     SMARTLIST_FOREACH(chunks, char *, c, tor_free(c));
     smartlist_free(chunks);
   }
@@ -1113,7 +1113,7 @@ geoip_get_client_history(geoip_client_action_t action,
     SMARTLIST_FOREACH(entries, c_hist_t *, ch, {
         smartlist_add_asprintf(chunks, "%s=%u", ch->country, ch->total);
       });
-    *country_str = smartlist_join_strings(chunks, ",", 0, NULL);
+    *country_str = smartlist_join_strings(chunks, ", ", 0, NULL);
     SMARTLIST_FOREACH(chunks, char *, c, tor_free(c));
     smartlist_free(chunks);
   }
@@ -1156,7 +1156,7 @@ geoip_get_request_history(void)
   SMARTLIST_FOREACH(entries, c_hist_t *, ent, {
       smartlist_add_asprintf(strings, "%s=%u", ent->country, ent->total);
   });
-  result = smartlist_join_strings(strings, ",", 0, NULL);
+  result = smartlist_join_strings(strings, ", ", 0, NULL);
   SMARTLIST_FOREACH(strings, char *, cp, tor_free(cp));
   SMARTLIST_FOREACH(entries, c_hist_t *, ent, tor_free(ent));
   smartlist_free(strings);
@@ -1250,8 +1250,8 @@ geoip_format_dirreq_stats(time_t now)
   tor_asprintf(&result, "dirreq-stats-end %s (%d s)\n"
               "dirreq-v3-ips %s\n"
               "dirreq-v3-reqs %s\n"
-              "dirreq-v3-resp ok=%u,not-enough-sigs=%u,unavailable=%u,"
-                   "not-found=%u,not-modified=%u,busy=%u\n"
+              "dirreq-v3-resp ok=%u, not-enough-sigs=%u, unavailable=%u, "
+                   "not-found=%u, not-modified=%u, busy=%u\n"
               "dirreq-v3-direct-dl %s\n"
               "dirreq-v3-tunneled-dl %s\n",
               t,
@@ -1370,7 +1370,7 @@ validate_bridge_stats(const char *stats_str, time_t now)
     return 0;
   format_iso_time(stats_start_str, stats_end_time - seconds);
 
-  /* Parse: "bridge-ips CC=N,CC=N,..." */
+  /* Parse: "bridge-ips CC=N, CC=N, ..." */
   tmp = find_str_at_start_of_line(stats_str, BRIDGE_IPS);
   if (!tmp) {
     /* Look if there is an empty "bridge-ips" line */
@@ -1379,7 +1379,7 @@ validate_bridge_stats(const char *stats_str, time_t now)
       return 0;
   }
 
-  /* Parse: "bridge-ip-transports PT=N,PT=N,..." */
+  /* Parse: "bridge-ip-transports PT=N, PT=N, ..." */
   tmp = find_str_at_start_of_line(stats_str, BRIDGE_TRANSPORTS);
   if (!tmp) {
     /* Look if there is an empty "bridge-ip-transports" line */

@@ -778,7 +778,7 @@ rend_cache_store_v2_desc_as_service(const char *desc)
   strlcpy(e->desc, desc, encoded_size + 1);
   e->len = encoded_size;
   rend_cache_increment_allocation(rend_cache_entry_allocation(e));
-  log_debug(LD_REND,"Successfully stored rend desc '%s', len %d.",
+  log_debug(LD_REND, "Successfully stored rend desc '%s', len %d.",
             safe_str_client(service_id), (int)encoded_size);
   return 0;
 
@@ -943,7 +943,7 @@ rend_cache_store_v2_desc_as_client(const char *desc,
   tor_snprintf(key, sizeof(key), "2%s", service_id);
   e = (rend_cache_entry_t*) strmap_get_lc(rend_cache, key);
   if (e && !strcmp(desc, e->desc)) {
-    log_info(LD_REND,"We already have this service descriptor %s.",
+    log_info(LD_REND, "We already have this service descriptor %s.",
              safe_str_client(service_id));
     goto okay;
   }
@@ -985,7 +985,7 @@ rend_cache_store_v2_desc_as_client(const char *desc,
   strlcpy(e->desc, desc, encoded_size + 1);
   e->len = encoded_size;
   rend_cache_increment_allocation(rend_cache_entry_allocation(e));
-  log_debug(LD_REND,"Successfully stored rend desc '%s', len %d.",
+  log_debug(LD_REND, "Successfully stored rend desc '%s', len %d.",
             safe_str_client(service_id), (int)encoded_size);
   if (entry) {
     *entry = e;

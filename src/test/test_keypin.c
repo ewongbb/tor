@@ -132,8 +132,8 @@ test_keypin_parse_file(void *arg)
   smartlist_free(mock_addent_got);
 }
 
-#define ADD(a,b) keypin_check_and_add((const uint8_t*)(a),\
-                                      (const uint8_t*)(b),0)
+#define ADD(a, b) keypin_check_and_add((const uint8_t*)(a), \
+                                      (const uint8_t*)(b), 0)
 #define LONE_RSA(a) keypin_check_lone_rsa((const uint8_t*)(a))
 
 static void
@@ -224,7 +224,7 @@ test_keypin_journal(void *arg)
 
   contents = read_file_to_str(fname, RFTS_BIN, NULL);
   tt_assert(contents);
-  tt_str_op(contents,OP_EQ,
+  tt_str_op(contents, OP_EQ,
     "\n"
     "@opened-at 2008-08-02 20:30:00\n"
     "a2luZy1vZi10aGUtaGVycmluZ3M Z29vZC1mb3Itbm90aGluZyBhdHRvcm5leS1hdC1sYXc\n"

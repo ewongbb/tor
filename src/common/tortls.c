@@ -70,7 +70,7 @@ ENABLE_GCC_WARNING(redundant-decls)
 
 #define ADDR(tls) (((tls) && (tls)->address) ? tls->address : "peer")
 
-#if OPENSSL_VERSION_NUMBER <  OPENSSL_V(1,0,0,'f')
+#if OPENSSL_VERSION_NUMBER <  OPENSSL_V(1, 0, 0, 'f')
 /* This is a version of OpenSSL before 1.0.0f. It does not have
  * the CVE-2011-4576 fix, and as such it can't use RELEASE_BUFFERS and
  * SSL3 safely at the same time.
@@ -359,11 +359,11 @@ tor_tls_init(void)
     SSL_load_error_strings();
 
 #if (SIZEOF_VOID_P >= 8 &&                              \
-     OPENSSL_VERSION_NUMBER >= OPENSSL_V_SERIES(1,0,1))
+     OPENSSL_VERSION_NUMBER >= OPENSSL_V_SERIES(1, 0, 1))
     long version = OpenSSL_version_num();
 
     /* LCOV_EXCL_START : we can't test these lines on the same machine */
-    if (version >= OPENSSL_V_SERIES(1,0,1)) {
+    if (version >= OPENSSL_V_SERIES(1, 0, 1)) {
       /* Warn if we could *almost* be running with much faster ECDH.
          If we're built for a 64-bit target, using OpenSSL 1.0.1, but we
          don't have one of the built-in __uint128-based speedups, we are
@@ -460,7 +460,7 @@ tor_x509_name_new(const char *cname)
  * Return a certificate on success, NULL on failure.
  */
 MOCK_IMPL(STATIC X509 *,
-tor_tls_create_certificate,(crypto_pk_t *rsa,
+tor_tls_create_certificate, (crypto_pk_t *rsa,
                             crypto_pk_t *rsa_sign,
                             const char *cname,
                             const char *cname_sign,
@@ -505,9 +505,9 @@ tor_tls_create_certificate,(crypto_pk_t *rsa,
   tor_assert(cname);
   tor_assert(rsa_sign);
   tor_assert(cname_sign);
-  if (!(sign_pkey = crypto_pk_get_evp_pkey_(rsa_sign,1)))
+  if (!(sign_pkey = crypto_pk_get_evp_pkey_(rsa_sign, 1)))
     goto error;
-  if (!(pkey = crypto_pk_get_evp_pkey_(rsa,0)))
+  if (!(pkey = crypto_pk_get_evp_pkey_(rsa, 0)))
     goto error;
   if (!(x509 = X509_new()))
     goto error;
@@ -531,9 +531,9 @@ tor_tls_create_certificate,(crypto_pk_t *rsa,
   if (!(X509_set_issuer_name(x509, name_issuer)))
     goto error;
 
-  if (!X509_time_adj(X509_get_notBefore(x509),0,&start_time))
+  if (!X509_time_adj(X509_get_notBefore(x509), 0, &start_time))
     goto error;
-  if (!X509_time_adj(X509_get_notAfter(x509),0,&end_time))
+  if (!X509_time_adj(X509_get_notAfter(x509), 0, &end_time))
     goto error;
   if (!X509_set_pubkey(x509, pkey))
     goto error;
@@ -662,7 +662,7 @@ tor_x509_cert_free(tor_x509_cert_t *cert)
  * Steals a reference to x509_cert.
  */
 MOCK_IMPL(STATIC tor_x509_cert_t *,
-tor_x509_cert_new,(X509 *x509_cert))
+tor_x509_cert_new, (X509 *x509_cert))
 {
   tor_x509_cert_t *cert;
   EVP_PKEY *pkey;
@@ -868,7 +868,7 @@ tor_tls_cert_get_key(tor_x509_cert_t *cert)
  * the key certified in <b>cert</b> is the same as the key they used to do it.
  */
 MOCK_IMPL(int,
-tor_tls_cert_matches_key,(const tor_tls_t *tls, const tor_x509_cert_t *cert))
+tor_tls_cert_matches_key, (const tor_tls_t *tls, const tor_x509_cert_t *cert))
 {
   X509 *peercert = SSL_get_peer_certificate(tls->ssl);
   EVP_PKEY *link_key = NULL, *cert_key = NULL;
@@ -967,7 +967,7 @@ tor_tls_context_incref(tor_tls_context_t *ctx)
  * If <b>server_identity</b> is NULL, this will not generate a server
  * TLS context. If TOR_TLS_CTX_IS_PUBLIC_SERVER is set in <b>flags</b>, use
  * the same TLS context for incoming and outgoing connections, and
- * ignore <b>client_identity</b>. If one of TOR_TLS_CTX_USE_ECDHE_P{224,256}
+ * ignore <b>client_identity</b>. If one of TOR_TLS_CTX_USE_ECDHE_P{224, 256}
  * is set in <b>flags</b>, use that ECDHE group if possible; otherwise use
  * the default ECDHE group. */
 int
@@ -1188,7 +1188,7 @@ tor_tls_context_new(crypto_pk_t *identity, unsigned int key_lifetime,
 #ifdef SSL_OP_NO_COMPRESSION
   SSL_CTX_set_options(result->ctx, SSL_OP_NO_COMPRESSION);
 #endif
-#if OPENSSL_VERSION_NUMBER < OPENSSL_V_SERIES(1,1,0)
+#if OPENSSL_VERSION_NUMBER < OPENSSL_V_SERIES(1, 1, 0)
 #ifndef OPENSSL_NO_COMP
   if (result->ctx->comp_methods)
     result->ctx->comp_methods = NULL;
@@ -1199,7 +1199,7 @@ tor_tls_context_new(crypto_pk_t *identity, unsigned int key_lifetime,
   SSL_CTX_set_mode(result->ctx, SSL_MODE_RELEASE_BUFFERS);
 #endif
   if (! is_client) {
-    if (cert && !SSL_CTX_use_certificate(result->ctx,cert))
+    if (cert && !SSL_CTX_use_certificate(result->ctx, cert))
       goto error;
     X509_free(cert); /* We just added a reference to cert. */
     cert=NULL;
@@ -1214,7 +1214,7 @@ tor_tls_context_new(crypto_pk_t *identity, unsigned int key_lifetime,
   SSL_CTX_set_session_cache_mode(result->ctx, SSL_SESS_CACHE_OFF);
   if (!is_client) {
     tor_assert(rsa);
-    if (!(pkey = crypto_pk_get_evp_pkey_(rsa,1)))
+    if (!(pkey = crypto_pk_get_evp_pkey_(rsa, 1)))
       goto error;
     if (!SSL_CTX_use_PrivateKey(result->ctx, pkey))
       goto error;
@@ -1284,7 +1284,7 @@ STATIC void
 tor_tls_debug_state_callback(const SSL *ssl, int type, int val)
 {
   /* LCOV_EXCL_START since this depends on whether debug is captured or not */
-  log_debug(LD_HANDSHAKE, "SSL %p is now in state %s [type=%d,val=%d].",
+  log_debug(LD_HANDSHAKE, "SSL %p is now in state %s [type=%d, val=%d].",
             ssl, SSL_state_string_long(ssl), type, val);
   /* LCOV_EXCL_STOP */
 }
@@ -1644,7 +1644,7 @@ tor_tls_new(int sock, int isServer)
 #ifdef SSL_set_tlsext_host_name
   /* Browsers use the TLS hostname extension, so we should too. */
   if (!isServer) {
-    char *fake_hostname = crypto_random_hostname(4,25, "www.",".com");
+    char *fake_hostname = crypto_random_hostname(4, 25, "www.", ".com");
     SSL_set_tlsext_host_name(result->ssl, fake_hostname);
     tor_free(fake_hostname);
   }
@@ -1797,8 +1797,8 @@ tor_tls_free(tor_tls_t *tls)
     return;
   tor_assert(tls->ssl);
   {
-    size_t r,w;
-    tor_tls_get_n_raw_bytes(tls,&r,&w); /* ensure written_by_tls is updated */
+    size_t r, w;
+    tor_tls_get_n_raw_bytes(tls, &r, &w); /* ensure written_by_tls is updated */
   }
 #ifdef SSL_set_tlsext_host_name
   SSL_set_tlsext_host_name(tls->ssl, NULL);
@@ -1819,7 +1819,7 @@ tor_tls_free(tor_tls_t *tls)
  * TOR_TLS_CLOSE, TOR_TLS_WANTREAD, or TOR_TLS_WANTWRITE.
  */
 MOCK_IMPL(int,
-tor_tls_read,(tor_tls_t *tls, char *cp, size_t len))
+tor_tls_read, (tor_tls_t *tls, char *cp, size_t len))
 {
   int r, err;
   tor_assert(tls);
@@ -1839,12 +1839,12 @@ tor_tls_read,(tor_tls_t *tls, char *cp, size_t len))
   }
   err = tor_tls_get_error(tls, r, CATCH_ZERO, "reading", LOG_DEBUG, LD_NET);
   if (err == TOR_TLS_ZERORETURN_ || err == TOR_TLS_CLOSE) {
-    log_debug(LD_NET,"read returned r=%d; TLS is closed",r);
+    log_debug(LD_NET, "read returned r=%d; TLS is closed", r);
     tls->state = TOR_TLS_ST_CLOSED;
     return TOR_TLS_CLOSE;
   } else {
     tor_assert(err != TOR_TLS_DONE);
-    log_debug(LD_NET,"read returned r=%d, err=%d",r,err);
+    log_debug(LD_NET, "read returned r=%d, err=%d", r, err);
     return err;
   }
 }
@@ -1874,7 +1874,7 @@ tor_tls_write(tor_tls_t *tls, const char *cp, size_t n)
   if (tls->wantwrite_n) {
     /* if WANTWRITE last time, we must use the _same_ n as before */
     tor_assert(n >= tls->wantwrite_n);
-    log_debug(LD_NET,"resuming pending-write, (%d to flush, reusing %d)",
+    log_debug(LD_NET, "resuming pending-write, (%d to flush, reusing %d)",
               (int)n, (int)tls->wantwrite_n);
     n = tls->wantwrite_n;
     tls->wantwrite_n = 0;
@@ -1925,7 +1925,7 @@ tor_tls_handshake(tor_tls_t *tls)
   /* We need to call this here and not earlier, since OpenSSL has a penchant
    * for clearing its flags when you say accept or connect. */
   tor_tls_unblock_renegotiation(tls);
-  r = tor_tls_get_error(tls,r,0, "handshaking", LOG_INFO, LD_HANDSHAKE);
+  r = tor_tls_get_error(tls, r, 0, "handshaking", LOG_INFO, LD_HANDSHAKE);
   if (ERR_peek_error() != 0) {
     tls_log_errors(tls, tls->isServer ? LOG_INFO : LOG_WARN, LD_HANDSHAKE,
                    "handshaking");
@@ -2062,7 +2062,7 @@ tor_tls_peer_has_cert(tor_tls_t *tls)
 /** Return a newly allocated copy of the peer certificate, or NULL if there
  * isn't one. */
 MOCK_IMPL(tor_x509_cert_t *,
-tor_tls_get_peer_cert,(tor_tls_t *tls))
+tor_tls_get_peer_cert, (tor_tls_t *tls))
 {
   X509 *cert;
   cert = SSL_get_peer_certificate(tls->ssl);
@@ -2075,7 +2075,7 @@ tor_tls_get_peer_cert,(tor_tls_t *tls))
 /** Return a newly allocated copy of the cerficate we used on the connection,
  * or NULL if somehow we didn't use one. */
 MOCK_IMPL(tor_x509_cert_t *,
-tor_tls_get_own_cert,(tor_tls_t *tls))
+tor_tls_get_own_cert, (tor_tls_t *tls))
 {
   X509 *cert = SSL_get_certificate(tls->ssl);
   tls_log_errors(tls, LOG_WARN, LD_HANDSHAKE,
@@ -2130,7 +2130,7 @@ log_cert_lifetime(int severity, const X509 *cert, const char *problem,
   if (n > 0) {
     tor_log(severity, LD_GENERAL,
         "(certificate lifetime runs from %s through %s. Your time is %s.)",
-        s1,s2,mytime);
+        s1, s2, mytime);
   } else {
     tor_log(severity, LD_GENERAL,
         "(certificate lifetime runs from %s through %s. "
@@ -2155,7 +2155,7 @@ log_cert_lifetime(int severity, const X509 *cert, const char *problem,
  * Note that a reference is added to cert_out, so it needs to be
  * freed. id_cert_out doesn't. */
 MOCK_IMPL(STATIC void,
-try_to_extract_certs_from_tls,(int severity, tor_tls_t *tls,
+try_to_extract_certs_from_tls, (int severity, tor_tls_t *tls,
                                X509 **cert_out, X509 **id_cert_out))
 {
   X509 *cert = NULL, *id_cert = NULL;
@@ -2173,7 +2173,7 @@ try_to_extract_certs_from_tls,(int severity, tor_tls_t *tls,
    * cert and the id_cert.
    */
   if (num_in_chain < 1) {
-    log_fn(severity,LD_PROTOCOL,
+    log_fn(severity, LD_PROTOCOL,
            "Unexpected number of certificates in chain (%d)",
            num_in_chain);
     return;
@@ -2206,14 +2206,14 @@ tor_tls_verify(int severity, tor_tls_t *tls, crypto_pk_t **identity_key)
   if (!cert)
     goto done;
   if (!id_cert) {
-    log_fn(severity,LD_PROTOCOL,"No distinct identity certificate found");
+    log_fn(severity, LD_PROTOCOL, "No distinct identity certificate found");
     goto done;
   }
   tls_log_errors(tls, severity, LD_HANDSHAKE, "before verifying certificate");
 
   if (!(id_pkey = X509_get_pubkey(id_cert)) ||
       X509_verify(cert, id_pkey) <= 0) {
-    log_fn(severity,LD_PROTOCOL,"X509_verify on cert and pkey returned <= 0");
+    log_fn(severity, LD_PROTOCOL, "X509_verify on cert and pkey returned <= 0");
     tls_log_errors(tls, severity, LD_HANDSHAKE, "verifying certificate");
     goto done;
   }
@@ -2347,7 +2347,7 @@ tor_tls_get_n_raw_bytes(tor_tls_t *tls, size_t *n_read, size_t *n_written)
    * save the original BIO for  tls->ssl in the tor_tls_t structure, but
    * that would be tempting fate. */
   wbio = SSL_get_wbio(tls->ssl);
-#if OPENSSL_VERSION_NUMBER >= OPENSSL_VER(1,1,0,0,5)
+#if OPENSSL_VERSION_NUMBER >= OPENSSL_VER(1, 1, 0, 0, 5)
   /* BIO structure is opaque as of OpenSSL 1.1.0-pre5-dev.  Again, not
    * supposed to use this form of the version macro, but the OpenSSL developers
    * introduced major API changes in the pre-release stage.
@@ -2381,7 +2381,7 @@ tor_tls_get_n_raw_bytes(tor_tls_t *tls, size_t *n_read, size_t *n_written)
 /** Return a ratio of the bytes that TLS has sent to the bytes that we've told
  * it to send. Used to track whether our TLS records are getting too tiny. */
 MOCK_IMPL(double,
-tls_get_write_overhead_ratio,(void))
+tls_get_write_overhead_ratio, (void))
 {
   if (total_bytes_written_over_tls == 0)
     return 1.0;
@@ -2471,7 +2471,7 @@ SSL_SESSION_get_master_key(SSL_SESSION *s, uint8_t *out, size_t len)
  * connection <b>tls</b>.  Return 0 on success, -1 on failure.
  */
 MOCK_IMPL(int,
-tor_tls_get_tlssecrets,(tor_tls_t *tls, uint8_t *secrets_out))
+tor_tls_get_tlssecrets, (tor_tls_t *tls, uint8_t *secrets_out))
 {
 #define TLSSECRET_MAGIC "Tor V3 handshake TLS cross-certification"
   uint8_t buf[128];
@@ -2538,7 +2538,7 @@ tor_tls_get_tlssecrets,(tor_tls_t *tls, uint8_t *secrets_out))
  * compute.  Return 0 on success and -1 on failure.
  */
 MOCK_IMPL(int,
-tor_tls_export_key_material,(tor_tls_t *tls, uint8_t *secrets_out,
+tor_tls_export_key_material, (tor_tls_t *tls, uint8_t *secrets_out,
                              const uint8_t *context,
                              size_t context_len,
                              const char *label))
@@ -2565,7 +2565,7 @@ tor_tls_get_buffer_sizes(tor_tls_t *tls,
                          size_t *rbuf_capacity, size_t *rbuf_bytes,
                          size_t *wbuf_capacity, size_t *wbuf_bytes)
 {
-#if OPENSSL_VERSION_NUMBER >= OPENSSL_V_SERIES(1,1,0)
+#if OPENSSL_VERSION_NUMBER >= OPENSSL_V_SERIES(1, 1, 0)
   (void)tls;
   (void)rbuf_capacity;
   (void)rbuf_bytes;

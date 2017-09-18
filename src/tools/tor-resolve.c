@@ -134,20 +134,20 @@ parse_socks4a_resolve_response(const char *hostname,
   tor_assert(addr_out);
 
   if (len < RESPONSE_LEN_4) {
-    log_warn(LD_PROTOCOL,"Truncated socks response.");
+    log_warn(LD_PROTOCOL, "Truncated socks response.");
     return -1;
   }
   if (((uint8_t)response[0])!=0) { /* version: 0 */
-    log_warn(LD_PROTOCOL,"Nonzero version in socks response: bad format.");
+    log_warn(LD_PROTOCOL, "Nonzero version in socks response: bad format.");
     return -1;
   }
   status = (uint8_t)response[1];
   if (get_uint16(response+2)!=0) { /* port: 0 */
-    log_warn(LD_PROTOCOL,"Nonzero port in socks response: bad format.");
+    log_warn(LD_PROTOCOL, "Nonzero port in socks response: bad format.");
     return -1;
   }
   if (status != 90) {
-    log_warn(LD_NET,"Got status response '%d': socks request failed.", status);
+    log_warn(LD_NET, "Got status response '%d': socks request failed.", status);
     if (!strcasecmpend(hostname, ".onion")) {
       onion_warning(hostname);
       return -1;
@@ -208,7 +208,7 @@ do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport,
   tor_addr_make_unspec(result_addr);
   *result_hostname = NULL;
 
-  s = tor_open_socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+  s = tor_open_socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (s<0) {
     log_sock_error("creating_socket", -1);
     return -1;
@@ -247,7 +247,7 @@ do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport,
 
   if ((len = build_socks_resolve_request(&req, "", hostname, reverse,
                                          version))<0) {
-    log_err(LD_BUG,"Error generating SOCKS request");
+    log_err(LD_BUG, "Error generating SOCKS request");
     tor_assert(!req);
     goto err;
   }
@@ -281,7 +281,7 @@ do_resolve(const char *hostname, uint32_t sockshost, uint16_t socksport,
     }
     /* Give a user some useful feedback about SOCKS5 errors */
     if (reply_buf[1] != 0) {
-      log_warn(LD_NET,"Got SOCKS5 status response '%u': %s",
+      log_warn(LD_NET, "Got SOCKS5 status response '%u': %s",
                (unsigned)reply_buf[1],
                socks5_reason_to_string(reply_buf[1]));
       if (reply_buf[1] == 4 && !strcasecmpend(hostname, ".onion")) {
@@ -358,8 +358,8 @@ main(int argc, char **argv)
   if (!n_args)
     usage();
 
-  if (!strcmp(arg[0],"--version")) {
-    printf("Tor version %s.\n",VERSION);
+  if (!strcmp(arg[0], "--version")) {
+    printf("Tor version %s.\n", VERSION);
     return 0;
   }
   while (n_args && *arg[0] == '-') {
@@ -433,7 +433,7 @@ main(int argc, char **argv)
   }
 
   if (network_init()<0) {
-    log_err(LD_BUG,"Error initializing network; exiting.");
+    log_err(LD_BUG, "Error initializing network; exiting.");
     return 1;
   }
 

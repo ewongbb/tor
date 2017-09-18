@@ -239,7 +239,7 @@ contract256_window4_modm(signed char r[64], const bignum256modm in) {
 
 static void
 contract256_slidingwindow_modm(signed char r[256], const bignum256modm s, int windowsize) {
-	int i,j,k,b;
+	int i, j, k, b;
 	int m = (1 << (windowsize - 1)) - 1;
         const int soplen = 256;
 	signed char *bits = r;

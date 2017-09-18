@@ -75,10 +75,10 @@ perftime(void)
 }
 #endif
 
-#define NANOCOUNT(start,end,iters) \
+#define NANOCOUNT(start, end, iters) \
   ( ((double)((end)-(start))) / (iters) )
 
-#define MICROCOUNT(start,end,iters) \
+#define MICROCOUNT(start, end, iters) \
   ( NANOCOUNT((start), (end), (iters)) / 1000.0 )
 
 /** Run AES performance benchmarks. */
@@ -362,7 +362,7 @@ bench_dmap(void)
   const int elts = 4000;
   const int fpostests = 100000;
   char d[20];
-  int i,n=0, fp = 0;
+  int i, n=0, fp = 0;
   digestmap_t *dm = digestmap_new();
   digestset_t *ds = digestset_new(elts);
 
@@ -444,7 +444,7 @@ bench_siphash(void)
     }
     end = perftime();
     printf("siphash24g(%d): %.2f ns per call\n",
-           lens[i], NANOCOUNT(start,end,N));
+           lens[i], NANOCOUNT(start, end, N));
   }
 }
 
@@ -482,7 +482,7 @@ bench_digest(void)
       end = perftime();
       printf("%s(%d): %.2f ns per call\n",
              crypto_digest_algorithm_get_name(alg),
-             lens[i], NANOCOUNT(start,end,N));
+             lens[i], NANOCOUNT(start, end, N));
     }
   }
 }
@@ -527,8 +527,8 @@ bench_cell_ops(void)
     end = perftime();
     printf("%sbound cells: %.2f ns per cell. (%.2f ns per byte of payload)\n",
            outbound?"Out":" In",
-           NANOCOUNT(start,end,iters),
-           NANOCOUNT(start,end,iters*CELL_PAYLOAD_SIZE));
+           NANOCOUNT(start, end, iters),
+           NANOCOUNT(start, end, iters*CELL_PAYLOAD_SIZE));
   }
 
   crypto_digest_free(or_circ->p_digest);
@@ -648,7 +648,7 @@ static struct benchmark_t benchmarks[] = {
   ENT(dh),
   ENT(ecdh_p256),
   ENT(ecdh_p224),
-  {NULL,NULL,0}
+  {NULL, NULL, 0}
 };
 
 static benchmark_t *

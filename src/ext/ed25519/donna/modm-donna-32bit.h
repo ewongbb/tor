@@ -20,7 +20,7 @@ typedef bignum256modm_element_t bignum256modm[9];
 
 static const bignum256modm modm_m = {
 	0x1cf5d3ed, 0x20498c69, 0x2f79cd65, 0x37be77a8,
-	0x00000014,	0x00000000, 0x00000000,	0x00000000,
+	0x00000014, 	0x00000000, 0x00000000, 	0x00000000,
 	0x00001000
 };
 
@@ -333,7 +333,7 @@ contract256_window4_modm(signed char r[64], const bignum256modm in) {
 
 static void
 contract256_slidingwindow_modm(signed char r[256], const bignum256modm s, int windowsize) {
-	int i,j,k,b;
+	int i, j, k, b;
 	int m = (1 << (windowsize - 1)) - 1;
         const int soplen = 256;
 	signed char *bits = r;

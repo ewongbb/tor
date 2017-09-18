@@ -34,12 +34,12 @@
  * element.
  *
  * When we finish reading the torrc, we spawn the managed proxy and
- * expect {S,C}METHOD lines from its output. We add transports
+ * expect {S, C}METHOD lines from its output. We add transports
  * described by METHOD lines to its <em>transports</em> element, as
  * transport_t structs.
  *
  * When the managed proxy stops spitting METHOD lines (signified by a
- * '{S,C}METHODS DONE' message) we pass copies of its transports to
+ * '{S, C}METHODS DONE' message) we pass copies of its transports to
  * the bridge subsystem. We keep copies of the 'transport_t's on the
  * managed proxy to be able to associate the proxy with its
  * transports, and we pass copies to the bridge subsystem so that
@@ -835,7 +835,7 @@ proxy_configuration_finished(const managed_proxy_t *mp)
           mp->conf_state == PT_PROTO_FAILED_LAUNCH);
 }
 
-/** This function is called when a proxy sends an {S,C}METHODS DONE message. */
+/** This function is called when a proxy sends an {S, C}METHODS DONE message. */
 static void
 handle_methods_done(const managed_proxy_t *mp)
 {
@@ -876,7 +876,7 @@ handle_proxy_line(const char *line, managed_proxy_t *mp)
     if (mp->conf_state != PT_PROTO_LAUNCHED)
       goto err;
 
-    if (parse_version(line,mp) < 0)
+    if (parse_version(line, mp) < 0)
       goto err;
 
     tor_assert(mp->conf_protocol != 0);
@@ -952,7 +952,7 @@ handle_proxy_line(const char *line, managed_proxy_t *mp)
                "Could not launch managed proxy executable at '%s' ('%s').",
                mp->argv[0], strerror(saved_errno));
     } else { /* failed to parse error message */
-      log_warn(LD_GENERAL,"Could not launch managed proxy executable at '%s'.",
+      log_warn(LD_GENERAL, "Could not launch managed proxy executable at '%s'.",
                mp->argv[0]);
     }
 
@@ -1005,7 +1005,7 @@ parse_version(const char *line, managed_proxy_t *mp)
   return 0;
 }
 
-/** Parses {C,S}METHOD-ERROR <b>line</b> and warns the user
+/** Parses {C, S}METHOD-ERROR <b>line</b> and warns the user
  *  accordingly.  If <b>is_server</b> it is an SMETHOD-ERROR,
  *  otherwise it is a CMETHOD-ERROR. */
 static void
@@ -1052,11 +1052,11 @@ parse_smethod_line(const char *line, managed_proxy_t *mp)
   }
 
   /* Example of legit SMETHOD line:
-     SMETHOD obfs2 0.0.0.0:25612 ARGS:secret=supersekrit,key=superkey */
+     SMETHOD obfs2 0.0.0.0:25612 ARGS:secret=supersekrit, key=superkey */
 
-  tor_assert(!strcmp(smartlist_get(items,0),PROTO_SMETHOD));
+  tor_assert(!strcmp(smartlist_get(items, 0), PROTO_SMETHOD));
 
-  method_name = smartlist_get(items,1);
+  method_name = smartlist_get(items, 1);
   if (!string_is_C_identifier(method_name)) {
     log_warn(LD_CONFIG, "Transport name is not a C identifier (%s).",
              method_name);
@@ -1146,20 +1146,20 @@ parse_cmethod_line(const char *line, managed_proxy_t *mp)
     goto err;
   }
 
-  tor_assert(!strcmp(smartlist_get(items,0),PROTO_CMETHOD));
+  tor_assert(!strcmp(smartlist_get(items, 0), PROTO_CMETHOD));
 
-  method_name = smartlist_get(items,1);
+  method_name = smartlist_get(items, 1);
   if (!string_is_C_identifier(method_name)) {
     log_warn(LD_CONFIG, "Transport name is not a C identifier (%s).",
              method_name);
     goto err;
   }
 
-  socks_ver_str = smartlist_get(items,2);
+  socks_ver_str = smartlist_get(items, 2);
 
-  if (!strcmp(socks_ver_str,"socks4")) {
+  if (!strcmp(socks_ver_str, "socks4")) {
     socks_ver = PROXY_SOCKS4;
-  } else if (!strcmp(socks_ver_str,"socks5")) {
+  } else if (!strcmp(socks_ver_str, "socks5")) {
     socks_ver = PROXY_SOCKS5;
   } else {
     log_warn(LD_CONFIG, "Client managed proxy sent us a proxy protocol "
@@ -1288,7 +1288,7 @@ get_bindaddr_for_server_proxy(const managed_proxy_t *mp)
     tor_free(bindaddr_tmp);
   } SMARTLIST_FOREACH_END(t);
 
-  bindaddr_result = smartlist_join_strings(string_tmp, ",", 0, NULL);
+  bindaddr_result = smartlist_join_strings(string_tmp, ", ", 0, NULL);
 
   SMARTLIST_FOREACH(string_tmp, char *, t, tor_free(t));
   smartlist_free(string_tmp);
@@ -1325,7 +1325,7 @@ create_managed_proxy_environment(const managed_proxy_t *mp)
 
   {
     char *transports_to_launch =
-      smartlist_join_strings(mp->transports_to_launch, ",", 0, NULL);
+      smartlist_join_strings(mp->transports_to_launch, ", ", 0, NULL);
 
     smartlist_add_asprintf(envs,
                            mp->is_server ?

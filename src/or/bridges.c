@@ -376,10 +376,10 @@ bridge_resolve_conflicts(const tor_addr_t *addr, uint16_t port,
         tor_asprintf(&bridge_description_old, "%s:%s:%s",
                      fmt_addrport(&bridge->addr, bridge->port),
                      tor_digest_is_zero(bridge->identity) ?
-                     "" : hex_str(bridge->identity,DIGEST_LEN),
+                     "" : hex_str(bridge->identity, DIGEST_LEN),
                      bridge->transport_name ? bridge->transport_name : "");
 
-        log_warn(LD_GENERAL,"Tried to add bridge '%s', but we found a conflict"
+        log_warn(LD_GENERAL, "Tried to add bridge '%s', but we found a conflict"
                  " with the already registered bridge '%s'. We will discard"
                  " the old bridge and keep '%s'. If this is not what you"
                  " wanted, please change your configuration file accordingly.",
@@ -806,7 +806,7 @@ learned_bridge_descriptor(routerinfo_t *ri, int from_cache)
       tor_assert(node);
       rewrite_node_address_for_bridge(bridge, node);
       if (tor_digest_is_zero(bridge->identity)) {
-        memcpy(bridge->identity,ri->cache_info.identity_digest, DIGEST_LEN);
+        memcpy(bridge->identity, ri->cache_info.identity_digest, DIGEST_LEN);
         log_notice(LD_DIR, "Learned identity %s for bridge at %s:%d",
                    hex_str(bridge->identity, DIGEST_LEN),
                    fmt_and_decorate_addr(&bridge->addr),

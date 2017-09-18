@@ -426,7 +426,7 @@ list_sk_digests_for_authority_id, (const char *digest))
  * download_status_t or NULL if none exists. */
 
 MOCK_IMPL(download_status_t *,
-download_status_for_authority_id_and_sk,(const char *id_digest,
+download_status_for_authority_id_and_sk, (const char *id_digest,
                                          const char *sk_digest))
 {
   download_status_t *dl = NULL;
@@ -565,7 +565,7 @@ trusted_dirs_load_certs_from_string(const char *contents, int source,
 
         /*
          * This is where we care about the source; authority_cert_dl_failed()
-         * needs to know whether the download was by fp or (fp,sk) pair to
+         * needs to know whether the download was by fp or (fp, sk) pair to
          * twiddle the right bit in the download map.
          */
         if (source == TRUSTED_DIRS_CERTS_SRC_DL_BY_ID_DIGEST) {
@@ -585,14 +585,14 @@ trusted_dirs_load_certs_from_string(const char *contents, int source,
       added_trusted_cert = 1;
       log_info(LD_DIR, "Adding %s certificate for directory authority %s with "
                "signing key %s", from_store ? "cached" : "downloaded",
-               ds->nickname, hex_str(cert->signing_key_digest,DIGEST_LEN));
+               ds->nickname, hex_str(cert->signing_key_digest, DIGEST_LEN));
     } else {
       int adding = we_want_to_fetch_unknown_auth_certs(get_options());
       log_info(LD_DIR, "%s %s certificate for unrecognized directory "
                "authority with signing key %s",
                adding ? "Adding" : "Not adding",
                from_store ? "cached" : "downloaded",
-               hex_str(cert->signing_key_digest,DIGEST_LEN));
+               hex_str(cert->signing_key_digest, DIGEST_LEN));
       if (!adding) {
         authority_cert_free(cert);
         continue;
@@ -862,7 +862,7 @@ authority_cert_dl_failed(const char *id_digest,
       base16_encode(sk_digest_str, sizeof(sk_digest_str),
                     signing_key_digest, DIGEST_LEN);
       log_warn(LD_BUG,
-               "Got failure for cert fetch with (fp,sk) = (%s,%s), with "
+               "Got failure for cert fetch with (fp, sk) = (%s, %s), with "
                "status %d, but knew nothing about the download.",
                id_digest_str, sk_digest_str, status);
     }
@@ -1075,7 +1075,7 @@ authority_certs_fetch_missing(networkstatus_t *status, time_t now,
   /*
    * Next, if we have a consensus, scan through it and look for anything
    * signed with a key from a cert we don't have.  Those get downloaded
-   * by (fp,sk) pair, but if we don't know any certs at all for the fp
+   * by (fp, sk) pair, but if we don't know any certs at all for the fp
    * (identity digest), and it's one of the trusted dir server certs
    * we started off above or a pending download in pending_id, don't
    * try to get it yet.  Most likely, the one we'll get for that will
@@ -1339,7 +1339,7 @@ signed_desc_append_to_journal(signed_descriptor_t *desc,
                               desc_store_t *store)
 {
   char *fname = get_datadir_fname_suffix(store->fname_base, ".new");
-  const char *body = signed_descriptor_get_body_impl(desc,1);
+  const char *body = signed_descriptor_get_body_impl(desc, 1);
   size_t len = desc->signed_descriptor_len + desc->annotations_len;
 
   if (append_bytes_to_file(fname, body, len, 1)) {
@@ -1479,7 +1479,7 @@ router_rebuild_store(int flags, desc_store_t *store)
     if (errno == ERANGE) {
       /* empty store.*/
       if (total_expected_len) {
-        log_warn(LD_FS, "We wrote some bytes to a new descriptor file at '%s',"
+        log_warn(LD_FS, "We wrote some bytes to a new descriptor file at '%s', "
                  " but when we went to mmap it, it was empty!", fname);
       } else if (had_any) {
         log_info(LD_FS, "We just removed every descriptor in '%s'.  This is "
@@ -1487,7 +1487,7 @@ router_rebuild_store(int flags, desc_store_t *store)
                  "Otherwise, it's a bug.", fname);
       }
     } else {
-      log_warn(LD_FS, "Unable to mmap new descriptor file at '%s'.",fname);
+      log_warn(LD_FS, "Unable to mmap new descriptor file at '%s'.", fname);
     }
   }
 
@@ -1570,7 +1570,7 @@ router_reload_router_list_impl(desc_store_t *store)
     contents = read_file_to_str(fname, RFTS_BIN|RFTS_IGNORE_MISSING, &st);
   if (contents) {
     if (extrainfo)
-      router_load_extrainfo_from_string(contents, NULL,SAVED_IN_JOURNAL,
+      router_load_extrainfo_from_string(contents, NULL, SAVED_IN_JOURNAL,
                                         NULL, 0);
     else
       router_load_routers_from_string(contents, NULL, SAVED_IN_JOURNAL,
@@ -2835,21 +2835,21 @@ router_choose_random_node(smartlist_t *excludedsmartlist,
            "We found %d running nodes.",
             smartlist_len(sl));
 
-  smartlist_subtract(sl,excludednodes);
+  smartlist_subtract(sl, excludednodes);
   log_debug(LD_CIRC,
             "We removed %d excludednodes, leaving %d nodes.",
             smartlist_len(excludednodes),
             smartlist_len(sl));
 
   if (excludedsmartlist) {
-    smartlist_subtract(sl,excludedsmartlist);
+    smartlist_subtract(sl, excludedsmartlist);
     log_debug(LD_CIRC,
               "We removed %d excludedsmartlist, leaving %d nodes.",
               smartlist_len(excludedsmartlist),
               smartlist_len(sl));
   }
   if (excludedset) {
-    routerset_subtract_nodes(sl,excludedset);
+    routerset_subtract_nodes(sl, excludedset);
     log_debug(LD_CIRC,
               "We removed excludedset, leaving %d nodes.",
               smartlist_len(sl));
@@ -2984,12 +2984,12 @@ hexdigest_to_digest(const char *hexdigest, char *digest)
   if (hexdigest[0]=='$')
     ++hexdigest;
   if (strlen(hexdigest) < HEX_DIGEST_LEN ||
-      base16_decode(digest,DIGEST_LEN,hexdigest,HEX_DIGEST_LEN) != DIGEST_LEN)
+      base16_decode(digest, DIGEST_LEN, hexdigest, HEX_DIGEST_LEN) != DIGEST_LEN)
     return -1;
   return 0;
 }
 
-/** As router_get_by_id_digest,but return a pointer that you're allowed to
+/** As router_get_by_id_digest, but return a pointer that you're allowed to
  * modify */
 routerinfo_t *
 router_get_mutable_by_digest(const char *digest)
@@ -3027,7 +3027,7 @@ router_get_by_descriptor_digest(const char *digest)
  * 20-byte extra-info digest is <b>digest</b>.  Return NULL if no such router
  * is known. */
 MOCK_IMPL(signed_descriptor_t *,
-router_get_by_extrainfo_digest,(const char *digest))
+router_get_by_extrainfo_digest, (const char *digest))
 {
   tor_assert(digest);
 
@@ -3040,7 +3040,7 @@ router_get_by_extrainfo_digest,(const char *digest))
  * extra-info-digest is <b>digest</b>. Return NULL if no such extra-info
  * document is known. */
 MOCK_IMPL(signed_descriptor_t *,
-extrainfo_get_by_descriptor_digest,(const char *digest))
+extrainfo_get_by_descriptor_digest, (const char *digest))
 {
   extrainfo_t *ei;
   tor_assert(digest);
@@ -3379,7 +3379,7 @@ routerlist_insert(routerlist_t *rl, routerinfo_t *ri)
  * corresponding router in rl-\>routers or rl-\>old_routers.  Return the status
  * of inserting <b>ei</b>.  Free <b>ei</b> if it isn't inserted. */
 MOCK_IMPL(STATIC was_router_added_t,
-extrainfo_insert,(routerlist_t *rl, extrainfo_t *ei, int warn_if_incompatible))
+extrainfo_insert, (routerlist_t *rl, extrainfo_t *ei, int warn_if_incompatible))
 {
   was_router_added_t r;
   const char *compatibility_error_msg;
@@ -3428,7 +3428,7 @@ extrainfo_insert,(routerlist_t *rl, extrainfo_t *ei, int warn_if_incompatible))
     base16_encode(d1, sizeof(d1), ri->cache_info.identity_digest, DIGEST_LEN);
     base16_encode(d2, sizeof(d2), ei->cache_info.identity_digest, DIGEST_LEN);
 
-    log_fn(severity,LD_DIR,
+    log_fn(severity, LD_DIR,
            "router info incompatible with extra info (ri id: %s, ei id %s, "
            "reason: %s)", d1, d2, compatibility_error_msg);
 
@@ -3775,7 +3775,7 @@ routerlist_reset_warnings(void)
 /** Return 1 if the signed descriptor of this router is older than
  *  <b>seconds</b> seconds.  Otherwise return 0. */
 MOCK_IMPL(int,
-router_descriptor_is_older_than,(const routerinfo_t *router, int seconds))
+router_descriptor_is_older_than, (const routerinfo_t *router, int seconds))
 {
   return router->cache_info.published_on < approx_time() - seconds;
 }
@@ -4239,7 +4239,7 @@ routerlist_remove_old_routers(void)
  done:
   digestset_free(retain);
   router_rebuild_store(RRS_DONT_REMOVE_OLD, &routerlist->desc_store);
-  router_rebuild_store(RRS_DONT_REMOVE_OLD,&routerlist->extrainfo_store);
+  router_rebuild_store(RRS_DONT_REMOVE_OLD, &routerlist->extrainfo_store);
 }
 
 /** We just added a new set of descriptors. Take whatever extra steps
@@ -4373,7 +4373,7 @@ router_load_routers_from_string(const char *s, const char *eos,
         smartlist_string_remove(requested_fingerprints, fp);
       } else {
         char *requested =
-          smartlist_join_strings(requested_fingerprints," ",0,NULL);
+          smartlist_join_strings(requested_fingerprints, " ", 0, NULL);
         log_warn(LD_DIR,
                  "We received a router descriptor with a fingerprint (%s) "
                  "that we never requested. (We asked for: %s.) Dropping.",
@@ -4474,7 +4474,7 @@ router_load_extrainfo_from_string(const char *s, const char *eos,
         if (sd) {
           log_info(LD_GENERAL, "Marking extrainfo with descriptor %s as "
                    "unparseable, and therefore undownloadable",
-                   hex_str((char*)d,DIGEST_LEN));
+                   hex_str((char*)d, DIGEST_LEN));
           download_status_mark_impossible(&sd->ei_dl_status);
         }
       }
@@ -4873,7 +4873,7 @@ list_pending_fpsk_downloads(fp_pair_map_t *result)
  * otherwise, download from an appropriate random directory server.
  */
 MOCK_IMPL(STATIC void,
-initiate_descriptor_downloads,(const routerstatus_t *source,
+initiate_descriptor_downloads, (const routerstatus_t *source,
                                int purpose, smartlist_t *digests,
                                int lo, int hi, int pds_flags))
 {
@@ -5259,7 +5259,7 @@ update_extrainfo_downloads(time_t now)
   smartlist_t *wanted;
   digestmap_t *pending;
   int old_routers, i, max_dl_per_req;
-  int n_no_ei = 0, n_pending = 0, n_have = 0, n_delay = 0, n_bogus[2] = {0,0};
+  int n_no_ei = 0, n_pending = 0, n_have = 0, n_delay = 0, n_bogus[2] = {0, 0};
   if (! options->DownloadExtraInfo)
     return;
   if (should_delay_dir_fetches(options, NULL))

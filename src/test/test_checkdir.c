@@ -15,11 +15,11 @@
 #include "util.h"
 
 #ifdef _WIN32
-#define mkdir(a,b) mkdir(a)
-#define tt_int_op_nowin(a,op,b) do { (void)(a); (void)(b); } while (0)
+#define mkdir(a, b) mkdir(a)
+#define tt_int_op_nowin(a, op, b) do { (void)(a); (void)(b); } while (0)
 #define umask(mask) ((void)0)
 #else
-#define tt_int_op_nowin(a,op,b) tt_int_op((a),op,(b))
+#define tt_int_op_nowin(a, op, b) tt_int_op((a), op, (b))
 #endif
 
 /** Run unit tests for private dir permission enforcement logic. */
@@ -139,7 +139,7 @@ test_checkdir_perms(void *testdata)
   tor_free(testdir);
 }
 
-#define CHECKDIR(name,flags)                              \
+#define CHECKDIR(name, flags)                              \
   { #name, test_checkdir_##name, (flags), NULL, NULL }
 
 struct testcase_t checkdir_tests[] = {

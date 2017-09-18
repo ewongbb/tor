@@ -74,8 +74,8 @@ static strmap_t *addressmap=NULL;
  * Table mapping addresses to which virtual address, if any, we
  * assigned them to.
  *
- * We maintain the following invariant: if [A,B] is in
- * virtaddress_reversemap, then B must be a virtual address, and [A,B]
+ * We maintain the following invariant: if [A, B] is in
+ * virtaddress_reversemap, then B must be a virtual address, and [A, B]
  * must be in addressmap.  We do not require that the converse hold:
  * if it fails, then we could end up mapping two virtual addresses to
  * the same address, which is no disaster.
@@ -127,7 +127,7 @@ addressmap_virtaddress_remove(const char *address, addressmap_entry_t *ent)
       address_is_in_virtual_range(ent->new_address)) {
     virtaddress_entry_t *ve =
       strmap_get(virtaddress_reversemap, ent->new_address);
-    /*log_fn(LOG_NOTICE,"remove reverse mapping for %s",ent->new_address);*/
+    /*log_fn(LOG_NOTICE, "remove reverse mapping for %s", ent->new_address);*/
     if (ve) {
       if (!strcmp(address, ve->ipv4_address))
         tor_free(ve->ipv4_address);
@@ -569,12 +569,12 @@ addressmap_register(const char *address, char *new_address, time_t expires,
     tor_assert(wildcard_addr);
 
   ent = strmap_get(addressmap, address);
-  if (!new_address || (!strcasecmp(address,new_address) &&
+  if (!new_address || (!strcasecmp(address, new_address) &&
                        wildcard_addr == wildcard_new_addr)) {
     /* Remove the mapping, if any. */
     tor_free(new_address);
     if (ent) {
-      addressmap_ent_remove(address,ent);
+      addressmap_ent_remove(address, ent);
       strmap_remove(addressmap, address);
     }
     return;
@@ -584,7 +584,7 @@ addressmap_register(const char *address, char *new_address, time_t expires,
     strmap_set(addressmap, address, ent);
   } else if (ent->new_address) { /* we need to clean up the old mapping. */
     if (expires > 1) {
-      log_info(LD_APP,"Temporary addressmap ('%s' to '%s') not performed, "
+      log_info(LD_APP, "Temporary addressmap ('%s' to '%s') not performed, "
                "since it's already mapped to '%s'",
                safe_str_client(address),
                safe_str_client(new_address),
@@ -625,7 +625,7 @@ client_dns_incr_failures(const char *address)
   if (!ent) {
     ent = tor_malloc_zero(sizeof(addressmap_entry_t));
     ent->expires = time(NULL) + MAX_DNS_ENTRY_AGE;
-    strmap_set(addressmap,address,ent);
+    strmap_set(addressmap, address, ent);
   }
   if (ent->num_resolve_failures < SHORT_MAX)
     ++ent->num_resolve_failures; /* don't overflow */
@@ -819,7 +819,7 @@ parse_virtual_addr_network(const char *val, sa_family_t family,
   if (bits > max_prefix_bits) {
     if (msg)
       tor_asprintf(msg, "VirtualAddressNetwork%s expects a /%d "
-                   "network or larger",ipv6?"IPv6":"", max_prefix_bits);
+                   "network or larger", ipv6?"IPv6":"", max_prefix_bits);
     return -1;
   }
 
@@ -911,7 +911,7 @@ addressmap_get_virtual_address(int type)
     char rand_bytes[10];
     do {
       crypto_rand(rand_bytes, sizeof(rand_bytes));
-      base32_encode(buf,sizeof(buf),rand_bytes,sizeof(rand_bytes));
+      base32_encode(buf, sizeof(buf), rand_bytes, sizeof(rand_bytes));
       strlcat(buf, ".virtual", sizeof(buf));
     } while (strmap_get(addressmap, buf));
     return tor_strdup(buf);
@@ -1034,7 +1034,7 @@ addressmap_register_virtual_address(int type, char *new_address)
     addressmap_entry_t *ent;
     ent = strmap_get(addressmap, *addrp);
     tor_assert(ent);
-    tor_assert(!strcasecmp(ent->new_address,new_address));
+    tor_assert(!strcasecmp(ent->new_address, new_address));
     vent = strmap_get(virtaddress_reversemap, new_address);
     tor_assert(vent);
     tor_assert(!strcasecmp(*addrp,
@@ -1108,7 +1108,7 @@ addressmap_get_mappings(smartlist_t *sl, time_t min_expires,
      val = val_;
      if (val->expires >= min_expires && val->expires <= max_expires) {
        if (!sl) {
-         iter = strmap_iter_next_rmv(addressmap,iter);
+         iter = strmap_iter_next_rmv(addressmap, iter);
          addressmap_ent_remove(key, val);
          continue;
        } else if (val->new_address) {
@@ -1131,7 +1131,7 @@ addressmap_get_mappings(smartlist_t *sl, time_t min_expires,
          }
        }
      }
-     iter = strmap_iter_next(addressmap,iter);
+     iter = strmap_iter_next(addressmap, iter);
    }
 }
 

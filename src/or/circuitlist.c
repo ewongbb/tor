@@ -16,7 +16,7 @@
  * circuit ID in the relay cell.
  *
  * To handle that, we maintain a global list of circuits, and a hashtable
- * mapping [channel,circID] pairs to circuits.  Circuits are added to and
+ * mapping [channel, circID] pairs to circuits.  Circuits are added to and
  * removed from this mapping using circuit_set_p_circid_chan() and
  * circuit_set_n_circid_chan().  To look up a circuit from this map, most
  * callers should use circuit_get_by_circid_channel(), though
@@ -148,7 +148,7 @@ chan_circid_entry_hash_(chan_circid_circuit_map_t *a)
   return (unsigned) siphash24g(array, sizeof(array));
 }
 
-/** Map from [chan,circid] to circuit. */
+/** Map from [chan, circid] to circuit. */
 static HT_HEAD(chan_circid_map, chan_circid_circuit_map_t)
      chan_circid_map = HT_INITIALIZER();
 HT_PROTOTYPE(chan_circid_map, chan_circid_circuit_map_t, node,
@@ -163,9 +163,9 @@ HT_GENERATE2(chan_circid_map, chan_circid_circuit_map_t, node,
  */
 static chan_circid_circuit_map_t *_last_circid_chan_ent = NULL;
 
-/** Implementation helper for circuit_set_{p,n}_circid_channel: A circuit ID
+/** Implementation helper for circuit_set_{p, n}_circid_channel: A circuit ID
  * and/or channel for circ has just changed from <b>old_chan, old_id</b>
- * to <b>chan, id</b>.  Adjust the chan,circid map as appropriate, removing
+ * to <b>chan, id</b>.  Adjust the chan, circid map as appropriate, removing
  * the old entry (if any) and adding a new one. */
 static void
 circuit_set_circid_chan_helper(circuit_t *circ, int direction,
@@ -344,7 +344,7 @@ channel_mark_circid_usable(channel_t *chan, circid_t id)
 void
 channel_note_destroy_pending(channel_t *chan, circid_t id)
 {
-  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id,chan);
+  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id, chan);
   if (circ) {
     if (circ->n_chan == chan && circ->n_circ_id == id) {
       circ->n_delete_pending = 1;
@@ -362,9 +362,9 @@ channel_note_destroy_pending(channel_t *chan, circid_t id)
 /** Called to indicate that a DESTROY is no longer pending on <b>chan</b> with
  * circuit ID <b>id</b> -- typically, because it has been sent. */
 MOCK_IMPL(void,
-channel_note_destroy_not_pending,(channel_t *chan, circid_t id))
+channel_note_destroy_not_pending, (channel_t *chan, circid_t id))
 {
-  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id,chan);
+  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id, chan);
   if (circ) {
     if (circ->n_chan == chan && circ->n_circ_id == id) {
       circ->n_delete_pending = 0;
@@ -382,7 +382,7 @@ channel_note_destroy_not_pending,(channel_t *chan, circid_t id))
 
 /** Set the p_conn field of a circuit <b>circ</b>, along
  * with the corresponding circuit ID, and add the circuit as appropriate
- * to the (chan,id)-\>circuit map. */
+ * to the (chan, id)-\>circuit map. */
 void
 circuit_set_p_circid_chan(or_circuit_t *or_circ, circid_t id,
                           channel_t *chan)
@@ -408,7 +408,7 @@ circuit_set_p_circid_chan(or_circuit_t *or_circ, circid_t id,
 
 /** Set the n_conn field of a circuit <b>circ</b>, along
  * with the corresponding circuit ID, and add the circuit as appropriate
- * to the (chan,id)-\>circuit map. */
+ * to the (chan, id)-\>circuit map. */
 void
 circuit_set_n_circid_chan(circuit_t *circ, circid_t id,
                           channel_t *chan)
@@ -505,7 +505,7 @@ circuit_count_pending_on_channel(channel_t *chan)
   circuit_get_all_pending_on_channel(sl, chan);
   cnt = smartlist_len(sl);
   smartlist_free(sl);
-  log_debug(LD_CIRC,"or_conn to %s at %s, %d pending circs",
+  log_debug(LD_CIRC, "or_conn to %s at %s, %d pending circs",
             chan->nickname ? chan->nickname : "NULL",
             channel_get_canonical_remote_descr(chan),
             cnt);
@@ -581,7 +581,7 @@ circuit_close_all_marked(void)
 
 /** Return a pointer to the global list of circuits. */
 MOCK_IMPL(smartlist_t *,
-circuit_get_global_list,(void))
+circuit_get_global_list, (void))
 {
   if (NULL == global_circuitlist)
     global_circuitlist = smartlist_new();
@@ -1381,7 +1381,7 @@ circuit_get_by_edge_conn(edge_connection_t *conn)
 }
 
 /** For each circuit that has <b>chan</b> as n_chan or p_chan, unlink the
- * circuit from the chan,circid map, and mark it for close if it hasn't
+ * circuit from the chan, circid map, and mark it for close if it hasn't
  * been marked already.
  */
 void

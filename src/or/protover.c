@@ -185,7 +185,7 @@ parse_single_entry(const char *s, const char *end_of_entry)
 
   s = equals + 1;
   while (s < end_of_entry) {
-    const char *comma = memchr(s, ',', end_of_entry-s);
+    const char *comma = memchr(s, ', ', end_of_entry-s);
     proto_range_t *range = tor_malloc_zero(sizeof(proto_range_t));
     if (! comma)
       comma = end_of_entry;
@@ -200,7 +200,7 @@ parse_single_entry(const char *s, const char *end_of_entry)
     }
 
     s = comma;
-    while (*s == ',' && s < end_of_entry)
+    while (*s == ', ' && s < end_of_entry)
       ++s;
   }
 
@@ -293,7 +293,7 @@ protover_get_supported_protocols(void)
     "HSIntro=3-4 "
     "HSRend=1-2 "
     "Link=1-4 "
-    "LinkAuth=1,3 "
+    "LinkAuth=1, 3 "
     "Microdesc=1-2 "
     "Relay=1-2";
 }
@@ -327,7 +327,7 @@ proto_entry_encode_into(smartlist_t *chunks, const proto_entry_t *entry)
   SMARTLIST_FOREACH_BEGIN(entry->ranges, proto_range_t *, range) {
     const char *comma = "";
     if (range_sl_idx != 0)
-      comma = ",";
+      comma = ", ";
 
     if (range->low == range->high) {
       smartlist_add_asprintf(chunks, "%s%lu",
@@ -369,7 +369,7 @@ static const int MAX_PROTOCOLS_TO_EXPAND = (1<<16);
 
 /** Voting helper: Given a list of proto_entry_t, return a newly allocated
  * smartlist of newly allocated strings, one for each included protocol
- * version. (So 'Foo=3,5-7' expands to a list of 'Foo=3', 'Foo=5', 'Foo=6',
+ * version. (So 'Foo=3, 5-7' expands to a list of 'Foo=3', 'Foo=5', 'Foo=6',
  * 'Foo=7'.)
  *
  * Do not list any protocol version more than once.

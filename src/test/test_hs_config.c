@@ -239,7 +239,7 @@ test_invalid_service_v2(void *arg)
       "HiddenServiceDir /tmp/tor-test-hs-RANDOM/hs1\n"
       "HiddenServiceVersion 2\n"
       "HiddenServicePort 80\n"
-      "HiddenServiceAuthorizeClient blah alice,bob\n"; /* blah is no good. */
+      "HiddenServiceAuthorizeClient blah alice, bob\n"; /* blah is no good. */
     setup_full_capture_of_logs(LOG_WARN);
     ret = helper_config_service(conf, validate_only);
     tt_int_op(ret, OP_EQ, -1);
@@ -269,7 +269,7 @@ test_valid_service_v2(void *arg)
 #ifdef HAVE_SYS_UN_H
       "HiddenServicePort 42 unix:/path/to/socket\n"
 #endif
-      "HiddenServiceAuthorizeClient basic alice,bob,eve\n"
+      "HiddenServiceAuthorizeClient basic alice, bob, eve\n"
       "HiddenServiceAllowUnknownPorts 1\n"
       "HiddenServiceMaxStreams 42\n"
       "HiddenServiceMaxStreamsCloseCircuit 0\n"
@@ -289,7 +289,7 @@ test_valid_service_v2(void *arg)
 #ifdef HAVE_SYS_UN_H
       "HiddenServicePort 9000 unix:/path/to/socket\n"
 #endif
-      "HiddenServiceAuthorizeClient stealth charlie,romeo\n"
+      "HiddenServiceAuthorizeClient stealth charlie, romeo\n"
       "HiddenServiceAllowUnknownPorts 0\n"
       "HiddenServiceMaxStreams 42\n"
       "HiddenServiceMaxStreamsCloseCircuit 0\n"

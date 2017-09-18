@@ -51,12 +51,12 @@ int ed25519_keypair_generate(ed25519_keypair_t *keypair_out, int extra_strong);
 int ed25519_sign(ed25519_signature_t *signature_out,
                  const uint8_t *msg, size_t len,
                  const ed25519_keypair_t *key);
-MOCK_DECL(int,ed25519_checksig,(const ed25519_signature_t *signature,
+MOCK_DECL(int, ed25519_checksig, (const ed25519_signature_t *signature,
                                 const uint8_t *msg, size_t len,
                                 const ed25519_public_key_t *pubkey));
 
 MOCK_DECL(int,
-ed25519_sign_prefixed,(ed25519_signature_t *signature_out,
+ed25519_sign_prefixed, (ed25519_signature_t *signature_out,
                        const uint8_t *msg, size_t len,
                        const char *prefix_str,
                        const ed25519_keypair_t *keypair));
@@ -84,7 +84,7 @@ typedef struct {
   size_t len;
 } ed25519_checkable_t;
 
-MOCK_DECL(int, ed25519_checksig_batch,(int *okay_out,
+MOCK_DECL(int, ed25519_checksig_batch, (int *okay_out,
                                        const ed25519_checkable_t *checkable,
                                        int n_checkable));
 

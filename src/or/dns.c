@@ -203,7 +203,7 @@ evdns_log_cb(int warn, const char *msg)
 static void
 dns_randfn_(char *b, size_t n)
 {
-  crypto_rand(b,n);
+  crypto_rand(b, n);
 }
 
 /** Initialize the DNS subsystem; called by the OR process. */
@@ -500,7 +500,7 @@ purge_expired_resolves(time_t now)
  * <b>conn</b>'s attached circuit.
  */
 MOCK_IMPL(STATIC void,
-send_resolved_cell,(edge_connection_t *conn, uint8_t answer_type,
+send_resolved_cell, (edge_connection_t *conn, uint8_t answer_type,
                     const cached_resolve_t *resolved))
 {
   char buf[RELAY_PAYLOAD_SIZE], *cp = buf;
@@ -567,7 +567,7 @@ send_resolved_cell,(edge_connection_t *conn, uint8_t answer_type,
  * <b>conn</b>'s attached circuit.
  */
 MOCK_IMPL(STATIC void,
-send_resolved_hostname_cell,(edge_connection_t *conn,
+send_resolved_hostname_cell, (edge_connection_t *conn,
                              const char *hostname))
 {
   char buf[RELAY_PAYLOAD_SIZE];
@@ -697,7 +697,7 @@ dns_resolve(edge_connection_t *exitconn)
  * Set *<b>resolve_out</b> to a cached resolve, if we found one.
  */
 MOCK_IMPL(STATIC int,
-dns_resolve_impl,(edge_connection_t *exitconn, int is_resolve,
+dns_resolve_impl, (edge_connection_t *exitconn, int is_resolve,
                  or_circuit_t *oncirc, char **hostname_out,
                  int *made_connection_pending_out,
                  cached_resolve_t **resolve_out))
@@ -789,12 +789,12 @@ dns_resolve_impl,(edge_connection_t *exitconn, int is_resolve,
         pending_connection->next = resolve->pending_connections;
         resolve->pending_connections = pending_connection;
         *made_connection_pending_out = 1;
-        log_debug(LD_EXIT,"Connection (fd "TOR_SOCKET_T_FORMAT") waiting "
+        log_debug(LD_EXIT, "Connection (fd "TOR_SOCKET_T_FORMAT") waiting "
                   "for pending DNS resolve of %s", exitconn->base_.s,
                   escaped_safe_str(exitconn->base_.address));
         return 0;
       case CACHE_STATE_CACHED:
-        log_debug(LD_EXIT,"Connection (fd "TOR_SOCKET_T_FORMAT") found "
+        log_debug(LD_EXIT, "Connection (fd "TOR_SOCKET_T_FORMAT") found "
                   "cached answer for %s",
                   exitconn->base_.s,
                   escaped_safe_str(resolve->address));
@@ -826,7 +826,7 @@ dns_resolve_impl,(edge_connection_t *exitconn, int is_resolve,
   HT_INSERT(cache_map, &cache_root, resolve);
   set_expiry(resolve, now + RESOLVE_MAX_TIMEOUT);
 
-  log_debug(LD_EXIT,"Launching %s.",
+  log_debug(LD_EXIT, "Launching %s.",
             escaped_safe_str(exitconn->base_.address));
   assert_cache_ok();
 
@@ -850,7 +850,7 @@ dns_resolve_impl,(edge_connection_t *exitconn, int is_resolve,
  * a successful lookup.
  */
 MOCK_IMPL(STATIC int,
-set_exitconn_info_from_resolve,(edge_connection_t *exitconn,
+set_exitconn_info_from_resolve, (edge_connection_t *exitconn,
                                 const cached_resolve_t *resolve,
                                 char **hostname_out))
 {
@@ -1012,7 +1012,7 @@ connection_dns_remove(edge_connection_t *conn)
   }
 
   tor_assert(resolve->pending_connections);
-  assert_connection_ok(TO_CONN(conn),0);
+  assert_connection_ok(TO_CONN(conn), 0);
 
   pend = resolve->pending_connections;
 
@@ -1048,7 +1048,7 @@ connection_dns_remove(edge_connection_t *conn)
  * <b>address</b> from the cache.
  */
 MOCK_IMPL(void,
-dns_cancel_pending_resolve,(const char *address))
+dns_cancel_pending_resolve, (const char *address))
 {
   pending_connection_t *pend;
   cached_resolve_t search;
@@ -1132,7 +1132,7 @@ is_test_address(const char *address)
  * single DNS resolve: remember the answer, and tell all pending connections
  * about the result of the lookup if the lookup is now done.  (<b>address</b>
  * is a NUL-terminated string containing the address to look up;
- * <b>query_type</b> is one of DNS_{IPv4_A,IPv6_AAAA,PTR}; <b>dns_answer</b>
+ * <b>query_type</b> is one of DNS_{IPv4_A, IPv6_AAAA, PTR}; <b>dns_answer</b>
  * is DNS_OK or one of DNS_ERR_*, <b>addr</b> is an IPv4 or IPv6 address if we
  * got one; <b>hostname</b> is a hostname fora PTR request if we got one, and
  * <b>ttl</b> is the time-to-live of this answer, in seconds.)
@@ -1154,7 +1154,7 @@ dns_found_answer(const char *address, uint8_t query_type,
   if (!resolve) {
     int is_test_addr = is_test_address(address);
     if (!is_test_addr)
-      log_info(LD_EXIT,"Resolved unasked address %s; ignoring.",
+      log_info(LD_EXIT, "Resolved unasked address %s; ignoring.",
                escaped_safe_str(address));
     return;
   }
@@ -1202,7 +1202,7 @@ inform_pending_connections(cached_resolve_t *resolve)
     pend = resolve->pending_connections;
     pendconn = pend->conn; /* don't pass complex things to the
                               connection_mark_for_close macro */
-    assert_connection_ok(TO_CONN(pendconn),time(NULL));
+    assert_connection_ok(TO_CONN(pendconn), time(NULL));
 
     if (pendconn->base_.marked_for_close) {
       /* prevent double-remove. */
@@ -1380,7 +1380,7 @@ configure_nameservers(int force)
                conf_fname, strerror(errno));
       goto err;
     }
-    if (!force && resolv_conf_fname && !strcmp(conf_fname,resolv_conf_fname)
+    if (!force && resolv_conf_fname && !strcmp(conf_fname, resolv_conf_fname)
         && st.st_mtime == resolv_conf_mtime) {
       log_info(LD_EXIT, "No change to '%s'", conf_fname);
       return 0;
@@ -1421,7 +1421,7 @@ configure_nameservers(int force)
       evdns_base_clear_nameservers_and_suspend(the_evdns_base);
     }
     if (evdns_base_config_windows_nameservers(the_evdns_base))  {
-      log_warn(LD_EXIT,"Could not config nameservers.");
+      log_warn(LD_EXIT, "Could not config nameservers.");
       goto err;
     }
     if (evdns_base_count_nameservers(the_evdns_base) == 0) {
@@ -1436,7 +1436,7 @@ configure_nameservers(int force)
   }
 #endif
 
-#define SET(k,v)  evdns_base_set_option(the_evdns_base, (k), (v))
+#define SET(k, v)  evdns_base_set_option(the_evdns_base, (k), (v))
 
   if (evdns_base_count_nameservers(the_evdns_base) == 1) {
     SET("max-timeouts:", "16");
@@ -1643,7 +1643,7 @@ launch_one_resolve(const char *address, uint8_t query_type,
  * <b>exitconn</b>.  Returns -1 on error, -2 on transient error,
  * 0 on "resolve launched." */
 MOCK_IMPL(STATIC int,
-launch_resolve,(cached_resolve_t *resolve))
+launch_resolve, (cached_resolve_t *resolve))
 {
   tor_addr_t a;
   int r;

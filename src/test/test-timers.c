@@ -19,10 +19,10 @@
 #define MAX_DURATION 30
 #define N_DISABLE 5
 
-static struct timeval fire_at[N_TIMERS] = { {0,0} };
+static struct timeval fire_at[N_TIMERS] = { {0, 0} };
 static int is_disabled[N_TIMERS] = {0};
 static int fired[N_TIMERS] = {0};
-static struct timeval difference[N_TIMERS] = { {0,0} };
+static struct timeval difference[N_TIMERS] = { {0, 0} };
 static tor_timer_t *timers[N_TIMERS] = {NULL};
 
 static int n_active_timers = 0;
@@ -48,7 +48,7 @@ timer_cb(tor_timer_t *t, void *arg, const monotime_t *now_mono)
     delay_usec[idx];
   ++n_fired;
 
-  // printf("%d / %d\n",n_fired, N_TIMERS);
+  // printf("%d / %d\n", n_fired, N_TIMERS);
   if (n_fired == n_active_timers) {
     event_base_loopbreak(tor_libevent_get_base());
   }
@@ -71,8 +71,8 @@ main(int argc, char **argv)
   monotime_get(&started_at);
   for (i = 0; i < N_TIMERS; ++i) {
     struct timeval delay;
-    delay.tv_sec = crypto_rand_int_range(0,MAX_DURATION);
-    delay.tv_usec = crypto_rand_int_range(0,1000000);
+    delay.tv_sec = crypto_rand_int_range(0, MAX_DURATION);
+    delay.tv_usec = crypto_rand_int_range(0, 1000000);
     delay_usec[i] = delay.tv_sec * 1000000 + delay.tv_usec;
     timeradd(&now, &delay, &fire_at[i]);
     timers[i] = timer_new(timer_cb, &timers[i]);

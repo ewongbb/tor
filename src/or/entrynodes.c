@@ -331,7 +331,7 @@ HANDLE_IMPL(entry_guard, entry_guard_t, ATTR_UNUSED STATIC)
  * dates, so that we aren't leaking exactly when we recorded it.
  */
 MOCK_IMPL(STATIC time_t,
-randomize_time,(time_t now, time_t max_backdate))
+randomize_time, (time_t now, time_t max_backdate))
 {
   tor_assert(max_backdate > 0);
 
@@ -1206,7 +1206,7 @@ remove_guard_from_confirmed_and_primary_lists(guard_selection_t *gs,
  * appears in the consensus, or as a configured bridge (as
  * appropriate) */
 MOCK_IMPL(STATIC int,
-entry_guard_is_listed,(guard_selection_t *gs, const entry_guard_t *guard))
+entry_guard_is_listed, (guard_selection_t *gs, const entry_guard_t *guard))
 {
   if (gs->type == GS_TYPE_BRIDGE) {
     return NULL != get_bridge_info_for_guard(guard);
@@ -3272,8 +3272,8 @@ getinfo_helper_entry_guards(control_connection_t *conn,
   (void) conn;
   (void) errmsg;
 
-  if (!strcmp(question,"entry-guards") ||
-      !strcmp(question,"helper-nodes")) {
+  if (!strcmp(question, "entry-guards") ||
+      !strcmp(question, "helper-nodes")) {
     const smartlist_t *guards;
     guards = gs->sampled_entry_guards;
 

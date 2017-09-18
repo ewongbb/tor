@@ -28,7 +28,7 @@ listener_connection_t *listener_connection_new(int type, int socket_family);
 connection_t *connection_new(int type, int socket_family);
 
 void connection_link_connections(connection_t *conn_a, connection_t *conn_b);
-MOCK_DECL(void,connection_free,(connection_t *conn));
+MOCK_DECL(void, connection_free, (connection_t *conn));
 void connection_free_all(void);
 void connection_about_to_close_connection(connection_t *conn);
 void connection_close_immediate(connection_t *conn);
@@ -52,7 +52,7 @@ MOCK_DECL(void, connection_mark_for_close_internal_,
  * For all other cases, use connection_mark_and_flush() instead, which
  * checks for or_connection_t properly, instead.  See below.
  */
-#define connection_mark_and_flush_internal_(c,line,file)                \
+#define connection_mark_and_flush_internal_(c, line, file)                \
   do {                                                                  \
     connection_t *tmp_conn__ = (c);                                     \
     connection_mark_for_close_internal_(tmp_conn__, (line), (file));    \
@@ -65,7 +65,7 @@ MOCK_DECL(void, connection_mark_for_close_internal_,
 /**
  * Mark 'c' for close, but try to hold it open until all the data is written.
  */
-#define connection_mark_and_flush_(c,line,file)                           \
+#define connection_mark_and_flush_(c, line, file)                           \
   do {                                                                    \
     connection_t *tmp_conn_ = (c);                                        \
     if (tmp_conn_->type == CONN_TYPE_OR) {                                \
@@ -176,7 +176,7 @@ connection_get_outbuf_len(connection_t *conn)
 connection_t *connection_get_by_global_id(uint64_t id);
 
 connection_t *connection_get_by_type(int type);
-MOCK_DECL(connection_t *,connection_get_by_type_addr_port_purpose,(int type,
+MOCK_DECL(connection_t *, connection_get_by_type_addr_port_purpose, (int type,
                                                   const tor_addr_t *addr,
                                                   uint16_t port, int purpose));
 connection_t *connection_get_by_type_state(int type, int state);
@@ -276,7 +276,7 @@ void connection_buckets_note_empty_ts(uint32_t *timestamp_var,
                                       int tokens_before,
                                       size_t tokens_removed,
                                       const struct timeval *tvnow);
-MOCK_DECL(STATIC int,connection_connect_sockaddr,
+MOCK_DECL(STATIC int, connection_connect_sockaddr,
                                             (connection_t *conn,
                                              const struct sockaddr *sa,
                                              socklen_t sa_len,

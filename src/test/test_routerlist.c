@@ -254,7 +254,7 @@ test_router_pick_directory_server_impl(void *arg)
   con_md = networkstatus_parse_vote_from_string(consensus_text_md, NULL,
                                                 NS_TYPE_CONSENSUS);
   tt_assert(con_md);
-  tt_int_op(con_md->flavor,OP_EQ, FLAV_MICRODESC);
+  tt_int_op(con_md->flavor, OP_EQ, FLAV_MICRODESC);
   tt_assert(con_md->routerstatus_list);
   tt_int_op(smartlist_len(con_md->routerstatus_list), OP_EQ, 3);
   tt_assert(!networkstatus_set_current_consensus_from_ns(con_md,
@@ -486,7 +486,7 @@ test_routerlist_router_is_already_dir_fetching(void *arg)
 
 #define NODE(name, flags) \
   { #name, test_routerlist_##name, (flags), NULL, NULL }
-#define ROUTER(name,flags) \
+#define ROUTER(name, flags) \
   { #name, test_router_##name, (flags), NULL, NULL }
 
 struct testcase_t routerlist_tests[] = {

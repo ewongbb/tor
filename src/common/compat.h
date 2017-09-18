@@ -94,7 +94,7 @@
 /* Temporarily enable and disable warnings. */
 #ifdef __GNUC__
 #  define PRAGMA_STRINGIFY_(s) #s
-#  define PRAGMA_JOIN_STRINGIFY_(a,b) PRAGMA_STRINGIFY_(a ## b)
+#  define PRAGMA_JOIN_STRINGIFY_(a, b) PRAGMA_STRINGIFY_(a ## b)
 /* Support for macro-generated pragmas (c99) */
 #  define PRAGMA_(x) _Pragma (#x)
 #  ifdef __clang__
@@ -106,15 +106,15 @@
 /* we have push/pop support */
 #    define DISABLE_GCC_WARNING(warningopt) \
           PRAGMA_DIAGNOSTIC_(push) \
-          PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W,warningopt))
+          PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W, warningopt))
 #    define ENABLE_GCC_WARNING(warningopt) \
           PRAGMA_DIAGNOSTIC_(pop)
 #  else
 /* older version of gcc: no push/pop support. */
 #    define DISABLE_GCC_WARNING(warningopt) \
-         PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W,warningopt))
+         PRAGMA_DIAGNOSTIC_(ignored PRAGMA_JOIN_STRINGIFY_(-W, warningopt))
 #    define ENABLE_GCC_WARNING(warningopt) \
-         PRAGMA_DIAGNOSTIC_(warning PRAGMA_JOIN_STRINGIFY_(-W,warningopt))
+         PRAGMA_DIAGNOSTIC_(warning PRAGMA_JOIN_STRINGIFY_(-W, warningopt))
 #  endif
 #else /* ifdef __GNUC__ */
 /* not gcc at all */
@@ -254,10 +254,10 @@
 #endif
 
 #ifndef HAVE_STRLCAT
-size_t strlcat(char *dst, const char *src, size_t siz) ATTR_NONNULL((1,2));
+size_t strlcat(char *dst, const char *src, size_t siz) ATTR_NONNULL((1, 2));
 #endif
 #ifndef HAVE_STRLCPY
-size_t strlcpy(char *dst, const char *src, size_t siz) ATTR_NONNULL((1,2));
+size_t strlcpy(char *dst, const char *src, size_t siz) ATTR_NONNULL((1, 2));
 #endif
 
 #ifdef _MSC_VER
@@ -324,19 +324,19 @@ tor_mmap_t *tor_mmap_file(const char *filename) ATTR_NONNULL((1));
 int tor_munmap_file(tor_mmap_t *handle) ATTR_NONNULL((1));
 
 int tor_snprintf(char *str, size_t size, const char *format, ...)
-  CHECK_PRINTF(3,4) ATTR_NONNULL((1,3));
+  CHECK_PRINTF(3, 4) ATTR_NONNULL((1, 3));
 int tor_vsnprintf(char *str, size_t size, const char *format, va_list args)
-  CHECK_PRINTF(3,0) ATTR_NONNULL((1,3));
+  CHECK_PRINTF(3, 0) ATTR_NONNULL((1, 3));
 
 int tor_asprintf(char **strp, const char *fmt, ...)
-  CHECK_PRINTF(2,3);
+  CHECK_PRINTF(2, 3);
 int tor_vasprintf(char **strp, const char *fmt, va_list args)
-  CHECK_PRINTF(2,0);
+  CHECK_PRINTF(2, 0);
 
 const void *tor_memmem(const void *haystack, size_t hlen, const void *needle,
-                       size_t nlen) ATTR_NONNULL((1,3));
+                       size_t nlen) ATTR_NONNULL((1, 3));
 static const void *tor_memstr(const void *haystack, size_t hlen,
-                           const char *needle) ATTR_NONNULL((1,3));
+                           const char *needle) ATTR_NONNULL((1, 3));
 static inline const void *
 tor_memstr(const void *haystack, size_t hlen, const char *needle)
 {
@@ -388,7 +388,7 @@ struct tm *tor_gmtime_r(const time_t *timep, struct tm *result);
 #ifndef timeradd
 /** Replacement for timeradd on platforms that do not have it: sets tvout to
  * the sum of tv1 and tv2. */
-#define timeradd(tv1,tv2,tvout) \
+#define timeradd(tv1, tv2, tvout) \
   do {                                                  \
     (tvout)->tv_sec = (tv1)->tv_sec + (tv2)->tv_sec;    \
     (tvout)->tv_usec = (tv1)->tv_usec + (tv2)->tv_usec; \
@@ -402,7 +402,7 @@ struct tm *tor_gmtime_r(const time_t *timep, struct tm *result);
 #ifndef timersub
 /** Replacement for timersub on platforms that do not have it: sets tvout to
  * tv1 minus tv2. */
-#define timersub(tv1,tv2,tvout) \
+#define timersub(tv1, tv2, tvout) \
   do {                                                  \
     (tvout)->tv_sec = (tv1)->tv_sec - (tv2)->tv_sec;    \
     (tvout)->tv_usec = (tv1)->tv_usec - (tv2)->tv_usec; \
@@ -421,7 +421,7 @@ struct tm *tor_gmtime_r(const time_t *timep, struct tm *result);
  * platforms' native timercmp definitions do not support >=, <=, or ==.  So
  * don't use those.
  */
-#define timercmp(tv1,tv2,op)                    \
+#define timercmp(tv1, tv2, op)                    \
   (((tv1)->tv_sec == (tv2)->tv_sec) ?           \
    ((tv1)->tv_usec op (tv2)->tv_usec) :         \
    ((tv1)->tv_sec op (tv2)->tv_sec))
@@ -483,7 +483,7 @@ tor_socket_t tor_open_socket_with_extensions(
                                            int domain, int type, int protocol,
                                            int cloexec, int nonblock);
 MOCK_DECL(tor_socket_t,
-tor_open_socket,(int domain, int type, int protocol));
+tor_open_socket, (int domain, int type, int protocol));
 tor_socket_t tor_open_socket_nonblocking(int domain, int type, int protocol);
 tor_socket_t tor_accept_socket(tor_socket_t sockfd, struct sockaddr *addr,
                                   socklen_t *len);
@@ -495,12 +495,12 @@ tor_socket_t tor_accept_socket_with_extensions(tor_socket_t sockfd,
                                                socklen_t *len,
                                                int cloexec, int nonblock);
 MOCK_DECL(tor_socket_t,
-tor_connect_socket,(tor_socket_t socket,const struct sockaddr *address,
+tor_connect_socket, (tor_socket_t socket, const struct sockaddr *address,
                     socklen_t address_len));
 int get_n_open_sockets(void);
 
 MOCK_DECL(int,
-tor_getsockname,(tor_socket_t socket, struct sockaddr *address,
+tor_getsockname, (tor_socket_t socket, struct sockaddr *address,
                  socklen_t *address_len));
 
 #define tor_socket_send(s, buf, len, flags) send(s, buf, len, flags)
@@ -568,11 +568,11 @@ struct sockaddr_in6 {
 };
 #endif
 
-MOCK_DECL(int,tor_gethostname,(char *name, size_t namelen));
-int tor_inet_aton(const char *cp, struct in_addr *addr) ATTR_NONNULL((1,2));
+MOCK_DECL(int, tor_gethostname, (char *name, size_t namelen));
+int tor_inet_aton(const char *cp, struct in_addr *addr) ATTR_NONNULL((1, 2));
 const char *tor_inet_ntop(int af, const void *src, char *dst, size_t len);
 int tor_inet_pton(int af, const char *src, void *dst);
-MOCK_DECL(int,tor_lookup_hostname,(const char *name, uint32_t *addr));
+MOCK_DECL(int, tor_lookup_hostname, (const char *name, uint32_t *addr));
 int set_socket_nonblocking(tor_socket_t socket);
 int tor_socketpair(int family, int type, int protocol, tor_socket_t fd[2]);
 int network_init(void);
@@ -704,10 +704,10 @@ int tor_mlockall(void);
  * has it.}
  **/
 #ifndef MAX
-#define MAX(a,b) ( ((a)<(b)) ? (b) : (a) )
+#define MAX(a, b) ( ((a)<(b)) ? (b) : (a) )
 #endif
 #ifndef MIN
-#define MIN(a,b) ( ((a)>(b)) ? (b) : (a) )
+#define MIN(a, b) ( ((a)>(b)) ? (b) : (a) )
 #endif
 
 /* Platform-specific helpers. */

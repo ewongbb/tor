@@ -116,7 +116,7 @@ void sandbox_freeaddrinfo(struct addrinfo *addrinfo);
 void sandbox_free_getaddrinfo_cache(void);
 #else
 #define sandbox_getaddrinfo(name, servname, hints, res)  \
-  getaddrinfo((name),(servname), (hints),(res))
+  getaddrinfo((name), (servname), (hints), (res))
 #define sandbox_add_addrinfo(name) \
   ((void)(name))
 #define sandbox_freeaddrinfo(addrinfo) \

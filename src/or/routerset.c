@@ -108,7 +108,7 @@ routerset_parse(routerset_t *target, const char *s, const char *description)
   char *countryname;
   smartlist_t *list = smartlist_new();
   int malformed_list;
-  smartlist_split_string(list, s, ",",
+  smartlist_split_string(list, s, ", ",
                          SPLIT_SKIP_SPACE | SPLIT_IGNORE_BLANK, 0);
   SMARTLIST_FOREACH_BEGIN(list, char *, nick) {
       addr_policy_t *p;
@@ -129,7 +129,7 @@ routerset_parse(routerset_t *target, const char *s, const char *description)
                   description);
         smartlist_add(target->country_names, countryname);
         added_countries = 1;
-      } else if ((strchr(nick,'.') || strchr(nick, ':') ||  strchr(nick, '*'))
+      } else if ((strchr(nick, '.') || strchr(nick, ':') ||  strchr(nick, '*'))
                  && (p = router_parse_addr_policy_item_from_string(
                                      nick, ADDR_POLICY_REJECT,
                                      &malformed_list))) {
@@ -392,7 +392,7 @@ routerset_subtract_nodes(smartlist_t *lst, const routerset_t *routerset)
     return;
   SMARTLIST_FOREACH(lst, const node_t *, node, {
       if (routerset_contains_node(routerset, node)) {
-        //log_debug(LD_DIR, "Subtracting %s",r->nickname);
+        //log_debug(LD_DIR, "Subtracting %s", r->nickname);
         SMARTLIST_DEL_CURRENT(lst, node);
       }
     });
@@ -405,7 +405,7 @@ routerset_to_string(const routerset_t *set)
 {
   if (!set || !set->list)
     return tor_strdup("");
-  return smartlist_join_strings(set->list, ",", 0, NULL);
+  return smartlist_join_strings(set->list, ", ", 0, NULL);
 }
 
 /** Helper: return true iff old and new are both NULL, or both non-NULL

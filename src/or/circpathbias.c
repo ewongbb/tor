@@ -808,7 +808,7 @@ pathbias_send_usable_probe(circuit_t *circ)
   ocirc->pathbias_probe_nonce &= 0x00ffffff;
   probe_nonce = tor_dup_ip(ocirc->pathbias_probe_nonce);
 
-  tor_snprintf(payload,RELAY_PAYLOAD_SIZE, "%s:25", probe_nonce);
+  tor_snprintf(payload, RELAY_PAYLOAD_SIZE, "%s:25", probe_nonce);
   payload_len = (int)strlen(payload)+1;
 
   // XXX: need this? Can we assume ipv4 will always be supported?
@@ -943,7 +943,7 @@ pathbias_check_close(origin_circuit_t *ocirc, int reason)
         /* Remote circ close reasons on an unused circuit all could be bias */
         log_info(LD_CIRC,
             "Circuit %d remote-closed without successful use for reason %d. "
-            "Circuit purpose %d currently %d,%s. Len %d.",
+            "Circuit purpose %d currently %d, %s. Len %d.",
             ocirc->global_identifier,
             reason, circ->purpose, ocirc->has_opened,
             circuit_state_to_string(circ->state),
@@ -959,7 +959,7 @@ pathbias_check_close(origin_circuit_t *ocirc, int reason)
          * What about clock jumps/suspends? */
         log_info(LD_CIRC,
             "Circuit %d's channel closed without successful use for reason "
-            "%d, channel reason %d. Circuit purpose %d currently %d,%s. Len "
+            "%d, channel reason %d. Circuit purpose %d currently %d, %s. Len "
             "%d.", ocirc->global_identifier,
             reason, circ->n_chan->reason_for_closing,
             circ->purpose, ocirc->has_opened,
@@ -985,7 +985,7 @@ pathbias_check_close(origin_circuit_t *ocirc, int reason)
        * streams could be bias */
       log_info(LD_CIRC,
             "Circuit %d closed without successful use for reason %d. "
-            "Circuit purpose %d currently %d,%s. Len %d.",
+            "Circuit purpose %d currently %d, %s. Len %d.",
             ocirc->global_identifier,
             reason, circ->purpose, ocirc->has_opened,
             circuit_state_to_string(circ->state),
@@ -1502,7 +1502,7 @@ pathbias_scale_close_rates(entry_guard_t *guard)
     entry_guards_changed();
 
     log_info(LD_CIRC,
-             "Scaled pathbias counts to (%f,%f)/%f (%d/%d open) for guard "
+             "Scaled pathbias counts to (%f, %f)/%f (%d/%d open) for guard "
              "%s",
              pb->circ_successes, pb->successful_circuits_closed,
              pb->circ_attempts, opened_built, opened_attempts,

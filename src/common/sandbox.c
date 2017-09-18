@@ -111,15 +111,15 @@ static int sandbox_active = 0;
 static sandbox_cfg_t *filter_dynamic = NULL;
 
 #undef SCMP_CMP
-#define SCMP_CMP(a,b,c) ((struct scmp_arg_cmp){(a),(b),(c),0})
-#define SCMP_CMP_STR(a,b,c) \
-  ((struct scmp_arg_cmp) {(a),(b),(intptr_t)(void*)(c),0})
-#define SCMP_CMP4(a,b,c,d) ((struct scmp_arg_cmp){(a),(b),(c),(d)})
+#define SCMP_CMP(a, b, c) ((struct scmp_arg_cmp){(a), (b), (c), 0})
+#define SCMP_CMP_STR(a, b, c) \
+  ((struct scmp_arg_cmp) {(a), (b), (intptr_t)(void*)(c), 0})
+#define SCMP_CMP4(a, b, c, d) ((struct scmp_arg_cmp){(a), (b), (c), (d)})
 /* We use a wrapper here because these masked comparisons seem to be pretty
  * verbose. Also, it's important to cast to scmp_datum_t before negating the
  * mask, since otherwise the negation might get applied to a 32 bit value, and
  * the high bits of the value might get masked out improperly. */
-#define SCMP_CMP_MASKED(a,b,c) \
+#define SCMP_CMP_MASKED(a, b, c) \
   SCMP_CMP4((a), SCMP_CMP_MASKED_EQ, ~(scmp_datum_t)(b), (c))
 
 /** Variable used for storing all syscall numbers that will be allowed with the
@@ -252,16 +252,16 @@ static int filter_nopar_gen[] = {
 
 /* These macros help avoid the error where the number of filters we add on a
  * single rule don't match the arg_cnt param. */
-#define seccomp_rule_add_0(ctx,act,call) \
-  seccomp_rule_add((ctx),(act),(call),0)
-#define seccomp_rule_add_1(ctx,act,call,f1) \
-  seccomp_rule_add((ctx),(act),(call),1,(f1))
-#define seccomp_rule_add_2(ctx,act,call,f1,f2)  \
-  seccomp_rule_add((ctx),(act),(call),2,(f1),(f2))
-#define seccomp_rule_add_3(ctx,act,call,f1,f2,f3)       \
-  seccomp_rule_add((ctx),(act),(call),3,(f1),(f2),(f3))
-#define seccomp_rule_add_4(ctx,act,call,f1,f2,f3,f4)      \
-  seccomp_rule_add((ctx),(act),(call),4,(f1),(f2),(f3),(f4))
+#define seccomp_rule_add_0(ctx, act, call) \
+  seccomp_rule_add((ctx), (act), (call), 0)
+#define seccomp_rule_add_1(ctx, act, call, f1) \
+  seccomp_rule_add((ctx), (act), (call), 1, (f1))
+#define seccomp_rule_add_2(ctx, act, call, f1, f2)  \
+  seccomp_rule_add((ctx), (act), (call), 2, (f1), (f2))
+#define seccomp_rule_add_3(ctx, act, call, f1, f2, f3)       \
+  seccomp_rule_add((ctx), (act), (call), 3, (f1), (f2), (f3))
+#define seccomp_rule_add_4(ctx, act, call, f1, f2, f3, f4)      \
+  seccomp_rule_add((ctx), (act), (call), 4, (f1), (f2), (f3), (f4))
 
 /**
  * Function responsible for setting up the rt_sigaction syscall for
@@ -366,7 +366,7 @@ sb_mmap2(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
 
   rc = seccomp_rule_add_2(ctx, SCMP_ACT_ALLOW, SCMP_SYS(mmap2),
        SCMP_CMP(2, SCMP_CMP_EQ, PROT_READ|PROT_WRITE),
-       SCMP_CMP(3, SCMP_CMP_EQ,MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK));
+       SCMP_CMP(3, SCMP_CMP_EQ, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK));
   if (rc) {
     return rc;
   }
@@ -415,7 +415,7 @@ sb_open(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       rc = seccomp_rule_add_1(ctx, SCMP_ACT_ALLOW, SCMP_SYS(open),
             SCMP_CMP_STR(0, SCMP_CMP_EQ, param->value));
       if (rc != 0) {
-        log_err(LD_BUG,"(Sandbox) failed to add open syscall, received "
+        log_err(LD_BUG, "(Sandbox) failed to add open syscall, received "
             "libseccomp error %d", rc);
         return rc;
       }
@@ -426,7 +426,7 @@ sb_open(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
                 SCMP_CMP_MASKED(1, O_CLOEXEC|O_NONBLOCK|O_NOCTTY|O_NOFOLLOW,
                                 O_RDONLY));
   if (rc != 0) {
-    log_err(LD_BUG,"(Sandbox) failed to add open syscall, received libseccomp "
+    log_err(LD_BUG, "(Sandbox) failed to add open syscall, received libseccomp "
         "error %d", rc);
     return rc;
   }
@@ -449,7 +449,7 @@ sb_chmod(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       rc = seccomp_rule_add_1(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chmod),
             SCMP_CMP_STR(0, SCMP_CMP_EQ, param->value));
       if (rc != 0) {
-        log_err(LD_BUG,"(Sandbox) failed to add chmod syscall, received "
+        log_err(LD_BUG, "(Sandbox) failed to add chmod syscall, received "
             "libseccomp error %d", rc);
         return rc;
       }
@@ -474,7 +474,7 @@ sb_chown(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       rc = seccomp_rule_add_1(ctx, SCMP_ACT_ALLOW, SCMP_SYS(chown),
             SCMP_CMP_STR(0, SCMP_CMP_EQ, param->value));
       if (rc != 0) {
-        log_err(LD_BUG,"(Sandbox) failed to add chown syscall, received "
+        log_err(LD_BUG, "(Sandbox) failed to add chown syscall, received "
             "libseccomp error %d", rc);
         return rc;
       }
@@ -493,7 +493,7 @@ sb__sysctl(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
 
   rc = seccomp_rule_add_0(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(_sysctl));
   if (rc != 0) {
-    log_err(LD_BUG,"(Sandbox) failed to add _sysctl syscall, "
+    log_err(LD_BUG, "(Sandbox) failed to add _sysctl syscall, "
         "received libseccomp error %d", rc);
     return rc;
   }
@@ -522,7 +522,7 @@ sb_rename(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
             SCMP_CMP_STR(0, SCMP_CMP_EQ, param->value),
             SCMP_CMP_STR(1, SCMP_CMP_EQ, param->value2));
       if (rc != 0) {
-        log_err(LD_BUG,"(Sandbox) failed to add rename syscall, received "
+        log_err(LD_BUG, "(Sandbox) failed to add rename syscall, received "
             "libseccomp error %d", rc);
         return rc;
       }
@@ -554,7 +554,7 @@ sb_openat(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
           SCMP_CMP(2, SCMP_CMP_EQ, O_RDONLY|O_NONBLOCK|O_LARGEFILE|O_DIRECTORY|
               O_CLOEXEC));
       if (rc != 0) {
-        log_err(LD_BUG,"(Sandbox) failed to add openat syscall, received "
+        log_err(LD_BUG, "(Sandbox) failed to add openat syscall, received "
             "libseccomp error %d", rc);
         return rc;
       }
@@ -1014,7 +1014,7 @@ sb_stat64(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       rc = seccomp_rule_add_1(ctx, SCMP_ACT_ALLOW, SCMP_SYS(stat64),
           SCMP_CMP_STR(0, SCMP_CMP_EQ, param->value));
       if (rc != 0) {
-        log_err(LD_BUG,"(Sandbox) failed to add stat64 syscall, received "
+        log_err(LD_BUG, "(Sandbox) failed to add stat64 syscall, received "
             "libseccomp error %d", rc);
         return rc;
       }
@@ -1128,7 +1128,7 @@ prot_strings_helper(strmap_t *locations,
     *pr_mem_left_p -= param_size;
     return 0;
   } else {
-    log_err(LD_BUG,"(Sandbox) insufficient protected memory!");
+    log_err(LD_BUG, "(Sandbox) insufficient protected memory!");
     return -1;
   }
 }
@@ -1159,7 +1159,7 @@ prot_strings(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
   pr_mem_base = (char*) mmap(NULL, MALLOC_MP_LIM + pr_mem_size,
       PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
   if (pr_mem_base == MAP_FAILED) {
-    log_err(LD_BUG,"(Sandbox) failed allocate protected memory! mmap: %s",
+    log_err(LD_BUG, "(Sandbox) failed allocate protected memory! mmap: %s",
         strerror(errno));
     ret = -1;
     goto out;
@@ -1187,7 +1187,7 @@ prot_strings(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
 
   // protecting from writes
   if (mprotect(pr_mem_base, MALLOC_MP_LIM + pr_mem_size, PROT_READ)) {
-    log_err(LD_BUG,"(Sandbox) failed to protect memory! mprotect: %s",
+    log_err(LD_BUG, "(Sandbox) failed to protect memory! mprotect: %s",
         strerror(errno));
     ret = -3;
     goto out;
@@ -1200,7 +1200,7 @@ prot_strings(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
   ret = seccomp_rule_add_1(ctx, SCMP_ACT_KILL, SCMP_SYS(mremap),
       SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t) pr_mem_base));
   if (ret) {
-    log_err(LD_BUG,"(Sandbox) mremap protected memory filter fail!");
+    log_err(LD_BUG, "(Sandbox) mremap protected memory filter fail!");
     goto out;
   }
 
@@ -1208,7 +1208,7 @@ prot_strings(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
   ret = seccomp_rule_add_1(ctx, SCMP_ACT_KILL, SCMP_SYS(munmap),
         SCMP_CMP(0, SCMP_CMP_EQ, (intptr_t) pr_mem_base));
   if (ret) {
-    log_err(LD_BUG,"(Sandbox) munmap protected memory filter fail!");
+    log_err(LD_BUG, "(Sandbox) munmap protected memory filter fail!");
     goto out;
   }
 
@@ -1227,7 +1227,7 @@ prot_strings(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
       SCMP_CMP(1, SCMP_CMP_LE, MALLOC_MP_LIM),
       SCMP_CMP(2, SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
   if (ret) {
-    log_err(LD_BUG,"(Sandbox) mprotect protected memory filter fail (LT)!");
+    log_err(LD_BUG, "(Sandbox) mprotect protected memory filter fail (LT)!");
     goto out;
   }
 
@@ -1237,7 +1237,7 @@ prot_strings(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
       SCMP_CMP(1, SCMP_CMP_LE, MALLOC_MP_LIM),
       SCMP_CMP(2, SCMP_CMP_EQ, PROT_READ|PROT_WRITE));
   if (ret) {
-    log_err(LD_BUG,"(Sandbox) mprotect protected memory filter fail (GT)!");
+    log_err(LD_BUG, "(Sandbox) mprotect protected memory filter fail (GT)!");
     goto out;
   }
 
@@ -1287,7 +1287,7 @@ sandbox_cfg_allow_stat_filename(sandbox_cfg_t **cfg, char *file)
 
   elem = new_element(SCMP_stat, file);
   if (!elem) {
-    log_err(LD_BUG,"(Sandbox) failed to register parameter!");
+    log_err(LD_BUG, "(Sandbox) failed to register parameter!");
     return -1;
   }
 
@@ -1304,7 +1304,7 @@ sandbox_cfg_allow_open_filename(sandbox_cfg_t **cfg, char *file)
 
   elem = new_element(SCMP_SYS(open), file);
   if (!elem) {
-    log_err(LD_BUG,"(Sandbox) failed to register parameter!");
+    log_err(LD_BUG, "(Sandbox) failed to register parameter!");
     return -1;
   }
 
@@ -1321,7 +1321,7 @@ sandbox_cfg_allow_chmod_filename(sandbox_cfg_t **cfg, char *file)
 
   elem = new_element(SCMP_SYS(chmod), file);
   if (!elem) {
-    log_err(LD_BUG,"(Sandbox) failed to register parameter!");
+    log_err(LD_BUG, "(Sandbox) failed to register parameter!");
     return -1;
   }
 
@@ -1338,7 +1338,7 @@ sandbox_cfg_allow_chown_filename(sandbox_cfg_t **cfg, char *file)
 
   elem = new_element(SCMP_SYS(chown), file);
   if (!elem) {
-    log_err(LD_BUG,"(Sandbox) failed to register parameter!");
+    log_err(LD_BUG, "(Sandbox) failed to register parameter!");
     return -1;
   }
 
@@ -1356,7 +1356,7 @@ sandbox_cfg_allow_rename(sandbox_cfg_t **cfg, char *file1, char *file2)
   elem = new_element2(SCMP_SYS(rename), file1, file2);
 
   if (!elem) {
-    log_err(LD_BUG,"(Sandbox) failed to register parameter!");
+    log_err(LD_BUG, "(Sandbox) failed to register parameter!");
     return -1;
   }
 
@@ -1373,7 +1373,7 @@ sandbox_cfg_allow_openat_filename(sandbox_cfg_t **cfg, char *file)
 
   elem = new_element(SCMP_SYS(openat), file);
   if (!elem) {
-    log_err(LD_BUG,"(Sandbox) failed to register parameter!");
+    log_err(LD_BUG, "(Sandbox) failed to register parameter!");
     return -1;
   }
 
@@ -1388,7 +1388,7 @@ sandbox_cfg_allow_openat_filename(sandbox_cfg_t **cfg, char *file)
  * getaddrinfo.
  *
  * We support only a limited range of getaddrinfo calls, where servname is null
- * and hints contains only socktype=SOCK_STREAM, family in INET,INET6,UNSPEC.
+ * and hints contains only socktype=SOCK_STREAM, family in INET, INET6, UNSPEC.
  */
 typedef struct cached_getaddrinfo_item_t {
   HT_ENTRY(cached_getaddrinfo_item_t) node;
@@ -1488,7 +1488,7 @@ sandbox_getaddrinfo(const char *name, const char *servname,
        result. */
 
     err = getaddrinfo(name, NULL, hints, res);
-    log_info(LD_NET,"(Sandbox) getaddrinfo %s.", err ? "failed" : "succeeded");
+    log_info(LD_NET, "(Sandbox) getaddrinfo %s.", err ? "failed" : "succeeded");
 
     if (! item) {
       item = tor_malloc_zero(sizeof(*item));
@@ -1514,7 +1514,7 @@ sandbox_getaddrinfo(const char *name, const char *servname,
   }
 
   /* getting here means something went wrong */
-  log_err(LD_BUG,"(Sandbox) failed to get address %s!", name);
+  log_err(LD_BUG, "(Sandbox) failed to get address %s!", name);
   return EAI_NONAME;
 }
 
@@ -1569,7 +1569,7 @@ add_param_filter(scmp_filter_ctx ctx, sandbox_cfg_t* cfg)
   // function pointer
   for (i = 0; i < ARRAY_LENGTH(filter_func); i++) {
     if ((filter_func[i])(ctx, cfg)) {
-      log_err(LD_BUG,"(Sandbox) failed to add syscall %d, received libseccomp "
+      log_err(LD_BUG, "(Sandbox) failed to add syscall %d, received libseccomp "
           "error %d", i, rc);
       return rc;
     }
@@ -1592,7 +1592,7 @@ add_noparam_filter(scmp_filter_ctx ctx)
   for (i = 0; i < ARRAY_LENGTH(filter_nopar_gen); i++) {
     rc = seccomp_rule_add_0(ctx, SCMP_ACT_ALLOW, filter_nopar_gen[i]);
     if (rc != 0) {
-      log_err(LD_BUG,"(Sandbox) failed to add syscall index %d (NR=%d), "
+      log_err(LD_BUG, "(Sandbox) failed to add syscall index %d (NR=%d), "
           "received libseccomp error %d", i, filter_nopar_gen[i], rc);
       return rc;
     }
@@ -1614,7 +1614,7 @@ install_syscall_filter(sandbox_cfg_t* cfg)
 
   ctx = seccomp_init(SCMP_ACT_TRAP);
   if (ctx == NULL) {
-    log_err(LD_BUG,"(Sandbox) failed to initialise libseccomp context");
+    log_err(LD_BUG, "(Sandbox) failed to initialise libseccomp context");
     rc = -1;
     goto end;
   }
@@ -1747,12 +1747,12 @@ install_sigsys_debugging(void)
   act.sa_sigaction = &sigsys_debugging;
   act.sa_flags = SA_SIGINFO;
   if (sigaction(SIGSYS, &act, NULL) < 0) {
-    log_err(LD_BUG,"(Sandbox) Failed to register SIGSYS signal handler");
+    log_err(LD_BUG, "(Sandbox) Failed to register SIGSYS signal handler");
     return -1;
   }
 
   if (sigprocmask(SIG_UNBLOCK, &mask, NULL)) {
-    log_err(LD_BUG,"(Sandbox) Failed call to sigprocmask()");
+    log_err(LD_BUG, "(Sandbox) Failed call to sigprocmask()");
     return -2;
   }
 

@@ -189,15 +189,15 @@ channelpadding_get_netflow_inactive_timeout_ms(const channel_t *chan)
    * This MAX() hack is here because we apply the timeout on both the client
    * and the server. This creates the situation where the total time before
    * sending a packet in either direction is actually
-   * min(client_timeout,server_timeout).
+   * min(client_timeout, server_timeout).
    *
    * If X is a random variable uniform from 0..R-1 (where R=high-low),
-   * then Y=max(X,X) has Prob(Y == i) = (2.0*i + 1)/(R*R).
+   * then Y=max(X, X) has Prob(Y == i) = (2.0*i + 1)/(R*R).
    *
-   * If we create a third random variable Z=min(Y,Y), then it turns out that
+   * If we create a third random variable Z=min(Y, Y), then it turns out that
    * Exp[Z] ~= Exp[X]. Here's a table:
    *
-   *    R     Exp[X]    Exp[Z]    Exp[min(X,X)]   Exp[max(X,X)]
+   *    R     Exp[X]    Exp[Z]    Exp[min(X, X)]   Exp[max(X, X)]
    *  2000     999.5    1066        666.2           1332.8
    *  3000    1499.5    1599.5      999.5           1999.5
    *  5000    2499.5    2666       1666.2           3332.8
@@ -216,12 +216,12 @@ channelpadding_get_netflow_inactive_timeout_ms(const channel_t *chan)
    * if the relay does support padding, but the client has set
    * ReducedConnectionPadding 1), then the defense will still prevent
    * record splitting, but with less overhead than the midpoint
-   * (as seen by the Exp[max(X,X)] column).
+   * (as seen by the Exp[max(X, X)] column).
    *
    * To calculate average padding packet frequency (and thus overhead),
    * index into the table by picking a row based on R = high-low. Then,
    * use the appropriate column (Exp[Z] for two-sided padding, and
-   * Exp[max(X,X)] for one-sided padding). Finally, take this value
+   * Exp[max(X, X)] for one-sided padding). Finally, take this value
    * and add it to the low timeout value. This value is the average
    * frequency which padding packets will be sent.
    */
@@ -244,7 +244,7 @@ channelpadding_update_padding_for_channel(channel_t *chan,
   if (pad_vars->version != 0) {
     static ratelim_t version_limit = RATELIM_INIT(600);
 
-    log_fn_ratelim(&version_limit,LOG_PROTOCOL_WARN,LD_PROTOCOL,
+    log_fn_ratelim(&version_limit, LOG_PROTOCOL_WARN, LD_PROTOCOL,
            "Got a PADDING_NEGOTIATE cell with an unknown version. Ignoring.");
     return -1;
   }
@@ -258,7 +258,7 @@ channelpadding_update_padding_for_channel(channel_t *chan,
       !get_options()->ORPort_set) {
     static ratelim_t relay_limit = RATELIM_INIT(600);
 
-    log_fn_ratelim(&relay_limit,LOG_PROTOCOL_WARN,LD_PROTOCOL,
+    log_fn_ratelim(&relay_limit, LOG_PROTOCOL_WARN, LD_PROTOCOL,
            "Got a PADDING_NEGOTIATE from relay at %s (%s). "
            "This should not happen.",
            chan->get_remote_descr(chan, 0),
@@ -277,7 +277,7 @@ channelpadding_update_padding_for_channel(channel_t *chan,
   chan->padding_timeout_high_ms = MAX(chan->padding_timeout_low_ms,
                                       pad_vars->ito_high_ms);
 
-  log_fn(LOG_INFO,LD_OR,
+  log_fn(LOG_INFO, LD_OR,
          "Negotiated padding=%d, lo=%d, hi=%d on "U64_FORMAT,
          chan->padding_enabled, chan->padding_timeout_low_ms,
          chan->padding_timeout_high_ms,
@@ -366,7 +366,7 @@ channelpadding_send_padding_cell_for_callback(channel_t *chan)
   /* Check that the channel is still valid and open */
   if (!chan || chan->state != CHANNEL_STATE_OPEN) {
     if (chan) chan->pending_padding_callback = 0;
-    log_fn(LOG_INFO,LD_OR,
+    log_fn(LOG_INFO, LD_OR,
            "Scheduled a netflow padding cell, but connection already closed.");
     return;
   }
@@ -387,7 +387,7 @@ channelpadding_send_padding_cell_for_callback(channel_t *chan)
   {
     uint64_t now = monotime_coarse_absolute_msec();
 
-    log_fn(LOG_INFO,LD_OR,
+    log_fn(LOG_INFO, LD_OR,
         "Sending netflow keepalive on "U64_FORMAT" to %s (%s) after "
         I64_FORMAT" ms. Delta "I64_FORMAT"ms",
         U64_PRINTF_ARG(chan->global_identifier),
@@ -431,7 +431,7 @@ channelpadding_send_padding_callback(tor_timer_t *timer, void *args,
 
     channelpadding_send_padding_cell_for_callback(chan);
   } else {
-     log_fn(LOG_INFO,LD_OR,
+     log_fn(LOG_INFO, LD_OR,
             "Channel closed while waiting for timer.");
   }
 
@@ -689,7 +689,7 @@ channelpadding_reduce_padding_on_channel(channel_t *chan)
   chan->padding_timeout_low_ms = consensus_nf_ito_low_reduced;
   chan->padding_timeout_high_ms = consensus_nf_ito_high_reduced;
 
-  log_fn(LOG_INFO,LD_OR,
+  log_fn(LOG_INFO, LD_OR,
          "Reduced padding on channel "U64_FORMAT": lo=%d, hi=%d",
          U64_PRINTF_ARG(chan->global_identifier),
          chan->padding_timeout_low_ms, chan->padding_timeout_high_ms);

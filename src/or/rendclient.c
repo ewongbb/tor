@@ -54,7 +54,7 @@ rend_client_introcirc_has_opened(origin_circuit_t *circ)
   tor_assert(circ->base_.purpose == CIRCUIT_PURPOSE_C_INTRODUCING);
   tor_assert(circ->cpath);
 
-  log_info(LD_REND,"introcirc is open");
+  log_info(LD_REND, "introcirc is open");
   connection_ap_attach_pending(1);
 }
 
@@ -228,7 +228,7 @@ rend_client_send_introduction(origin_circuit_t *introcirc,
                                  tmp+v3_shift+7+DIGEST_LEN+2,
                                  sizeof(tmp)-(v3_shift+7+DIGEST_LEN+2));
     if (klen < 0) {
-      log_warn(LD_BUG,"Internal error: can't encode public key.");
+      log_warn(LD_BUG, "Internal error: can't encode public key.");
       status = -2;
       goto perm_err;
     }
@@ -260,7 +260,7 @@ rend_client_send_introduction(origin_circuit_t *introcirc,
                                       (int)(dh_offset+DH_KEY_LEN),
                                       PK_PKCS1_OAEP_PADDING, 0);
   if (r<0) {
-    log_warn(LD_BUG,"Internal error: hybrid pk encrypt failed.");
+    log_warn(LD_BUG, "Internal error: hybrid pk encrypt failed.");
     status = -2;
     goto perm_err;
   }
@@ -315,7 +315,7 @@ rend_client_rendcirc_has_opened(origin_circuit_t *circ)
 {
   tor_assert(circ->base_.purpose == CIRCUIT_PURPOSE_C_ESTABLISH_REND);
 
-  log_info(LD_REND,"rendcirc is open");
+  log_info(LD_REND, "rendcirc is open");
 
   /* generate a rendezvous cookie, store it in circ */
   if (rend_client_send_establish_rendezvous(circ) < 0) {
@@ -367,7 +367,7 @@ rend_client_introduction_acked(origin_circuit_t *circ,
     /* Locate the rend circ which is waiting to hear about this ack,
      * and tell it.
      */
-    log_info(LD_REND,"Received ack. Telling rend circ...");
+    log_info(LD_REND, "Received ack. Telling rend circ...");
     rendcirc = circuit_get_ready_rend_circ_by_rend_data(circ->rend_data);
     if (rendcirc) { /* remember the ack */
       assert_circ_anonymity_ok(rendcirc, options);
@@ -378,7 +378,7 @@ rend_client_introduction_acked(origin_circuit_t *circ,
        * _C_REND_READY_INTRO_ACKED state. */
       rendcirc->base_.timestamp_dirty = time(NULL);
     } else {
-      log_info(LD_REND,"...Found no rend circ. Dropping on the floor.");
+      log_info(LD_REND, "...Found no rend circ. Dropping on the floor.");
     }
     /* close the circuit: we won't need it anymore. */
     circuit_change_purpose(TO_CIRCUIT(circ),
@@ -849,7 +849,7 @@ rend_client_report_intro_point_failure(extend_info_t *failed_intro,
 
     return 0;
   }
-  log_info(LD_REND,"%d options left for %s.",
+  log_info(LD_REND, "%d options left for %s.",
            smartlist_len(ent->parsed->intro_nodes),
            escaped_safe_str_client(onion_address));
   return 1;
@@ -861,7 +861,7 @@ rend_client_receive_rendezvous(origin_circuit_t *circ, const uint8_t *request,
                                size_t request_len)
 {
   if (request_len != DH_KEY_LEN+DIGEST_LEN) {
-    log_warn(LD_PROTOCOL,"Incorrect length (%d) on RENDEZVOUS2 cell.",
+    log_warn(LD_PROTOCOL, "Incorrect length (%d) on RENDEZVOUS2 cell.",
              (int)request_len);
     goto err;
   }
@@ -907,7 +907,7 @@ rend_client_desc_trynow(const char *query)
         rend_client_any_intro_points_usable(entry)) {
       /* either this fetch worked, or it failed but there was a
        * valid entry from before which we should reuse */
-      log_info(LD_REND,"Rend desc is usable. Launching circuits.");
+      log_info(LD_REND, "Rend desc is usable. Launching circuits.");
       base_conn->state = AP_CONN_STATE_CIRCUIT_WAIT;
 
       /* restart their timeout values, so they get a fair shake at
@@ -918,7 +918,7 @@ rend_client_desc_trynow(const char *query)
 
       connection_ap_mark_as_pending_circuit(conn);
     } else { /* 404, or fetch didn't get that far */
-      log_notice(LD_REND,"Closing stream for '%s.onion': hidden service is "
+      log_notice(LD_REND, "Closing stream for '%s.onion': hidden service is "
                  "unavailable (try again later).",
                  safe_str_client(query));
       connection_mark_unattached_ap(conn, END_STREAM_REASON_RESOLVEFAILED);

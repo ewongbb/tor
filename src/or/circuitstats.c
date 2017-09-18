@@ -934,8 +934,8 @@ circuit_build_times_parse_state(circuit_build_times_t *cbt,
       smartlist_free(args);
       break;
     } else {
-      const char *ms_str = smartlist_get(args,0);
-      const char *count_str = smartlist_get(args,1);
+      const char *ms_str = smartlist_get(args, 0);
+      const char *count_str = smartlist_get(args, 1);
       uint32_t count, k;
       build_time_t ms;
       int ok;
@@ -1044,7 +1044,7 @@ circuit_build_times_update_alpha(circuit_build_times_t *cbt)
 {
   build_time_t *x=cbt->circuit_build_times;
   double a = 0;
-  int n=0,i=0,abandoned_count=0;
+  int n=0, i=0, abandoned_count=0;
   build_time_t max_time=0;
 
   /* http://en.wikipedia.org/wiki/Pareto_distribution#Parameter_estimation */
@@ -1141,7 +1141,7 @@ circuit_build_times_calculate_timeout(circuit_build_times_t *cbt,
 
   if (cbt->alpha > 0) {
     double p;
-    p = pow(1.0-quantile,1.0/cbt->alpha);
+    p = pow(1.0-quantile, 1.0/cbt->alpha);
     if (p > 0) {
       ret = cbt->Xm/p;
     }
@@ -1161,7 +1161,7 @@ circuit_build_times_cdf(circuit_build_times_t *cbt, double x)
 {
   double ret;
   tor_assert(cbt->Xm > 0);
-  ret = 1.0-pow(cbt->Xm/x,cbt->alpha);
+  ret = 1.0-pow(cbt->Xm/x, cbt->alpha);
   tor_assert(0 <= ret && ret <= 1.0);
   return ret;
 }
@@ -1473,7 +1473,7 @@ circuit_build_times_network_check_changed(circuit_build_times_t *cbt)
 double
 circuit_build_times_timeout_rate(const circuit_build_times_t *cbt)
 {
-  int i=0,timeouts=0;
+  int i=0, timeouts=0;
   for (i = 0; i < CBT_NCIRCUITS_TO_OBSERVE; i++) {
     if (cbt->circuit_build_times[i] >= cbt->timeout_ms) {
        timeouts++;
@@ -1492,7 +1492,7 @@ circuit_build_times_timeout_rate(const circuit_build_times_t *cbt)
 double
 circuit_build_times_close_rate(const circuit_build_times_t *cbt)
 {
-  int i=0,closed=0;
+  int i=0, closed=0;
   for (i = 0; i < CBT_NCIRCUITS_TO_OBSERVE; i++) {
     if (cbt->circuit_build_times[i] == CBT_BUILD_ABANDONED) {
        closed++;
@@ -1666,7 +1666,7 @@ circuit_build_times_set_timeout(circuit_build_times_t *cbt)
              timeout_rate);
   } else {
     log_info(LD_CIRC,
-             "Set circuit build timeout to %lds (%fms, %fms, Xm: %d, a: %f,"
+             "Set circuit build timeout to %lds (%fms, %fms, Xm: %d, a: %f, "
              " r: %f) based on %d circuit times",
              tor_lround(cbt->timeout_ms/1000),
              cbt->timeout_ms, cbt->close_ms, cbt->Xm, cbt->alpha, timeout_rate,

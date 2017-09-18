@@ -142,18 +142,18 @@ static char last_sent_bootstrap_message[BOOTSTRAP_MSG_LEN];
 
 static void connection_printf_to_buf(control_connection_t *conn,
                                      const char *format, ...)
-  CHECK_PRINTF(2,3);
+  CHECK_PRINTF(2, 3);
 static void send_control_event_impl(uint16_t event,
                                     const char *format, va_list ap)
-  CHECK_PRINTF(2,0);
+  CHECK_PRINTF(2, 0);
 static int control_event_status(int type, int severity, const char *format,
                                 va_list args)
-  CHECK_PRINTF(3,0);
+  CHECK_PRINTF(3, 0);
 
 static void send_control_done(control_connection_t *conn);
 static void send_control_event(uint16_t event,
                                const char *format, ...)
-  CHECK_PRINTF(2,3);
+  CHECK_PRINTF(2, 3);
 static int handle_control_setconf(control_connection_t *conn, uint32_t len,
                                   char *body);
 static int handle_control_resetconf(control_connection_t *conn, uint32_t len,
@@ -558,7 +558,7 @@ connection_printf_to_buf(control_connection_t *conn, const char *format, ...)
   char *buf = NULL;
   int len;
 
-  va_start(ap,format);
+  va_start(ap, format);
   len = tor_vasprintf(&buf, format, ap);
   va_end(ap);
 
@@ -606,7 +606,7 @@ control_ports_write_to_file(void)
 #ifndef _WIN32
   if (options->ControlPortFileGroupReadable) {
     if (chmod(options->ControlPortWriteToFile, 0640)) {
-      log_warn(LD_FS,"Unable to make %s group-readable.",
+      log_warn(LD_FS, "Unable to make %s group-readable.",
                options->ControlPortWriteToFile);
     }
   }
@@ -694,7 +694,7 @@ get_block_event_queue(void)
  * of Tor.
  */
 MOCK_IMPL(STATIC void,
-queue_control_event_string,(uint16_t event, char *msg))
+queue_control_event_string, (uint16_t event, char *msg))
 {
   /* This is redundant with checks done elsewhere, but it's a last-ditch
    * attempt to avoid queueing something we shouldn't have to queue. */
@@ -829,7 +829,7 @@ flush_queued_events_cb(evutil_socket_t fd, short what, void *arg)
  * The EXTENDED_FORMAT and NONEXTENDED_FORMAT flags behave similarly with
  * respect to the EXTENDED_EVENTS feature. */
 MOCK_IMPL(STATIC void,
-send_control_event_string,(uint16_t event,
+send_control_event_string, (uint16_t event,
                            const char *msg))
 {
   tor_assert(event >= EVENT_MIN_ && event <= EVENT_MAX_);
@@ -962,7 +962,7 @@ control_setconf_helper(control_connection_t *conn, uint32_t len, char *body,
   smartlist_free(entries);
 
   if (config_get_lines(config, &lines, 0) < 0) {
-    log_warn(LD_CONTROL,"Controller gave us config lines we can't parse.");
+    log_warn(LD_CONTROL, "Controller gave us config lines we can't parse.");
     connection_write_str_to_buf("551 Couldn't parse configuration\r\n",
                                 conn);
     tor_free(config);
@@ -1041,7 +1041,7 @@ handle_control_getconf(control_connection_t *conn, uint32_t body_len,
     if (!option_is_recognized(q)) {
       smartlist_add(unrecognized, (char*) q);
     } else {
-      config_line_t *answer = option_get_assignment(options,q);
+      config_line_t *answer = option_get_assignment(options, q);
       if (!answer) {
         const char *name = option_get_canonical_name(q);
         smartlist_add_asprintf(answers, "250-%s\r\n", name);
@@ -1417,8 +1417,8 @@ handle_control_authenticate(control_connection_t *conn, uint32_t len,
     } else {
       SMARTLIST_FOREACH(sl, char *, expected,
       {
-        secret_to_key_rfc2440(received,DIGEST_LEN,
-                              password,password_len,expected);
+        secret_to_key_rfc2440(received, DIGEST_LEN,
+                              password, password_len, expected);
         if (tor_memeq(expected + S2K_RFC2440_SPECIFIER_LEN,
                       received, DIGEST_LEN))
           goto ok;
@@ -1604,8 +1604,8 @@ handle_control_mapaddress(control_connection_t *conn, uint32_t len,
     tor_strlower(line);
     smartlist_split_string(elts, line, "=", 0, 2);
     if (smartlist_len(elts) == 2) {
-      const char *from = smartlist_get(elts,0);
-      const char *to = smartlist_get(elts,1);
+      const char *from = smartlist_get(elts, 0);
+      const char *to = smartlist_get(elts, 1);
       if (address_is_invalid_mapaddress_target(to)) {
         smartlist_add_asprintf(reply,
                      "512-syntax error: invalid address '%s'", to);
@@ -1614,7 +1614,7 @@ handle_control_mapaddress(control_connection_t *conn, uint32_t len,
       } else if (!strcmp(from, ".") || !strcmp(from, "0.0.0.0") ||
                  !strcmp(from, "::")) {
         const char type =
-          !strcmp(from,".") ? RESOLVED_TYPE_HOSTNAME :
+          !strcmp(from, ".") ? RESOLVED_TYPE_HOSTNAME :
           (!strcmp(from, "0.0.0.0") ? RESOLVED_TYPE_IPV4 : RESOLVED_TYPE_IPV6);
         const char *address = addressmap_register_virtual_address(
                                                      type, tor_strdup(to));
@@ -1656,7 +1656,7 @@ handle_control_mapaddress(control_connection_t *conn, uint32_t len,
   smartlist_free(elts);
 
   if (smartlist_len(reply)) {
-    ((char*)smartlist_get(reply,smartlist_len(reply)-1))[3] = ' ';
+    ((char*)smartlist_get(reply, smartlist_len(reply)-1))[3] = ' ';
     r = smartlist_join_strings(reply, "\r\n", 1, &sz);
     connection_buf_add(r, sz, TO_CONN(conn));
     tor_free(r);
@@ -2559,7 +2559,7 @@ circuit_describe_status_for_controller(origin_circuit_t *circ)
 
     /* Only emit a BUILD_FLAGS argument if it will have a non-empty value. */
     if (smartlist_len(flaglist)) {
-      flaglist_joined = smartlist_join_strings(flaglist, ",", 0, NULL);
+      flaglist_joined = smartlist_join_strings(flaglist, ", ", 0, NULL);
 
       smartlist_add_asprintf(descparts, "BUILD_FLAGS=%s", flaglist_joined);
 
@@ -2698,7 +2698,7 @@ getinfo_helper_events(control_connection_t *control_conn,
         origin_circ = TO_ORIGIN_CIRCUIT(circ);
       write_stream_target_to_buf(conn, buf, sizeof(buf));
       smartlist_add_asprintf(status, "%lu %s %lu %s",
-                   (unsigned long) base_conn->global_identifier,state,
+                   (unsigned long) base_conn->global_identifier, state,
                    origin_circ?
                          (unsigned long)origin_circ->global_identifier : 0ul,
                    buf);
@@ -3072,7 +3072,7 @@ static const getinfo_item_t getinfo_items[] = {
   ITEM("network-liveness", liveness,
        "Current opinion on whether the network is live"),
   ITEM("circuit-status", events, "List of current circuits originating here."),
-  ITEM("stream-status", events,"List of current streams."),
+  ITEM("stream-status", events, "List of current streams."),
   ITEM("orconn-status", events, "A list of current OR connections."),
   ITEM("dormant", misc,
        "Is Tor dormant (not building circuits because it's idle)?"),
@@ -3101,7 +3101,7 @@ static const getinfo_item_t getinfo_items[] = {
       "Number of versioning authorities agreeing on the status of the "
       "current version"),
   ITEM("address", misc, "IP address of this Tor host, if we can guess it."),
-  ITEM("traffic/read", misc,"Bytes read since the process was started."),
+  ITEM("traffic/read", misc, "Bytes read since the process was started."),
   ITEM("traffic/written", misc,
        "Bytes written since the process was started."),
   ITEM("process/pid", misc, "Process id belonging to the main tor process."),
@@ -3111,7 +3111,7 @@ static const getinfo_item_t getinfo_items[] = {
   ITEM("process/descriptor-limit", misc, "File descriptor limit."),
   ITEM("limits/max-mem-in-queues", misc, "Actual limit on memory in queues"),
   PREFIX("desc-annotations/id/", dir, "Router annotations by hexdigest."),
-  PREFIX("dir/server/", dir,"Router descriptors as retrieved from a DirPort."),
+  PREFIX("dir/server/", dir, "Router descriptors as retrieved from a DirPort."),
   PREFIX("dir/status/", dir,
          "v2 networkstatus docs as retrieved from a DirPort."),
   ITEM("dir/status-vote/current/consensus", dir,
@@ -3293,10 +3293,10 @@ getargs_helper(const char *command, control_connection_t *conn,
   smartlist_split_string(args, body, " ",
                          SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
   if (smartlist_len(args) < min_args) {
-    connection_printf_to_buf(conn, "512 Missing argument to %s\r\n",command);
+    connection_printf_to_buf(conn, "512 Missing argument to %s\r\n", command);
     goto err;
   } else if (max_args >= 0 && smartlist_len(args) > max_args) {
-    connection_printf_to_buf(conn, "512 Too many arguments to %s\r\n",command);
+    connection_printf_to_buf(conn, "512 Too many arguments to %s\r\n", command);
     goto err;
   }
   return args;
@@ -3350,7 +3350,7 @@ handle_control_extendcircuit(control_connection_t *conn, uint32_t len,
   if (!args)
     goto done;
 
-  zero_circ = !strcmp("0", (char*)smartlist_get(args,0));
+  zero_circ = !strcmp("0", (char*)smartlist_get(args, 0));
 
   if (zero_circ) {
     const char *purp = find_element_starting_with(args, 1, "PURPOSE=");
@@ -3379,11 +3379,11 @@ handle_control_extendcircuit(control_connection_t *conn, uint32_t len,
       smartlist_free(args);
       goto done;
     }
-    // "EXTENDCIRCUIT 0 router1,router2" ||
-    // "EXTENDCIRCUIT 0 router1,router2 PURPOSE=foo"
+    // "EXTENDCIRCUIT 0 router1, router2" ||
+    // "EXTENDCIRCUIT 0 router1, router2 PURPOSE=foo"
   }
 
-  if (!zero_circ && !(circ = get_circ(smartlist_get(args,0)))) {
+  if (!zero_circ && !(circ = get_circ(smartlist_get(args, 0)))) {
     connection_printf_to_buf(conn, "552 Unknown circuit \"%s\"\r\n",
                              (char*)smartlist_get(args, 0));
     SMARTLIST_FOREACH(args, char *, cp, tor_free(cp));
@@ -3399,7 +3399,7 @@ handle_control_extendcircuit(control_connection_t *conn, uint32_t len,
     goto done;
   }
 
-  smartlist_split_string(router_nicknames, smartlist_get(args,1), ",", 0, 0);
+  smartlist_split_string(router_nicknames, smartlist_get(args, 1), ", ", 0, 0);
 
   SMARTLIST_FOREACH(args, char *, cp, tor_free(cp));
   smartlist_free(args);
@@ -3496,14 +3496,14 @@ handle_control_setcircuitpurpose(control_connection_t *conn,
   if (!args)
     goto done;
 
-  if (!(circ = get_circ(smartlist_get(args,0)))) {
+  if (!(circ = get_circ(smartlist_get(args, 0)))) {
     connection_printf_to_buf(conn, "552 Unknown circuit \"%s\"\r\n",
                              (char*)smartlist_get(args, 0));
     goto done;
   }
 
   {
-    const char *purp = find_element_starting_with(args,1,"PURPOSE=");
+    const char *purp = find_element_starting_with(args, 1, "PURPOSE=");
     if (!purp) {
       connection_write_str_to_buf("552 No purpose given\r\n", conn);
       goto done;
@@ -3544,7 +3544,7 @@ handle_control_attachstream(control_connection_t *conn, uint32_t len,
   if (!args)
     return 0;
 
-  zero_circ = !strcmp("0", (char*)smartlist_get(args,1));
+  zero_circ = !strcmp("0", (char*)smartlist_get(args, 1));
 
   if (!(ap_conn = get_stream(smartlist_get(args, 0)))) {
     connection_printf_to_buf(conn, "552 Unknown stream \"%s\"\r\n",
@@ -3553,7 +3553,7 @@ handle_control_attachstream(control_connection_t *conn, uint32_t len,
     connection_printf_to_buf(conn, "552 Unknown circuit \"%s\"\r\n",
                              (char*)smartlist_get(args, 1));
   } else if (circ) {
-    const char *hopstring = find_element_starting_with(args,2,"HOP=");
+    const char *hopstring = find_element_starting_with(args, 2, "HOP=");
     if (hopstring) {
       hopstring += strlen("HOP=");
       hop = (int) tor_parse_ulong(hopstring, 10, 0, INT_MAX,
@@ -3680,7 +3680,7 @@ handle_control_postdescriptor(control_connection_t *conn, uint32_t len,
     break;
   case 0:
     if (!msg) msg = "Descriptor not added";
-    connection_printf_to_buf(conn, "251 %s\r\n",msg);
+    connection_printf_to_buf(conn, "251 %s\r\n", msg);
     break;
   case 1:
     send_control_done(conn);
@@ -3763,7 +3763,7 @@ handle_control_closestream(control_connection_t *conn, uint32_t len,
     connection_printf_to_buf(conn, "552 Unknown stream \"%s\"\r\n",
                              (char*)smartlist_get(args, 0));
   else {
-    reason = (uint8_t) tor_parse_ulong(smartlist_get(args,1), 10, 0, 255,
+    reason = (uint8_t) tor_parse_ulong(smartlist_get(args, 1), 10, 0, 255,
                                        &ok, NULL);
     if (!ok) {
       connection_printf_to_buf(conn, "552 Unrecognized reason \"%s\"\r\n",
@@ -3806,7 +3806,7 @@ handle_control_closecircuit(control_connection_t *conn, uint32_t len,
         safe = 1;
       else
         log_info(LD_CONTROL, "Skipping unknown option %s",
-                 (char*)smartlist_get(args,i));
+                 (char*)smartlist_get(args, i));
     }
   }
   SMARTLIST_FOREACH(args, char *, cp, tor_free(cp));
@@ -3914,7 +3914,7 @@ handle_control_protocolinfo(control_connection_t *conn, uint32_t len,
         smartlist_add(mlist, (char*)"HASHEDPASSWORD");
       if (!cookies && !passwd)
         smartlist_add(mlist, (char*)"NULL");
-      methods = smartlist_join_strings(mlist, ",", 0, NULL);
+      methods = smartlist_join_strings(mlist, ", ", 0, NULL);
       smartlist_free(mlist);
     }
 
@@ -4364,11 +4364,11 @@ handle_control_add_onion(control_connection_t *conn,
 
     const char *arg = smartlist_get(args, i);
     if (!strcasecmpstart(arg, port_prefix)) {
-      /* "Port=VIRTPORT[,TARGET]". */
+      /* "Port=VIRTPORT[, TARGET]". */
       const char *port_str = arg + strlen(port_prefix);
 
       rend_service_port_config_t *cfg =
-          rend_service_parse_port_config(port_str, ",", NULL);
+          rend_service_parse_port_config(port_str, ", ", NULL);
       if (!cfg) {
         connection_printf_to_buf(conn, "512 Invalid VIRTPORT/TARGET\r\n");
         goto out;
@@ -4384,7 +4384,7 @@ handle_control_add_onion(control_connection_t *conn,
         goto out;
       }
     } else if (!strcasecmpstart(arg, flags_prefix)) {
-      /* "Flags=Flag[,Flag]", where Flag can be:
+      /* "Flags=Flag[, Flag]", where Flag can be:
        *   * 'DiscardPK' - If tor generates the keypair, do not include it in
        *                   the response.
        *   * 'Detach' - Do not tie this onion service to any particular control
@@ -4406,7 +4406,7 @@ handle_control_add_onion(control_connection_t *conn,
       smartlist_t *flags = smartlist_new();
       int bad = 0;
 
-      smartlist_split_string(flags, arg + strlen(flags_prefix), ",",
+      smartlist_split_string(flags, arg + strlen(flags_prefix), ", ",
                              SPLIT_IGNORE_BLANK, 0);
       if (smartlist_len(flags) < 1) {
         connection_printf_to_buf(conn, "512 Invalid 'Flags' argument\r\n");
@@ -4860,7 +4860,7 @@ connection_control_reached_eof(control_connection_t *conn)
 {
   tor_assert(conn);
 
-  log_info(LD_CONTROL,"Control connection reached EOF. Closing.");
+  log_info(LD_CONTROL, "Control connection reached EOF. Closing.");
   connection_mark_for_close(TO_CONN(conn));
   return 0;
 }
@@ -5464,7 +5464,7 @@ control_event_stream_status(entry_connection_t *conn, stream_status_event_t tp,
      * dnsserv.c.
      */
     if (strcmp(ENTRY_TO_CONN(conn)->address, "(Tor_internal)") != 0) {
-      tor_snprintf(addrport_buf,sizeof(addrport_buf), " SOURCE_ADDR=%s:%d",
+      tor_snprintf(addrport_buf, sizeof(addrport_buf), " SOURCE_ADDR=%s:%d",
                    ENTRY_TO_CONN(conn)->address, ENTRY_TO_CONN(conn)->port);
     } else {
       /*
@@ -5765,7 +5765,7 @@ append_cell_stats_by_command(smartlist_t *event_parts, const char *key,
     }
   }
   if (smartlist_len(key_value_strings) > 0) {
-    char *joined = smartlist_join_strings(key_value_strings, ",", 0, NULL);
+    char *joined = smartlist_join_strings(key_value_strings, ", ", 0, NULL);
     smartlist_add_asprintf(event_parts, "%s=%s", key, joined);
     SMARTLIST_FOREACH(key_value_strings, char *, cp, tor_free(cp));
     tor_free(joined);
@@ -5914,7 +5914,7 @@ get_bw_samples(void)
     tor_assert(0 <= idx && idx < N_BW_EVENTS_TO_CACHE);
     const struct cached_bw_event_s *bwe = &cached_bw_events[idx];
 
-    smartlist_add_asprintf(elements, "%u,%u",
+    smartlist_add_asprintf(elements, "%u, %u",
                            (unsigned)bwe->n_read,
                            (unsigned)bwe->n_written);
 
@@ -6052,8 +6052,8 @@ control_event_address_mapped(const char *from, const char *to, time_t expires,
   else {
     char buf[ISO_TIME_LEN+1];
     char buf2[ISO_TIME_LEN+1];
-    format_local_iso_time(buf,expires);
-    format_iso_time(buf2,expires);
+    format_local_iso_time(buf, expires);
+    format_iso_time(buf2, expires);
     send_control_event(EVENT_ADDRMAP,
                                 "650 ADDRMAP %s %s \"%s\""
                                 " %s%sEXPIRES=\"%s\" CACHED=\"%s\"\r\n",
@@ -6273,8 +6273,8 @@ control_event_my_descriptor_changed(void)
 }
 
 /** Helper: sends a status event where <b>type</b> is one of
- * EVENT_STATUS_{GENERAL,CLIENT,SERVER}, where <b>severity</b> is one of
- * LOG_{NOTICE,WARN,ERR}, and where <b>format</b> is a printf-style format
+ * EVENT_STATUS_{GENERAL, CLIENT, SERVER}, where <b>severity</b> is one of
+ * LOG_{NOTICE, WARN, ERR}, and where <b>format</b> is a printf-style format
  * string corresponding to <b>args</b>. */
 static int
 control_event_status(int type, int severity, const char *format, va_list args)
@@ -6919,7 +6919,7 @@ rend_auth_type_to_string(rend_auth_type_t auth_type)
  * previous values returned by this function.
  */
 MOCK_IMPL(const char *,
-node_describe_longname_by_id,(const char *id_digest))
+node_describe_longname_by_id, (const char *id_digest))
 {
   static char longname[MAX_VERBOSE_NICKNAME_LEN+1];
   node_get_verbose_nickname_by_id(id_digest, longname);

@@ -233,10 +233,10 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
  * very short loops.
  *
  * By convention, we do not use this for loops which nest, or for loops over
- * 10 lines or so.  Use SMARTLIST_FOREACH_{BEGIN,END} for those.
+ * 10 lines or so.  Use SMARTLIST_FOREACH_{BEGIN, END} for those.
  */
 #define SMARTLIST_FOREACH(sl, type, var, cmd)                   \
-  SMARTLIST_FOREACH_BEGIN(sl,type,var) {                        \
+  SMARTLIST_FOREACH_BEGIN(sl, type, var) {                        \
     cmd;                                                        \
   } SMARTLIST_FOREACH_END(var)
 
@@ -283,7 +283,7 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
  *  SMARTLIST_FOREACH_JOIN(routerstatus_list, routerstatus_t *, rs,
  *                     routerinfo_list, routerinfo_t *, ri,
  *                    tor_memcmp(rs->identity_digest, ri->identity_digest, 20),
- *                     log_info(LD_GENERAL,"No match for %s", ri->nickname)) {
+ *                     log_info(LD_GENERAL, "No match for %s", ri->nickname)) {
  *    log_info(LD_GENERAL, "%s matches routerstatus %p", ri->nickname, rs);
  * } SMARTLIST_FOREACH_JOIN_END(rs, ri);
  **/
@@ -306,10 +306,10 @@ char *smartlist_join_strings2(smartlist_t *sl, const char *join,
  *        ++rs_sl_idx;
  *      }
  *    }
- *    log_info(LD_GENERAL,"No match for %s", ri->nickname);
+ *    log_info(LD_GENERAL, "No match for %s", ri->nickname);
  *    continue;
  *   matched_ri: {
- *    log_info(LD_GENERAL,"%s matches with routerstatus %p",ri->nickname,rs);
+ *    log_info(LD_GENERAL, "%s matches with routerstatus %p", ri->nickname, rs);
  *    }
  *  }
  */

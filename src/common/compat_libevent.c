@@ -237,7 +237,7 @@ tor_init_libevent_rng(void)
   return rv;
 }
 
-#if defined(LIBEVENT_VERSION_NUMBER) && LIBEVENT_VERSION_NUMBER >= V(2,1,1) \
+#if defined(LIBEVENT_VERSION_NUMBER) && LIBEVENT_VERSION_NUMBER >= V(2, 1, 1) \
   && !defined(TOR_UNIT_TESTS)
 void
 tor_gettimeofday_cached(struct timeval *tv)

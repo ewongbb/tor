@@ -108,7 +108,7 @@ trunnel_calloc(size_t a, size_t b)
      if (--trunnel_provoke_alloc_failure == 0)
        return NULL;
    }
-   return calloc(a,b);
+   return calloc(a, b);
 }
 static inline char *
 trunnel_strdup(const char *s)
@@ -124,7 +124,7 @@ trunnel_strdup(const char *s)
 #define trunnel_malloc(x) (malloc((x)))
 #endif
 #ifndef trunnel_calloc
-#define trunnel_calloc(a,b) (calloc((a),(b)))
+#define trunnel_calloc(a, b) (calloc((a), (b)))
 #endif
 #ifndef trunnel_strdup
 #define trunnel_strdup(s) (strdup((s)))
@@ -132,13 +132,13 @@ trunnel_strdup(const char *s)
 #endif
 
 #ifndef trunnel_realloc
-#define trunnel_realloc(a,b) realloc((a),(b))
+#define trunnel_realloc(a, b) realloc((a), (b))
 #endif
 
 #ifndef trunnel_free_
 #define trunnel_free_(x) (free(x))
 #endif
-#define trunnel_free(x) ((x) ? (trunnel_free_(x),0) : (0))
+#define trunnel_free(x) ((x) ? (trunnel_free_(x), 0) : (0))
 
 #ifndef trunnel_abort
 #define trunnel_abort() abort()
@@ -162,7 +162,7 @@ trunnel_strdup(const char *s)
 #else
 /** Return the 'n'th element of 'da'. */
 #define TRUNNEL_DYNARRAY_GET(da, n)             \
-  (((n) >= (da)->n_ ? (trunnel_abort(),0) : 0), (da)->elts_[(n)])
+  (((n) >= (da)->n_ ? (trunnel_abort(), 0) : 0), (da)->elts_[(n)])
 #endif
 
 /** Change the 'n'th element of 'da' to 'v'. */

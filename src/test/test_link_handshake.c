@@ -399,7 +399,7 @@ recv_certs_setup(const struct testcase_t *test)
   ccc1->cert_type = is_link ? 1 : 3;
   ccc2->cert_type = 2;
 
-  const tor_x509_cert_t *a,*b;
+  const tor_x509_cert_t *a, *b;
   const uint8_t *enca, *encb;
   size_t lena, lenb;
   tor_tls_get_my_certs(is_link ? 1 : 0, &a, &b);
@@ -1471,7 +1471,7 @@ AUTHENTICATE_FAIL(missing_ed_auth,
       test_link_handshake_recv_certs_ ## name, TT_FORK,         \
       &setup_recv_certs, (void*)"RSA-Link" }
 
-#define TEST_RCV_CERTS_RSA(name,type)                           \
+#define TEST_RCV_CERTS_RSA(name, type)                           \
   { "recv_certs/" #name ,                                       \
       test_link_handshake_recv_certs_ ## name, TT_FORK,         \
       &setup_recv_certs, (void*)type }

@@ -664,7 +664,7 @@ test_hid_serv_request_tracker(void *arg)
 
   /* Get request tracker and make sure it's empty */
   strmap_t *request_tracker = get_last_hid_serv_requests();
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 0);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 0);
 
   /* Let's register a hid serv request */
   hsdir = tor_malloc_zero(sizeof(routerstatus_t));
@@ -672,19 +672,19 @@ test_hid_serv_request_tracker(void *arg)
   retval = hs_lookup_last_hid_serv_request(hsdir, req_key_str_first,
                                            now, 1);
   tt_int_op(retval, OP_EQ, now);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 1);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 1);
 
   /* Let's lookup a non-existent hidserv request */
   retval = hs_lookup_last_hid_serv_request(hsdir, req_key_str_second,
                                            now+1, 0);
   tt_int_op(retval, OP_EQ, 0);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 1);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 1);
 
   /* Let's lookup a real hidserv request */
   retval = hs_lookup_last_hid_serv_request(hsdir, req_key_str_first,
                                            now+2, 0);
   tt_int_op(retval, OP_EQ, now); /* we got it */
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 1);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 1);
 
   /**********************************************************************/
 
@@ -694,11 +694,11 @@ test_hid_serv_request_tracker(void *arg)
   retval = hs_lookup_last_hid_serv_request(hsdir2, req_key_str_first,
                                            now+3, 1);
   tt_int_op(retval, OP_EQ, now+3);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 2);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 2);
 
   /* Check that we can clean the first request based on time */
   hs_clean_last_hid_serv_requests(now+3+REND_HID_SERV_DIR_REQUERY_PERIOD);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 1);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 1);
   /* Check that it doesn't exist anymore */
   retval = hs_lookup_last_hid_serv_request(hsdir, req_key_str_first,
                                            now+2, 0);
@@ -710,19 +710,19 @@ test_hid_serv_request_tracker(void *arg)
   retval = hs_lookup_last_hid_serv_request(hsdir3, req_key_str_small,
                                            now+4, 1);
   tt_int_op(retval, OP_EQ, now+4);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 2);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 2);
 
   /*************************** deleting entries **************************/
 
   /* Add another request with very short key */
   retval = hs_lookup_last_hid_serv_request(hsdir, "l",  now, 1);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 3);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 3);
 
   /* Try deleting entries with a dummy key. Check that our previous requests
    * are still there */
   tor_capture_bugs_(1);
   hs_purge_hid_serv_from_last_hid_serv_requests("a");
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 3);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 3);
   tor_end_capture_bugs_();
 
   /* Try another dummy key. Check that requests are still there */
@@ -731,21 +731,21 @@ test_hid_serv_request_tracker(void *arg)
     memset(dummy, 'Z', 2000);
     dummy[1999] = '\x00';
     hs_purge_hid_serv_from_last_hid_serv_requests(dummy);
-    tt_int_op(strmap_size(request_tracker),OP_EQ, 3);
+    tt_int_op(strmap_size(request_tracker), OP_EQ, 3);
   }
 
   /* Another dummy key! */
   hs_purge_hid_serv_from_last_hid_serv_requests(req_key_str_second);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 3);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 3);
 
   /* Now actually delete a request! */
   hs_purge_hid_serv_from_last_hid_serv_requests(req_key_str_first);
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 2);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 2);
 
   /* Purge it all! */
   hs_purge_last_hid_serv_requests();
   request_tracker = get_last_hid_serv_requests();
-  tt_int_op(strmap_size(request_tracker),OP_EQ, 0);
+  tt_int_op(strmap_size(request_tracker), OP_EQ, 0);
 
  done:
   tor_free(hsdir);
@@ -770,13 +770,13 @@ test_parse_extended_hostname(void *arg)
 
   tt_assert(BAD_HOSTNAME == parse_extended_hostname(address1));
   tt_assert(ONION_V2_HOSTNAME == parse_extended_hostname(address2));
-  tt_str_op(address2,OP_EQ, "aaaaaaaaaaaaaaaa");
+  tt_str_op(address2, OP_EQ, "aaaaaaaaaaaaaaaa");
   tt_assert(EXIT_HOSTNAME == parse_extended_hostname(address3));
   tt_assert(NORMAL_HOSTNAME == parse_extended_hostname(address4));
   tt_assert(ONION_V2_HOSTNAME == parse_extended_hostname(address5));
-  tt_str_op(address5,OP_EQ, "abcdefghijklmnop");
+  tt_str_op(address5, OP_EQ, "abcdefghijklmnop");
   tt_assert(ONION_V2_HOSTNAME == parse_extended_hostname(address6));
-  tt_str_op(address6,OP_EQ, "abcdefghijklmnop");
+  tt_str_op(address6, OP_EQ, "abcdefghijklmnop");
   tt_assert(BAD_HOSTNAME == parse_extended_hostname(address7));
   tt_assert(ONION_V3_HOSTNAME == parse_extended_hostname(address8));
   tt_str_op(address8, OP_EQ,

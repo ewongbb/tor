@@ -41,7 +41,7 @@
 #include "sandbox.h"
 #include "statefile.h"
 
-/** A list of state-file "abbreviations," for compatibility. */
+/** A list of state-file "abbreviations, " for compatibility. */
 static config_abbrev_t state_abbrevs_[] = {
   { "AccountingBytesReadInterval", "AccountingBytesReadInInterval", 0, 0 },
   { "HelperNode", "EntryGuard", 0, 0 },
@@ -54,11 +54,11 @@ static config_abbrev_t state_abbrevs_[] = {
 };
 
 /*XXXX these next two are duplicates or near-duplicates from config.c */
-#define VAR(name,conftype,member,initvalue)                             \
+#define VAR(name, conftype, member, initvalue)                             \
   { name, CONFIG_TYPE_ ## conftype, offsetof(or_state_t, member),       \
       initvalue }
 /** As VAR, but the option name and member name are the same. */
-#define V(member,conftype,initvalue)                                    \
+#define V(member, conftype, initvalue)                                    \
   VAR(#member, conftype, member, initvalue)
 
 /** Array of "state" variables saved to the ~/.tor/state file. */
@@ -70,7 +70,7 @@ static config_var_t state_vars_[] = {
   V(AccountingExpectedUsage,          MEMUNIT,  NULL),
   V(AccountingIntervalStart,          ISOTIME,  NULL),
   V(AccountingSecondsActive,          INTERVAL, NULL),
-  V(AccountingSecondsToReachSoftLimit,INTERVAL, NULL),
+  V(AccountingSecondsToReachSoftLimit, INTERVAL, NULL),
   V(AccountingSoftLimitHitAt,         ISOTIME,  NULL),
   V(AccountingBytesAtSoftLimit,       MEMUNIT,  NULL),
 
@@ -269,17 +269,17 @@ or_state_set(or_state_t *new_state)
   config_free(&state_format, global_state);
   global_state = new_state;
   if (entry_guards_parse_state(global_state, 1, &err)<0) {
-    log_warn(LD_GENERAL,"%s",err);
+    log_warn(LD_GENERAL, "%s", err);
     tor_free(err);
     ret = -1;
   }
   if (rep_hist_load_state(global_state, &err)<0) {
-    log_warn(LD_GENERAL,"Unparseable bandwidth history state: %s",err);
+    log_warn(LD_GENERAL, "Unparseable bandwidth history state: %s", err);
     tor_free(err);
     ret = -1;
   }
   if (circuit_build_times_parse_state(
-      get_circuit_build_times_mutable(),global_state) < 0) {
+      get_circuit_build_times_mutable(), global_state) < 0) {
     ret = -1;
   }
   return ret;
@@ -361,7 +361,7 @@ or_state_load(void)
     case FN_ERROR:
     case FN_DIR:
     default:
-      log_warn(LD_GENERAL,"State file \"%s\" is not a file? Failing.", fname);
+      log_warn(LD_GENERAL, "State file \"%s\" is not a file? Failing.", fname);
       goto done;
   }
   new_state = or_state_new();

@@ -14,12 +14,12 @@
  *
  *  In the case of INTRODUCE1 it provides encryption and MAC keys to
  *  encode/decode the encrypted blob (see hs_ntor_intro_cell_keys_t). The
- *  relevant pub functions are hs_ntor_{client,service}_get_introduce1_keys().
+ *  relevant pub functions are hs_ntor_{client, service}_get_introduce1_keys().
  *
  *  In the case of RENDEZVOUS1 it calculates the MAC required to authenticate
  *  the cell, and also provides the key seed that is used to derive the crypto
  *  material for rendezvous encryption (see hs_ntor_rend_cell_keys_t). The
- *  relevant pub functions are hs_ntor_{client,service}_get_rendezvous1_keys().
+ *  relevant pub functions are hs_ntor_{client, service}_get_rendezvous1_keys().
  *  It also provides a function (hs_ntor_circuit_key_expansion()) that does the
  *  rendezvous key expansion to setup end-to-end rend circuit keys.
  */
@@ -51,7 +51,7 @@
     ptr += len;                                 \
   } STMT_END
 
-/* Length of EXP(X,y) | EXP(X,b) | AUTH_KEY | B | X | Y | PROTOID */
+/* Length of EXP(X, y) | EXP(X, b) | AUTH_KEY | B | X | Y | PROTOID */
 #define REND_SECRET_HS_INPUT_LEN (CURVE25519_OUTPUT_LEN * 2 + \
   ED25519_PUBKEY_LEN + CURVE25519_PUBKEY_LEN * 3 + PROTOID_LEN)
 /* Length of auth_input = verify | AUTH_KEY | B | Y | X | PROTOID | "Server" */
@@ -142,7 +142,7 @@ get_rendezvous1_key_material(const uint8_t *rend_secret_hs_input,
   return bad;
 }
 
-/** Length of secret_input = EXP(B,x) | AUTH_KEY | X | B | PROTOID */
+/** Length of secret_input = EXP(B, x) | AUTH_KEY | X | B | PROTOID */
 #define INTRO_SECRET_HS_INPUT_LEN (CURVE25519_OUTPUT_LEN +ED25519_PUBKEY_LEN +\
   CURVE25519_PUBKEY_LEN + CURVE25519_PUBKEY_LEN + PROTOID_LEN)
 /* Length of info = m_hsexpand | subcredential */
@@ -196,7 +196,7 @@ get_introduce1_key_material(const uint8_t *secret_input,
   crypto_xof_free(xof);
 
   { /* Get the keys */
-    memcpy(&hs_ntor_intro_cell_keys_out->enc_key, keystream,CIPHER256_KEY_LEN);
+    memcpy(&hs_ntor_intro_cell_keys_out->enc_key, keystream, CIPHER256_KEY_LEN);
     memcpy(&hs_ntor_intro_cell_keys_out->mac_key,
            keystream+CIPHER256_KEY_LEN, DIGEST256_LEN);
   }
@@ -211,11 +211,11 @@ get_introduce1_key_material(const uint8_t *secret_input,
  *
  * For the client-side it looks like this:
  *
- *         intro_secret_hs_input = EXP(B,x) | AUTH_KEY | X | B | PROTOID
+ *         intro_secret_hs_input = EXP(B, x) | AUTH_KEY | X | B | PROTOID
  *
  * whereas for the service-side it looks like this:
  *
- *         intro_secret_hs_input = EXP(X,b) | AUTH_KEY | X | B | PROTOID
+ *         intro_secret_hs_input = EXP(X, b) | AUTH_KEY | X | B | PROTOID
  *
  * In this function, <b>dh_result</b> carries the EXP() result (and has size
  * CURVE25519_OUTPUT_LEN) <b>intro_auth_pubkey</b> is AUTH_KEY,
@@ -249,9 +249,9 @@ get_intro_secret_hs_input(const uint8_t *dh_result,
  *  both client and service code.
  *
  * The computation on the client side is:
- *  rend_secret_hs_input = EXP(X,y) | EXP(X,b) | AUTH_KEY | B | X | Y | PROTOID
+ *  rend_secret_hs_input = EXP(X, y) | EXP(X, b) | AUTH_KEY | B | X | Y | PROTOID
  * whereas on the service side it is:
- *  rend_secret_hs_input = EXP(Y,x) | EXP(B,x) | AUTH_KEY | B | X | Y | PROTOID
+ *  rend_secret_hs_input = EXP(Y, x) | EXP(B, x) | AUTH_KEY | B | X | Y | PROTOID
  *
  * where:
  * <b>dh_result1</b> and <b>dh_result2</b> carry the two EXP() results (of size
@@ -300,7 +300,7 @@ get_rend_secret_hs_input(const uint8_t *dh_result1, const uint8_t *dh_result2,
  *
  * The relevant calculations are as follows:
  *
- *     intro_secret_hs_input = EXP(B,x) | AUTH_KEY | X | B | PROTOID
+ *     intro_secret_hs_input = EXP(B, x) | AUTH_KEY | X | B | PROTOID
  *     info = m_hsexpand | subcredential
  *     hs_keys = KDF(intro_secret_hs_input | t_hsenc | info, S_KEY_LEN+MAC_LEN)
  *     ENC_KEY = hs_keys[0:S_KEY_LEN]
@@ -309,7 +309,7 @@ get_rend_secret_hs_input(const uint8_t *dh_result1, const uint8_t *dh_result2,
  * where:
  * <b>intro_auth_pubkey</b> is AUTH_KEY (found in HS descriptor),
  * <b>intro_enc_pubkey</b> is B (also found in HS descriptor),
- * <b>client_ephemeral_enc_keypair</b> is freshly generated keypair (x,X)
+ * <b>client_ephemeral_enc_keypair</b> is freshly generated keypair (x, X)
  * <b>subcredential</b> is the hidden service subcredential (of size
  * DIGEST256_LEN). */
 int
@@ -330,7 +330,7 @@ hs_ntor_client_get_introduce1_keys(
   tor_assert(subcredential);
   tor_assert(hs_ntor_intro_cell_keys_out);
 
-  /* Calculate EXP(B,x) */
+  /* Calculate EXP(B, x) */
   curve25519_handshake(dh_result,
                        &client_ephemeral_enc_keypair->seckey,
                        intro_enc_pubkey);
@@ -362,7 +362,7 @@ hs_ntor_client_get_introduce1_keys(
  *
  * The relevant calculations are as follows:
  *
- *  rend_secret_hs_input = EXP(Y,x) | EXP(B,x) | AUTH_KEY | B | X | Y | PROTOID
+ *  rend_secret_hs_input = EXP(Y, x) | EXP(B, x) | AUTH_KEY | B | X | Y | PROTOID
  *  NTOR_KEY_SEED = MAC(rend_secret_hs_input, t_hsenc)
  *  verify = MAC(rend_secret_hs_input, t_hsverify)
  *  auth_input = verify | AUTH_KEY | B | Y | X | PROTOID | "Server"
@@ -370,7 +370,7 @@ hs_ntor_client_get_introduce1_keys(
  *
  * where:
  * <b>intro_auth_pubkey</b> is AUTH_KEY (found in HS descriptor),
- * <b>client_ephemeral_enc_keypair</b> is freshly generated keypair (x,X)
+ * <b>client_ephemeral_enc_keypair</b> is freshly generated keypair (x, X)
  * <b>intro_enc_pubkey</b> is B (also found in HS descriptor),
  * <b>service_ephemeral_rend_pubkey</b> is Y (SERVER_PK in RENDEZVOUS1 cell) */
 int
@@ -434,7 +434,7 @@ hs_ntor_client_get_rendezvous1_keys(
  *
  * The relevant calculations are as follows:
  *
- *    intro_secret_hs_input = EXP(X,b) | AUTH_KEY | X | B | PROTOID
+ *    intro_secret_hs_input = EXP(X, b) | AUTH_KEY | X | B | PROTOID
  *    info = m_hsexpand | subcredential
  *    hs_keys = KDF(intro_secret_hs_input | t_hsenc | info, S_KEY_LEN+MAC_LEN)
  *    HS_DEC_KEY = hs_keys[0:S_KEY_LEN]
@@ -442,7 +442,7 @@ hs_ntor_client_get_rendezvous1_keys(
  *
  * where:
  * <b>intro_auth_pubkey</b> is AUTH_KEY (introduction point auth key),
- * <b>intro_enc_keypair</b> is (b,B) (introduction point encryption keypair),
+ * <b>intro_enc_keypair</b> is (b, B) (introduction point encryption keypair),
  * <b>client_ephemeral_enc_pubkey</b> is X (CLIENT_PK in INTRODUCE2 cell),
  * <b>subcredential</b> is the HS subcredential (of size DIGEST256_LEN) */
 int
@@ -495,7 +495,7 @@ hs_ntor_service_get_introduce1_keys(
  *
  * The relevant calculations are as follows:
  *
- *  rend_secret_hs_input = EXP(X,y) | EXP(X,b) | AUTH_KEY | B | X | Y | PROTOID
+ *  rend_secret_hs_input = EXP(X, y) | EXP(X, b) | AUTH_KEY | B | X | Y | PROTOID
  *  NTOR_KEY_SEED = MAC(rend_secret_hs_input, t_hsenc)
  *  verify = MAC(rend_secret_hs_input, t_hsverify)
  *  auth_input = verify | AUTH_KEY | B | Y | X | PROTOID | "Server"
@@ -503,8 +503,8 @@ hs_ntor_service_get_introduce1_keys(
  *
  * where:
  * <b>intro_auth_pubkey</b> is AUTH_KEY (intro point auth key),
- * <b>intro_enc_keypair</b> is (b,B) (intro point enc keypair)
- * <b>service_ephemeral_rend_keypair</b> is a fresh (y,Y) keypair
+ * <b>intro_enc_keypair</b> is (b, B) (intro point enc keypair)
+ * <b>service_ephemeral_rend_keypair</b> is a fresh (y, Y) keypair
  * <b>client_ephemeral_enc_pubkey</b> is X (CLIENT_PK in INTRODUCE2 cell) */
 int
 hs_ntor_service_get_rendezvous1_keys(

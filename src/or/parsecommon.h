@@ -216,7 +216,7 @@ typedef struct directory_token_t {
 typedef enum {
   NO_OBJ,        /**< No object, ever. */
   NEED_OBJ,      /**< Object is required. */
-  NEED_SKEY_1024,/**< Object is required, and must be a 1024 bit private key */
+  NEED_SKEY_1024, /**< Object is required, and must be a 1024 bit private key */
   NEED_KEY_1024, /**< Object is required, and must be a 1024 bit public key */
   NEED_KEY,      /**< Object is required, and must be a public key. */
   OBJ_OK,        /**< Object is optional. */
@@ -239,34 +239,34 @@ typedef enum {
 /**@{*/
 
 /** Appears to indicate the end of a table. */
-#define END_OF_TABLE { NULL, NIL_, 0,0,0, NO_OBJ, 0, INT_MAX, 0, 0 }
+#define END_OF_TABLE { NULL, NIL_, 0, 0, 0, NO_OBJ, 0, INT_MAX, 0, 0 }
 /** An item with no restrictions: used for obsolete document types */
-#define T(s,t,a,o)    { s, t, a, o, 0, INT_MAX, 0, 0 }
+#define T(s, t, a, o)    { s, t, a, o, 0, INT_MAX, 0, 0 }
 /** An item with no restrictions on multiplicity or location. */
-#define T0N(s,t,a,o)  { s, t, a, o, 0, INT_MAX, 0, 0 }
+#define T0N(s, t, a, o)  { s, t, a, o, 0, INT_MAX, 0, 0 }
 /** An item that must appear exactly once */
-#define T1(s,t,a,o)   { s, t, a, o, 1, 1, 0, 0 }
+#define T1(s, t, a, o)   { s, t, a, o, 1, 1, 0, 0 }
 /** An item that must appear exactly once, at the start of the document */
-#define T1_START(s,t,a,o)   { s, t, a, o, 1, 1, AT_START, 0 }
+#define T1_START(s, t, a, o)   { s, t, a, o, 1, 1, AT_START, 0 }
 /** An item that must appear exactly once, at the end of the document */
-#define T1_END(s,t,a,o)   { s, t, a, o, 1, 1, AT_END, 0 }
+#define T1_END(s, t, a, o)   { s, t, a, o, 1, 1, AT_END, 0 }
 /** An item that must appear one or more times */
-#define T1N(s,t,a,o)  { s, t, a, o, 1, INT_MAX, 0, 0 }
+#define T1N(s, t, a, o)  { s, t, a, o, 1, INT_MAX, 0, 0 }
 /** An item that must appear no more than once */
-#define T01(s,t,a,o)  { s, t, a, o, 0, 1, 0, 0 }
+#define T01(s, t, a, o)  { s, t, a, o, 0, 1, 0, 0 }
 /** An annotation that must appear no more than once */
-#define A01(s,t,a,o)  { s, t, a, o, 0, 1, 0, 1 }
+#define A01(s, t, a, o)  { s, t, a, o, 0, 1, 0, 1 }
 
 /** Argument multiplicity: any number of arguments. */
-#define ARGS        0,INT_MAX,0
+#define ARGS        0, INT_MAX, 0
 /** Argument multiplicity: no arguments. */
-#define NO_ARGS     0,0,0
+#define NO_ARGS     0, 0, 0
 /** Argument multiplicity: concatenate all arguments. */
-#define CONCAT_ARGS 1,1,1
+#define CONCAT_ARGS 1, 1, 1
 /** Argument multiplicity: at least <b>n</b> arguments. */
-#define GE(n)       n,INT_MAX,0
+#define GE(n)       n, INT_MAX, 0
 /** Argument multiplicity: exactly <b>n</b> arguments. */
-#define EQ(n)       n,n,0
+#define EQ(n)       n, n, 0
 /**@}*/
 
 /** Determines the parsing rules for a single token type. */

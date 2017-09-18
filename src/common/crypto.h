@@ -34,26 +34,26 @@
   The format is: 4 bits major, 8 bits minor, 8 bits fix, 8 bits patch, 4 bit
   status.
  */
-#define OPENSSL_VER(a,b,c,d,e)                                \
+#define OPENSSL_VER(a, b, c, d, e)                                \
   (((a)<<28) |                                                \
    ((b)<<20) |                                                \
    ((c)<<12) |                                                \
    ((d)<< 4) |                                                \
     (e))
-/** An openssl release number.  For example, OPENSSL_V(0,9,8,'j') is the
+/** An openssl release number.  For example, OPENSSL_V(0, 9, 8, 'j') is the
  * version for the released version of 0.9.8j */
-#define OPENSSL_V(a,b,c,d) \
-  OPENSSL_VER((a),(b),(c),(d)-'a'+1,0xf)
+#define OPENSSL_V(a, b, c, d) \
+  OPENSSL_VER((a), (b), (c), (d)-'a'+1, 0xf)
 /** An openssl release number for the first release in the series.  For
- * example, OPENSSL_V_NOPATCH(1,0,0) is the first released version of OpenSSL
+ * example, OPENSSL_V_NOPATCH(1, 0, 0) is the first released version of OpenSSL
  * 1.0.0. */
-#define OPENSSL_V_NOPATCH(a,b,c) \
-  OPENSSL_VER((a),(b),(c),0,0xf)
+#define OPENSSL_V_NOPATCH(a, b, c) \
+  OPENSSL_VER((a), (b), (c), 0, 0xf)
 /** The first version that would occur for any alpha or beta in an openssl
- * series. For example, OPENSSL_V_SERIES(0,9,8) is greater than any released
+ * series. For example, OPENSSL_V_SERIES(0, 9, 8) is greater than any released
  * 0.9.7, and less than any released 0.9.8. */
-#define OPENSSL_V_SERIES(a,b,c) \
-  OPENSSL_VER((a),(b),(c),0,0)
+#define OPENSSL_V_SERIES(a, b, c) \
+  OPENSSL_VER((a), (b), (c), 0, 0)
 
 /** Length of the output of our message digest. */
 #define DIGEST_LEN 20
@@ -142,7 +142,7 @@ void crypto_thread_cleanup(void);
 int crypto_global_cleanup(void);
 
 /* environment setup */
-MOCK_DECL(crypto_pk_t *,crypto_pk_new,(void));
+MOCK_DECL(crypto_pk_t *, crypto_pk_new, (void));
 void crypto_pk_free(crypto_pk_t *env);
 
 void crypto_set_tls_dh_prime(void);
@@ -155,7 +155,7 @@ crypto_cipher_t *crypto_cipher_new_with_iv_and_bits(const uint8_t *key,
 void crypto_cipher_free(crypto_cipher_t *env);
 
 /* public key crypto */
-MOCK_DECL(int, crypto_pk_generate_key_with_bits,(crypto_pk_t *env, int bits));
+MOCK_DECL(int, crypto_pk_generate_key_with_bits, (crypto_pk_t *env, int bits));
 #define crypto_pk_generate_key(env)                     \
   crypto_pk_generate_key_with_bits((env), (PK_BYTES*8))
 
@@ -187,10 +187,10 @@ int crypto_pk_public_encrypt(crypto_pk_t *env, char *to, size_t tolen,
 int crypto_pk_private_decrypt(crypto_pk_t *env, char *to, size_t tolen,
                               const char *from, size_t fromlen,
                               int padding, int warnOnFailure);
-MOCK_DECL(int, crypto_pk_public_checksig,(const crypto_pk_t *env,
+MOCK_DECL(int, crypto_pk_public_checksig, (const crypto_pk_t *env,
                                           char *to, size_t tolen,
                                           const char *from, size_t fromlen));
-MOCK_DECL(int, crypto_pk_public_checksig_digest,(crypto_pk_t *env,
+MOCK_DECL(int, crypto_pk_public_checksig_digest, (crypto_pk_t *env,
                                          const char *data, size_t datalen,
                                          const char *sig, size_t siglen));
 int crypto_pk_private_sign(const crypto_pk_t *env, char *to, size_t tolen,
@@ -211,7 +211,7 @@ crypto_pk_t *crypto_pk_asn1_decode(const char *str, size_t len);
 int crypto_pk_get_digest(const crypto_pk_t *pk, char *digest_out);
 int crypto_pk_get_common_digests(crypto_pk_t *pk,
                                  common_digests_t *digests_out);
-int crypto_pk_get_fingerprint(crypto_pk_t *pk, char *fp_out,int add_space);
+int crypto_pk_get_fingerprint(crypto_pk_t *pk, char *fp_out, int add_space);
 int crypto_pk_get_hashed_fingerprint(crypto_pk_t *pk, char *fp_out);
 
 int crypto_pk_base64_encode(const crypto_pk_t *pk, char **priv_out);
@@ -301,7 +301,7 @@ int crypto_expand_key_material_rfc5869_sha256(
 
 /* random numbers */
 int crypto_seed_rng(void) ATTR_WUR;
-MOCK_DECL(void,crypto_rand,(char *to, size_t n));
+MOCK_DECL(void, crypto_rand, (char *to, size_t n));
 void crypto_rand_unmocked(char *to, size_t n);
 void crypto_strongest_rand(uint8_t *out, size_t out_len);
 int crypto_rand_int(unsigned int max);
@@ -331,7 +331,7 @@ struct evp_pkey_st;
 struct dh_st;
 struct rsa_st *crypto_pk_get_rsa_(crypto_pk_t *env);
 crypto_pk_t *crypto_new_pk_from_rsa_(struct rsa_st *rsa);
-MOCK_DECL(struct evp_pkey_st *, crypto_pk_get_evp_pkey_,(crypto_pk_t *env,
+MOCK_DECL(struct evp_pkey_st *, crypto_pk_get_evp_pkey_, (crypto_pk_t *env,
                                                          int private));
 struct dh_st *crypto_dh_get_dh_(crypto_dh_t *dh);
 

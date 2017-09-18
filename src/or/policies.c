@@ -190,10 +190,10 @@ parse_addr_policy(config_line_t *cfg, smartlist_t **dest,
   result = smartlist_new();
   entries = smartlist_new();
   for (; cfg; cfg = cfg->next) {
-    smartlist_split_string(entries, cfg->value, ",",
+    smartlist_split_string(entries, cfg->value, ", ",
                            SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
     SMARTLIST_FOREACH_BEGIN(entries, const char *, ent) {
-      log_debug(LD_CONFIG,"Adding new entry '%s'",ent);
+      log_debug(LD_CONFIG, "Adding new entry '%s'", ent);
       malformed_list = 0;
       item = router_parse_addr_policy_item_from_string(ent, assume_action,
                                                        &malformed_list);
@@ -283,7 +283,7 @@ parse_reachable_addresses(void)
   /* We ignore ReachableAddresses for relays */
   if (!server_mode(options)) {
     if (policy_is_reject_star(reachable_or_addr_policy, AF_UNSPEC, 0)
-        || policy_is_reject_star(reachable_dir_addr_policy, AF_UNSPEC,0)) {
+        || policy_is_reject_star(reachable_dir_addr_policy, AF_UNSPEC, 0)) {
       log_warn(LD_CONFIG, "Tor cannot connect to the Internet if "
                "ReachableAddresses, ReachableORAddresses, or "
                "ReachableDirAddresses reject all addresses. Please accept "
@@ -1120,7 +1120,7 @@ validate_addr_policies(const or_options_t *options, char **msg)
   smartlist_t *addr_policy=NULL;
   *msg = NULL;
 
-  if (policies_parse_exit_policy_from_options(options,0,NULL,&addr_policy)) {
+  if (policies_parse_exit_policy_from_options(options, 0, NULL, &addr_policy)) {
     REJECT("Error in ExitPolicy entry.");
   }
 
@@ -1486,7 +1486,7 @@ compare_unknown_tor_addr_to_addr_policy(uint16_t port,
  * addresses (127.0.0.1, and so on).  But we'll try this for now.
  */
 MOCK_IMPL(addr_policy_result_t,
-compare_tor_addr_to_addr_policy,(const tor_addr_t *addr, uint16_t port,
+compare_tor_addr_to_addr_policy, (const tor_addr_t *addr, uint16_t port,
                                  const smartlist_t *policy))
 {
   if (!policy) {
@@ -1507,7 +1507,7 @@ compare_tor_addr_to_addr_policy,(const tor_addr_t *addr, uint16_t port,
 }
 
 /** Return true iff the address policy <b>a</b> covers every case that
- * would be covered by <b>b</b>, so that a,b is redundant. */
+ * would be covered by <b>b</b>, so that a, b is redundant. */
 static int
 addr_policy_covers(addr_policy_t *a, addr_policy_t *b)
 {
@@ -1562,7 +1562,7 @@ append_exit_policy_string(smartlist_t **policy, const char *more)
   tmp.value = (char*) more;
   tmp.next = NULL;
   if (parse_addr_policy(&tmp, policy, -1)<0) {
-    log_warn(LD_BUG, "Unable to parse internally generated policy %s",more);
+    log_warn(LD_BUG, "Unable to parse internally generated policy %s", more);
   }
 }
 
@@ -1827,7 +1827,7 @@ policies_log_first_redundant_entry(const smartlist_t *policy)
     if (p->prt_min <= 1 && p->prt_max == 65535 && p->maskbits == 0) {
       family = tor_addr_family(&p->addr);
       /* accept/reject *:* may have already been expanded into
-       * accept/reject *4:*,accept/reject *6:*
+       * accept/reject *4:*, accept/reject *6:*
        * But handle both forms.
        */
       if (family == AF_INET || family == AF_UNSPEC) {
@@ -1838,8 +1838,8 @@ policies_log_first_redundant_entry(const smartlist_t *policy)
       }
     }
 
-    /* We also find accept *4:*,reject *6:* ; and
-     * accept *4:*,<other policies>,accept *6:* ; and similar.
+    /* We also find accept *4:*, reject *6:* ; and
+     * accept *4:*, <other policies>, accept *6:* ; and similar.
      * That's ok, because they make any subsequent entries redundant. */
     if (found_ipv4_wildcard && found_ipv6_wildcard) {
       found_final_effective_entry = 1;
@@ -1873,9 +1873,9 @@ policies_log_first_redundant_entry(const smartlist_t *policy)
 }
 
 #define DEFAULT_EXIT_POLICY                                         \
-  "reject *:25,reject *:119,reject *:135-139,reject *:445,"         \
-  "reject *:563,reject *:1214,reject *:4661-4666,"                  \
-  "reject *:6346-6429,reject *:6699,reject *:6881-6999,accept *:*"
+  "reject *:25, reject *:119, reject *:135-139, reject *:445, "         \
+  "reject *:563, reject *:1214, reject *:4661-4666, "                  \
+  "reject *:6346-6429, reject *:6699, reject *:6881-6999, accept *:*"
 
 /** Parse the exit policy <b>cfg</b> into the linked list *<b>dest</b>.
  *
@@ -1980,7 +1980,7 @@ policies_parse_exit_policy(config_line_t *cfg, smartlist_t **dest,
   int reject_local_interfaces = (options &
                                  EXIT_POLICY_REJECT_LOCAL_INTERFACES) ? 1 : 0;
 
-  return policies_parse_exit_policy_internal(cfg,dest,ipv6_enabled,
+  return policies_parse_exit_policy_internal(cfg, dest, ipv6_enabled,
                                              reject_private,
                                              configured_addresses,
                                              reject_local_interfaces,
@@ -2561,7 +2561,7 @@ policy_summarize(smartlist_t *policy, sa_family_t family)
 
   /* Now create two lists of strings, one for accepted and one
    * for rejected ports.  We take care to merge ranges so that
-   * we avoid getting stuff like "1-4,5-9,10", instead we want
+   * we avoid getting stuff like "1-4, 5-9, 10", instead we want
    * "1-10"
    */
   i = 0;
@@ -2604,8 +2604,8 @@ policy_summarize(smartlist_t *policy, sa_family_t family)
     goto cleanup;
   }
 
-  accepts_str = smartlist_join_strings(accepts, ",", 0, &accepts_len);
-  rejects_str = smartlist_join_strings(rejects, ",", 0, &rejects_len);
+  accepts_str = smartlist_join_strings(accepts, ", ", 0, &accepts_len);
+  rejects_str = smartlist_join_strings(rejects, ", ", 0, &rejects_len);
 
   if (rejects_len > MAX_EXITPOLICY_SUMMARY_LEN-strlen("reject")-1 &&
       accepts_len > MAX_EXITPOLICY_SUMMARY_LEN-strlen("accept")-1) {
@@ -2614,10 +2614,10 @@ policy_summarize(smartlist_t *policy, sa_family_t family)
     prefix = "accept";
 
     c = shorter_str + (MAX_EXITPOLICY_SUMMARY_LEN-strlen(prefix)-1);
-    while (*c != ',' && c >= shorter_str)
+    while (*c != ', ' && c >= shorter_str)
       c--;
     tor_assert(c >= shorter_str);
-    tor_assert(*c == ',');
+    tor_assert(*c == ', ');
     *c = '\0';
 
   } else if (rejects_len < accepts_len) {
@@ -2671,7 +2671,7 @@ parse_short_policy(const char *summary)
 
   n_entries = 0;
   for ( ; *summary; summary = next) {
-    const char *comma = strchr(summary, ',');
+    const char *comma = strchr(summary, ', ');
     unsigned low, high;
     char dummy;
     char ent_buf[32];
@@ -2693,7 +2693,7 @@ parse_short_policy(const char *summary)
     if (len < 1) {
       /* empty; skip it. */
       /* XXX This happens to be unreachable, since if len==0, then *summary is
-       * ',' or '\0', and the TOR_ISDIGIT test above would have failed. */
+       * ', ' or '\0', and the TOR_ISDIGIT test above would have failed. */
       continue;
     }
 
@@ -2714,7 +2714,7 @@ parse_short_policy(const char *summary)
       }
       high = low;
     } else {
-      log_fn(LOG_PROTOCOL_WARN, LD_DIR,"Found bad entry in policy summary %s",
+      log_fn(LOG_PROTOCOL_WARN, LD_DIR, "Found bad entry in policy summary %s",
              escaped(orig_summary));
       return NULL;
     }
@@ -2762,7 +2762,7 @@ write_short_policy(const short_policy_t *policy)
       smartlist_add_asprintf(sl, "%d-%d", e->min_port, e->max_port);
     }
     if (i < policy->n_entries-1)
-      smartlist_add_strdup(sl, ",");
+      smartlist_add_strdup(sl, ", ");
   }
   answer = smartlist_join_strings(sl, "", 0, NULL);
   SMARTLIST_FOREACH(sl, char *, a, tor_free(a));
@@ -2792,7 +2792,7 @@ compare_tor_addr_to_short_policy(const tor_addr_t *addr, uint16_t port,
   tor_assert(port != 0);
 
   if (addr && tor_addr_is_null(addr))
-    addr = NULL; /* Unspec means 'no address at all,' in this context. */
+    addr = NULL; /* Unspec means 'no address at all, ' in this context. */
 
   if (addr && get_options()->ClientRejectInternalAddresses &&
       (tor_addr_is_internal(addr, 0) || tor_addr_is_loopback(addr)))
@@ -2905,7 +2905,7 @@ policy_dump_to_string(const smartlist_t *policy_list,
     }
 
     pbuf = tor_malloc(POLICY_BUF_LEN);
-    bytes_written_to_pbuf = policy_write_item(pbuf,POLICY_BUF_LEN, tmpe, 1);
+    bytes_written_to_pbuf = policy_write_item(pbuf, POLICY_BUF_LEN, tmpe, 1);
 
     if (bytes_written_to_pbuf < 0) {
       log_warn(LD_BUG, "policy_dump_to_string ran out of room!");
@@ -2913,7 +2913,7 @@ policy_dump_to_string(const smartlist_t *policy_list,
       goto done;
     }
 
-    smartlist_add(policy_string_list,pbuf);
+    smartlist_add(policy_string_list, pbuf);
   } SMARTLIST_FOREACH_END(tmpe);
 
   policy_string = smartlist_join_strings(policy_string_list, "\n", 0, NULL);
@@ -2950,7 +2950,7 @@ getinfo_helper_policies(control_connection_t *conn,
     }
 
     *answer = smartlist_join_strings(private_policy_strings,
-                                     ",", 0, NULL);
+                                     ", ", 0, NULL);
 
     SMARTLIST_FOREACH(private_policy_strings, char *, str, tor_free(str));
     smartlist_free(private_policy_strings);
@@ -3015,7 +3015,7 @@ getinfo_helper_policies(control_connection_t *conn,
       return -1;
     }
 
-    *answer = router_dump_exit_policy_to_string(me,include_ipv4,include_ipv6);
+    *answer = router_dump_exit_policy_to_string(me, include_ipv4, include_ipv6);
   }
   return 0;
 }
@@ -3084,7 +3084,7 @@ policies_free_all(void)
       if (++n > 10)
         break;
       if (policy_write_item(buf, sizeof(buf), (*ent)->policy, 0) >= 0)
-        log_warn(LD_MM,"  %d [%d]: %s", n, (*ent)->policy->refcnt, buf);
+        log_warn(LD_MM, "  %d [%d]: %s", n, (*ent)->policy->refcnt, buf);
     }
   }
   HT_CLEAR(policy_map, &policy_root);

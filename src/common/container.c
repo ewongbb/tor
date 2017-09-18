@@ -29,7 +29,7 @@
 /** Allocate and return an empty smartlist.
  */
 MOCK_IMPL(smartlist_t *,
-smartlist_new,(void))
+smartlist_new, (void))
 {
   smartlist_t *sl = tor_malloc(sizeof(smartlist_t));
   sl->num_used = 0;
@@ -42,7 +42,7 @@ smartlist_new,(void))
  * list's elements.
  */
 MOCK_IMPL(void,
-smartlist_free,(smartlist_t *sl))
+smartlist_free, (smartlist_t *sl))
 {
   if (!sl)
     return;
@@ -209,7 +209,7 @@ smartlist_contains(const smartlist_t *sl, const void *element)
 }
 
 /** Return true iff <b>sl</b> has some element E such that
- * !strcmp(E,<b>element</b>)
+ * !strcmp(E, <b>element</b>)
  */
 int
 smartlist_contains_string(const smartlist_t *sl, const char *element)
@@ -217,7 +217,7 @@ smartlist_contains_string(const smartlist_t *sl, const char *element)
   int i;
   if (!sl) return 0;
   for (i=0; i < sl->num_used; i++)
-    if (strcmp((const char*)sl->list[i],element)==0)
+    if (strcmp((const char*)sl->list[i], element)==0)
       return 1;
   return 0;
 }
@@ -230,7 +230,7 @@ smartlist_string_pos(const smartlist_t *sl, const char *element)
   int i;
   if (!sl) return -1;
   for (i=0; i < sl->num_used; i++)
-    if (strcmp((const char*)sl->list[i],element)==0)
+    if (strcmp((const char*)sl->list[i], element)==0)
       return i;
   return -1;
 }
@@ -249,7 +249,7 @@ smartlist_pos(const smartlist_t *sl, const void *element)
 }
 
 /** Return true iff <b>sl</b> has some element E such that
- * !strcasecmp(E,<b>element</b>)
+ * !strcasecmp(E, <b>element</b>)
  */
 int
 smartlist_contains_string_case(const smartlist_t *sl, const char *element)
@@ -257,7 +257,7 @@ smartlist_contains_string_case(const smartlist_t *sl, const char *element)
   int i;
   if (!sl) return 0;
   for (i=0; i < sl->num_used; i++)
-    if (strcasecmp((const char*)sl->list[i],element)==0)
+    if (strcasecmp((const char*)sl->list[i], element)==0)
       return 1;
   return 0;
 }
@@ -269,7 +269,7 @@ int
 smartlist_contains_int_as_string(const smartlist_t *sl, int num)
 {
   char buf[32]; /* long enough for 64-bit int, and then some. */
-  tor_snprintf(buf,sizeof(buf),"%d", num);
+  tor_snprintf(buf, sizeof(buf), "%d", num);
   return smartlist_contains_string(sl, buf);
 }
 
@@ -312,7 +312,7 @@ smartlist_ints_eq(const smartlist_t *sl1, const smartlist_t *sl2)
 }
 
 /** Return true iff <b>sl</b> has some element E such that
- * tor_memeq(E,<b>element</b>,DIGEST_LEN)
+ * tor_memeq(E, <b>element</b>, DIGEST_LEN)
  */
 int
 smartlist_contains_digest(const smartlist_t *sl, const char *element)
@@ -320,12 +320,12 @@ smartlist_contains_digest(const smartlist_t *sl, const char *element)
   int i;
   if (!sl) return 0;
   for (i=0; i < sl->num_used; i++)
-    if (tor_memeq((const char*)sl->list[i],element,DIGEST_LEN))
+    if (tor_memeq((const char*)sl->list[i], element, DIGEST_LEN))
       return 1;
   return 0;
 }
 
-/** Return true iff some element E of sl2 has smartlist_contains(sl1,E).
+/** Return true iff some element E of sl2 has smartlist_contains(sl1, E).
  */
 int
 smartlist_overlap(const smartlist_t *sl1, const smartlist_t *sl2)
@@ -337,7 +337,7 @@ smartlist_overlap(const smartlist_t *sl1, const smartlist_t *sl2)
   return 0;
 }
 
-/** Remove every element E of sl1 such that !smartlist_contains(sl2,E).
+/** Remove every element E of sl1 such that !smartlist_contains(sl2, E).
  * Does not preserve the order of sl1.
  */
 void
@@ -352,7 +352,7 @@ smartlist_intersect(smartlist_t *sl1, const smartlist_t *sl2)
     }
 }
 
-/** Remove every element E of sl1 such that smartlist_contains(sl2,E).
+/** Remove every element E of sl1 such that smartlist_contains(sl2, E).
  * Does not preserve the order of sl1.
  */
 void
@@ -447,11 +447,11 @@ smartlist_split_string(smartlist_t *sl, const char *str, const char *sep,
     }
 
     if (max>0 && n == max-1) {
-      end = strchr(cp,'\0');
+      end = strchr(cp, '\0');
     } else if (sep) {
-      end = strstr(cp,sep);
+      end = strstr(cp, sep);
       if (!end)
-        end = strchr(cp,'\0');
+        end = strchr(cp, '\0');
     } else {
       for (end = cp; *end && *end != '\t' && *end != ' '; ++end)
         ;
@@ -499,7 +499,7 @@ char *
 smartlist_join_strings(smartlist_t *sl, const char *join,
                        int terminate, size_t *len_out)
 {
-  return smartlist_join_strings2(sl,join,strlen(join),terminate,len_out);
+  return smartlist_join_strings2(sl, join, strlen(join), terminate, len_out);
 }
 
 /** As smartlist_join_strings, but instead of separating/terminated with a
@@ -556,7 +556,7 @@ smartlist_sort(smartlist_t *sl, int (*compare)(const void **a, const void **b))
   if (!sl->num_used)
     return;
   qsort(sl->list, sl->num_used, sizeof(void*),
-        (int (*)(const void *,const void*))compare);
+        (int (*)(const void *, const void*))compare);
 }
 
 /** Given a smartlist <b>sl</b> sorted with the function <b>compare</b>,
@@ -915,12 +915,12 @@ smartlist_heapify(smartlist_t *sl,
 
     if (left_idx >= sl->num_used)
       return;
-    if (compare(sl->list[idx],sl->list[left_idx]) < 0)
+    if (compare(sl->list[idx], sl->list[left_idx]) < 0)
       best_idx = idx;
     else
       best_idx = left_idx;
     if (left_idx+1 < sl->num_used &&
-        compare(sl->list[left_idx+1],sl->list[best_idx]) < 0)
+        compare(sl->list[left_idx+1], sl->list[best_idx]) < 0)
       best_idx = left_idx + 1;
 
     if (best_idx == idx) {
@@ -949,7 +949,7 @@ smartlist_pqueue_add(smartlist_t *sl,
                      void *item)
 {
   int idx;
-  smartlist_add(sl,item);
+  smartlist_add(sl, item);
   UPDATE_IDX(sl->num_used-1);
 
   for (idx = sl->num_used - 1; idx; ) {
@@ -1222,7 +1222,7 @@ digest256map_assign_key(digest256map_entry_t *ent, const uint8_t *key)
 #define IMPLEMENT_MAP_FNS(maptype, keytype, prefix)                     \
   /** Create and return a new empty map. */                             \
   MOCK_IMPL(maptype *,                                                  \
-  prefix##_new,(void))                                                  \
+  prefix##_new, (void))                                                  \
   {                                                                     \
     maptype *result;                                                    \
     result = tor_malloc(sizeof(maptype));                               \
@@ -1369,7 +1369,7 @@ digest256map_assign_key(digest256map_entry_t *ent, const uint8_t *key)
    *    strmap_iter_get(iter, &key, &val);                              \
    *    cp = (char*)val;                                                \
    *    if (!*cp) {                                                     \
-   *       iter = strmap_iter_next_rmv(map,iter);                       \
+   *       iter = strmap_iter_next_rmv(map, iter);                       \
    *       free(val);                                                   \
    *    } else {                                                        \
    *       for (;*cp;cp++) *cp = TOR_TOUPPER(*cp);                      \
@@ -1438,7 +1438,7 @@ strmap_set_lc(strmap_t *map, const char *key, void *val)
   void *v;
   char *lc_key = tor_strdup(key);
   tor_strlower(lc_key);
-  v = strmap_set(map,lc_key,val);
+  v = strmap_set(map, lc_key, val);
   tor_free(lc_key);
   return v;
 }
@@ -1450,7 +1450,7 @@ strmap_get_lc(const strmap_t *map, const char *key)
   void *v;
   char *lc_key = tor_strdup(key);
   tor_strlower(lc_key);
-  v = strmap_get(map,lc_key);
+  v = strmap_get(map, lc_key);
   tor_free(lc_key);
   return v;
 }
@@ -1462,7 +1462,7 @@ strmap_remove_lc(strmap_t *map, const char *key)
   void *v;
   char *lc_key = tor_strdup(key);
   tor_strlower(lc_key);
-  v = strmap_remove(map,lc_key);
+  v = strmap_remove(map, lc_key);
   tor_free(lc_key);
   return v;
 }

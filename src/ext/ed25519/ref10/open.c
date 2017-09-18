@@ -23,18 +23,18 @@ int crypto_sign_open(
   ge_p2 R;
 
   if (signature[63] & 224) goto badsig;
-  if (ge_frombytes_negate_vartime(&A,pk) != 0) goto badsig;
+  if (ge_frombytes_negate_vartime(&A, pk) != 0) goto badsig;
 
-  memmove(pkcopy,pk,32);
-  memmove(rcopy,signature,32);
-  memmove(scopy,signature + 32,32);
+  memmove(pkcopy, pk, 32);
+  memmove(rcopy, signature, 32);
+  memmove(scopy, signature + 32, 32);
 
   crypto_hash_sha512_3(h, rcopy, 32, pkcopy, 32, m, mlen);
   sc_reduce(h);
 
-  ge_double_scalarmult_vartime(&R,h,&A,scopy);
-  ge_tobytes(rcheck,&R);
-  if (crypto_verify_32(rcheck,rcopy) == 0) {
+  ge_double_scalarmult_vartime(&R, h, &A, scopy);
+  ge_tobytes(rcheck, &R);
+  if (crypto_verify_32(rcheck, rcopy) == 0) {
     return 0;
   }
 

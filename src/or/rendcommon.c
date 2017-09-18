@@ -31,7 +31,7 @@
 int
 rend_cmp_service_ids(const char *one, const char *two)
 {
-  return strcasecmp(one,two);
+  return strcasecmp(one, two);
 }
 
 /** Free the storage held by the service descriptor <b>desc</b>.
@@ -552,7 +552,7 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
     size_t permanent_key_len;
     char published[ISO_TIME_LEN+1];
     int i;
-    char protocol_versions_string[16]; /* max len: "0,1,2,3,4,5,6,7\0" */
+    char protocol_versions_string[16]; /* max len: "0, 1, 2, 3, 4, 5, 6, 7\0" */
     size_t protocol_versions_written;
     size_t desc_len;
     char *desc_str = NULL;
@@ -584,7 +584,7 @@ rend_encode_v2_descriptors(smartlist_t *descs_out,
     for (i = 0; i < 8; i++) {
       if (desc->protocols & 1 << i) {
         tor_snprintf(protocol_versions_string + protocol_versions_written,
-                     16 - protocol_versions_written, "%d,", i);
+                     16 - protocol_versions_written, "%d, ", i);
         protocol_versions_written += 2;
       }
     }
@@ -769,39 +769,39 @@ rend_process_relay_cell(circuit_t *circ, const crypt_path_t *layer_hint,
   switch (command) {
     case RELAY_COMMAND_ESTABLISH_INTRO:
       if (or_circ)
-        r = hs_intro_received_establish_intro(or_circ,payload,length);
+        r = hs_intro_received_establish_intro(or_circ, payload, length);
       break;
     case RELAY_COMMAND_ESTABLISH_RENDEZVOUS:
       if (or_circ)
-        r = rend_mid_establish_rendezvous(or_circ,payload,length);
+        r = rend_mid_establish_rendezvous(or_circ, payload, length);
       break;
     case RELAY_COMMAND_INTRODUCE1:
       if (or_circ)
-        r = hs_intro_received_introduce1(or_circ,payload,length);
+        r = hs_intro_received_introduce1(or_circ, payload, length);
       break;
     case RELAY_COMMAND_INTRODUCE2:
       if (origin_circ)
-        r = hs_service_receive_introduce2(origin_circ,payload,length);
+        r = hs_service_receive_introduce2(origin_circ, payload, length);
       break;
     case RELAY_COMMAND_INTRODUCE_ACK:
       if (origin_circ)
-        r = hs_client_receive_introduce_ack(origin_circ,payload,length);
+        r = hs_client_receive_introduce_ack(origin_circ, payload, length);
       break;
     case RELAY_COMMAND_RENDEZVOUS1:
       if (or_circ)
-        r = rend_mid_rendezvous(or_circ,payload,length);
+        r = rend_mid_rendezvous(or_circ, payload, length);
       break;
     case RELAY_COMMAND_RENDEZVOUS2:
       if (origin_circ)
-        r = hs_client_receive_rendezvous2(origin_circ,payload,length);
+        r = hs_client_receive_rendezvous2(origin_circ, payload, length);
       break;
     case RELAY_COMMAND_INTRO_ESTABLISHED:
       if (origin_circ)
-        r = hs_service_receive_intro_established(origin_circ,payload,length);
+        r = hs_service_receive_intro_established(origin_circ, payload, length);
       break;
     case RELAY_COMMAND_RENDEZVOUS_ESTABLISHED:
       if (origin_circ)
-        r = hs_client_receive_rendezvous_acked(origin_circ,payload,length);
+        r = hs_client_receive_rendezvous_acked(origin_circ, payload, length);
       break;
     default:
       tor_fragile_assert();

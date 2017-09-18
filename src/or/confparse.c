@@ -60,7 +60,7 @@ config_expand_abbrev(const config_format_t *fmt, const char *option,
     return option;
   for (i=0; fmt->abbrevs[i].abbreviated; ++i) {
     /* Abbreviations are case insensitive. */
-    if (!strcasecmp(option,fmt->abbrevs[i].abbreviated) &&
+    if (!strcasecmp(option, fmt->abbrevs[i].abbreviated) &&
         (command_line || !fmt->abbrevs[i].commandline_only)) {
       if (warn_obsolete && fmt->abbrevs[i].warn) {
         log_warn(LD_CONFIG,
@@ -294,7 +294,7 @@ config_assign_value(const config_format_t *fmt, void *options,
       *(smartlist_t**)lvalue = smartlist_new();
     }
 
-    smartlist_split_string(*(smartlist_t**)lvalue, c->value, ",",
+    smartlist_split_string(*(smartlist_t**)lvalue, c->value, ", ",
                            SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
     break;
 
@@ -306,7 +306,7 @@ config_assign_value(const config_format_t *fmt, void *options,
       *(smartlist_t**)lvalue = smartlist_new();
     }
     csv_str = smartlist_new();
-    smartlist_split_string(csv_str, c->value, ",",
+    smartlist_split_string(csv_str, c->value, ", ",
                            SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
     SMARTLIST_FOREACH_BEGIN(csv_str, char *, str)
       {
@@ -607,7 +607,7 @@ config_get_assigned_option(const config_format_t *fmt, const void *options,
     case CONFIG_TYPE_CSV:
       if (*(smartlist_t**)value)
         result->value =
-          smartlist_join_strings(*(smartlist_t**)value, ",", 0, NULL);
+          smartlist_join_strings(*(smartlist_t**)value, ", ", 0, NULL);
       else
         result->value = tor_strdup("");
       break;
@@ -619,7 +619,7 @@ config_get_assigned_option(const config_format_t *fmt, const void *options,
             smartlist_add_asprintf(csv_str, "%d", *i);
           }
         SMARTLIST_FOREACH_END(i);
-        result->value = smartlist_join_strings(csv_str, ",", 0, NULL);
+        result->value = smartlist_join_strings(csv_str, ", ", 0, NULL);
         SMARTLIST_FOREACH(csv_str, char *, cp, tor_free(cp));
         smartlist_free(csv_str);
       } else
@@ -647,7 +647,7 @@ config_get_assigned_option(const config_format_t *fmt, const void *options,
     default:
       tor_free(result->key);
       tor_free(result);
-      log_warn(LD_BUG,"Unknown type %d for known key '%s'",
+      log_warn(LD_BUG, "Unknown type %d for known key '%s'",
                var->type, key);
       return NULL;
     }
@@ -736,7 +736,7 @@ config_assign(const config_format_t *fmt, void *options, config_line_t *list,
   /* pass 1: normalize keys */
   for (p = list; p; p = p->next) {
     const char *full = config_expand_abbrev(fmt, p->key, 0, 1);
-    if (strcmp(full,p->key)) {
+    if (strcmp(full, p->key)) {
       tor_free(p->key);
       p->key = tor_strdup(full);
     }

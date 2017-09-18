@@ -48,7 +48,7 @@ struct dircollator_s {
    * array is the i'th vote's entry for that RSA-SHA1 ID.*/
   digestmap_t *by_rsa_sha1;
   /** Map from <ed, RSA-SHA1> pair to an array similar to that used in
-   * by_rsa_sha1 above. We include <NULL,RSA-SHA1> entries for votes that
+   * by_rsa_sha1 above. We include <NULL, RSA-SHA1> entries for votes that
    * say that there is no Ed key. */
   struct double_digest_map by_both_ids;
 

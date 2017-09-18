@@ -11,8 +11,8 @@
 #include "memarea.h"
 #include "log_test_helpers.h"
 
-#define tt_str_eq_line(a,b) \
-  tt_assert(line_str_eq((b),(a)))
+#define tt_str_eq_line(a, b) \
+  tt_assert(line_str_eq((b), (a)))
 
 static void
 test_consdiff_smartlist_slice(void *arg)
@@ -578,7 +578,7 @@ test_consdiff_gen_ed_diff(void *arg)
   diff = gen_ed_diff(cons1, cons2, area);
   tt_ptr_op(NULL, OP_NE, diff);
   tt_int_op(1, OP_EQ, smartlist_len(diff));
-  tt_str_eq_line("1,2d", smartlist_get(diff, 0));
+  tt_str_eq_line("1, 2d", smartlist_get(diff, 0));
 
   smartlist_free(diff);
 
@@ -599,7 +599,7 @@ test_consdiff_gen_ed_diff(void *arg)
   diff = gen_ed_diff(cons1, cons2, area);
   tt_ptr_op(NULL, OP_NE, diff);
   tt_int_op(4, OP_EQ, smartlist_len(diff));
-  tt_str_eq_line("1,2c", smartlist_get(diff, 0));
+  tt_str_eq_line("1, 2c", smartlist_get(diff, 0));
   tt_str_eq_line("foo2", smartlist_get(diff, 1));
   tt_str_eq_line("bar2", smartlist_get(diff, 2));
   tt_str_eq_line(".", smartlist_get(diff, 3));
@@ -674,7 +674,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* Range without end. */
-  smartlist_add_linecpy(diff, area, "1,");
+  smartlist_add_linecpy(diff, area, "1, ");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -684,7 +684,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* Incoherent ranges. */
-  smartlist_add_linecpy(diff, area, "1,1");
+  smartlist_add_linecpy(diff, area, "1, 1");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -692,7 +692,7 @@ test_consdiff_apply_ed_diff(void *arg)
 
   smartlist_clear(diff);
 
-  smartlist_add_linecpy(diff, area, "3,2");
+  smartlist_add_linecpy(diff, area, "3, 2");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -701,7 +701,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* Unexpected range for add command. */
-  smartlist_add_linecpy(diff, area, "1,2a");
+  smartlist_add_linecpy(diff, area, "1, 2a");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -710,7 +710,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* $ for a non-delete command. */
-  smartlist_add_linecpy(diff, area, "1,$c");
+  smartlist_add_linecpy(diff, area, "1, $c");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -789,7 +789,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* '+' is not a number. */
-  smartlist_add_linecpy(diff, area, "+0,4d");
+  smartlist_add_linecpy(diff, area, "+0, 4d");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -798,7 +798,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* range duplication */
-  smartlist_add_linecpy(diff, area, "0,4d,5d");
+  smartlist_add_linecpy(diff, area, "0, 4d, 5d");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -808,7 +808,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* space before command */
-  smartlist_add_linecpy(diff, area, "0,4 d");
+  smartlist_add_linecpy(diff, area, "0, 4 d");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -818,7 +818,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_clear(diff);
 
   /* space inside number */
-  smartlist_add_linecpy(diff, area, "0,4 5d");
+  smartlist_add_linecpy(diff, area, "0, 4 5d");
   mock_clean_saved_logs();
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_EQ, cons2);
@@ -845,7 +845,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_free(cons2);
 
   /* Test deleting text, 'd'. */
-  consensus_split_lines(diff, "4d\n1,2d\n", area);
+  consensus_split_lines(diff, "4d\n1, 2d\n", area);
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_NE, cons2);
   tt_int_op(2, OP_EQ, smartlist_len(cons2));
@@ -856,7 +856,7 @@ test_consdiff_apply_ed_diff(void *arg)
   smartlist_free(cons2);
 
   /* Test changing text, 'c'. */
-  consensus_split_lines(diff, "4c\nT\nX\n.\n1,2c\nM\n.\n", area);
+  consensus_split_lines(diff, "4c\nT\nX\n.\n1, 2c\nM\n.\n", area);
   cons2 = apply_ed_diff(cons1, diff, 0);
   tt_ptr_op(NULL, OP_NE, cons2);
   tt_int_op(5, OP_EQ, smartlist_len(cons2));
@@ -947,8 +947,8 @@ test_consdiff_gen_diff(void *arg)
   tt_assert(line_str_eq(smartlist_get(diff, 1), "hash "
       "95D70F5A3CC65F920AA8B44C4563D7781A082674329661884E19E94B79D539C2 "
       "7AFECEFA4599BA33D603653E3D2368F648DF4AC4723929B0F7CF39281596B0C1"));
-  tt_assert(line_str_eq(smartlist_get(diff, 2), "6,$d"));
-  tt_assert(line_str_eq(smartlist_get(diff, 3), "3,4c"));
+  tt_assert(line_str_eq(smartlist_get(diff, 2), "6, $d"));
+  tt_assert(line_str_eq(smartlist_get(diff, 3), "3, 4c"));
   tt_assert(line_str_eq(smartlist_get(diff, 4), "bar"));
   tt_assert(line_str_eq(smartlist_get(diff, 5),
                         "directory-signature foo bar"));
@@ -1101,7 +1101,7 @@ test_consdiff_apply_diff(void *arg)
       " 06646D6CF563A41869D3B02E73254372AE3140046C5E7D83C9F71E54976AF9B4"
       /* bogus sha3. */
       " 3333333333333333333333333333333333333333333333333333333333333333");
-  smartlist_add_linecpy(diff, area, "1,2d"); // remove starting line
+  smartlist_add_linecpy(diff, area, "1, 2d"); // remove starting line
   mock_clean_saved_logs();
   cons2 = consdiff_apply_diff(cons1, diff, &digests1);
   tt_ptr_op(NULL, OP_EQ, cons2);

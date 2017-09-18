@@ -20,9 +20,9 @@ print_diff(const char *desc, const unsigned char *a, const unsigned char *b, siz
 	while (len--) {
 		diff = *a++ ^ *b++;
 		if (!diff)
-			printf("____,");
+			printf("____, ");
 		else
-			printf("0x%02x,", diff);
+			printf("0x%02x, ", diff);
 		if ((++p & 15) == 0)
 			printf("\n");
 	}
@@ -34,7 +34,7 @@ print_bytes(const char *desc, const unsigned char *bytes, size_t len) {
 	size_t p = 0;
 	printf("%s:\n", desc);
 	while (len--) {
-		printf("0x%02x,", *bytes++);
+		printf("0x%02x, ", *bytes++);
 		if ((++p & 15) == 0)
 			printf("\n");
 	}
@@ -80,22 +80,22 @@ prng(unsigned char *out, size_t bytes) {
 	while (bytes) {
 		for (i = 0; i < 16; i++) x[i] = state[i];
 
-		#define rotl32(x,k) ((x << k) | (x >> (32 - k)))
-		#define quarter(a,b,c,d) \
-			x[a] += x[b]; t = x[d]^x[a]; x[d] = rotl32(t,16); \
-			x[c] += x[d]; t = x[b]^x[c]; x[b] = rotl32(t,12); \
+		#define rotl32(x, k) ((x << k) | (x >> (32 - k)))
+		#define quarter(a, b, c, d) \
+			x[a] += x[b]; t = x[d]^x[a]; x[d] = rotl32(t, 16); \
+			x[c] += x[d]; t = x[b]^x[c]; x[b] = rotl32(t, 12); \
 			x[a] += x[b]; t = x[d]^x[a]; x[d] = rotl32(t, 8); \
 			x[c] += x[d]; t = x[b]^x[c]; x[b] = rotl32(t, 7);
 
 		for (i = 0; i < 12; i += 2) {
-			quarter( 0, 4, 8,12)
-			quarter( 1, 5, 9,13)
-			quarter( 2, 6,10,14)
-			quarter( 3, 7,11,15)
-			quarter( 0, 5,10,15)
-			quarter( 1, 6,11,12)
-			quarter( 2, 7, 8,13)
-			quarter( 3, 4, 9,14)
+			quarter( 0, 4, 8, 12)
+			quarter( 1, 5, 9, 13)
+			quarter( 2, 6, 10, 14)
+			quarter( 3, 7, 11, 15)
+			quarter( 0, 5, 10, 15)
+			quarter( 1, 6, 11, 12)
+			quarter( 2, 7, 8, 13)
+			quarter( 3, 4, 9, 14)
 		};
 
 		if (bytes <= 64) {

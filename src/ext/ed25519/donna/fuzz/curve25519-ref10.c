@@ -47,14 +47,14 @@ h = f + g
 Can overlap h with f or g.
 
 Preconditions:
-   |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-   |g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+   |f| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
+   |g| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
 
 Postconditions:
-   |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+   |h| bounded by 1.1*2^26, 1.1*2^25, 1.1*2^26, 1.1*2^25, etc.
 */
 
-void fe_add(fe h,fe f,fe g)
+void fe_add(fe h, fe f, fe g)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -102,7 +102,7 @@ void fe_add(fe h,fe f,fe g)
 h = f
 */
 
-void fe_copy(fe h,fe f)
+void fe_copy(fe h, fe f)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -128,13 +128,13 @@ void fe_copy(fe h,fe f)
 
 
 /*
-Replace (f,g) with (g,f) if b == 1;
-replace (f,g) with (f,g) if b == 0.
+Replace (f, g) with (g, f) if b == 1;
+replace (f, g) with (f, g) if b == 0.
 
-Preconditions: b in {0,1}.
+Preconditions: b in {0, 1}.
 */
 
-void fe_cswap(fe f,fe g,unsigned int b)
+void fe_cswap(fe f, fe g, unsigned int b)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -218,7 +218,7 @@ static crypto_uint64 load_4(const unsigned char *in)
   return result;
 }
 
-void fe_frombytes(fe h,const unsigned char *s)
+void fe_frombytes(fe h, const unsigned char *s)
 {
   crypto_int64 h0 = load_4(s);
   crypto_int64 h1 = load_3(s + 4) << 6;
@@ -271,11 +271,11 @@ h = f * g
 Can overlap h with f or g.
 
 Preconditions:
-   |f| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
-   |g| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+   |f| bounded by 1.1*2^26, 1.1*2^25, 1.1*2^26, 1.1*2^25, etc.
+   |g| bounded by 1.1*2^26, 1.1*2^25, 1.1*2^26, 1.1*2^25, etc.
 
 Postconditions:
-   |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+   |h| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
 */
 
 /*
@@ -298,7 +298,7 @@ Can get away with 11 carries, but then data flow is much deeper.
 With tighter constraints on inputs can squeeze carries into int32.
 */
 
-void fe_mul(fe h,fe f,fe g)
+void fe_mul(fe h, fe f, fe g)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -522,13 +522,13 @@ h = f * 121666
 Can overlap h with f.
 
 Preconditions:
-   |f| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+   |f| bounded by 1.1*2^26, 1.1*2^25, 1.1*2^26, 1.1*2^25, etc.
 
 Postconditions:
-   |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+   |h| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
 */
 
-void fe_mul121666(fe h,fe f)
+void fe_mul121666(fe h, fe f)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -590,17 +590,17 @@ h = f * f
 Can overlap h with f.
 
 Preconditions:
-   |f| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+   |f| bounded by 1.1*2^26, 1.1*2^25, 1.1*2^26, 1.1*2^25, etc.
 
 Postconditions:
-   |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+   |h| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
 */
 
 /*
 See fe_mul.c for discussion of implementation strategy.
 */
 
-void fe_sq(fe h,fe f)
+void fe_sq(fe h, fe f)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -737,14 +737,14 @@ h = f - g
 Can overlap h with f or g.
 
 Preconditions:
-   |f| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
-   |g| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+   |f| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
+   |g| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
 
 Postconditions:
-   |h| bounded by 1.1*2^26,1.1*2^25,1.1*2^26,1.1*2^25,etc.
+   |h| bounded by 1.1*2^26, 1.1*2^25, 1.1*2^26, 1.1*2^25, etc.
 */
 
-void fe_sub(fe h,fe f,fe g)
+void fe_sub(fe h, fe f, fe g)
 {
   crypto_int32 f0 = f[0];
   crypto_int32 f1 = f[1];
@@ -790,7 +790,7 @@ void fe_sub(fe h,fe f,fe g)
 
 /*
 Preconditions:
-  |h| bounded by 1.1*2^25,1.1*2^24,1.1*2^25,1.1*2^24,etc.
+  |h| bounded by 1.1*2^25, 1.1*2^24, 1.1*2^25, 1.1*2^24, etc.
 
 Write p=2^255-19; q=floor(h/p).
 Basic claim: q = floor(2^(-255)(h + 19 2^(-25)h9 + 2^(-1))).
@@ -813,7 +813,7 @@ Proof:
   so floor(2^(-255)(h + 19 2^(-25) h9 + 2^(-1))) = q.
 */
 
-void fe_tobytes(unsigned char *s,fe h)
+void fe_tobytes(unsigned char *s, fe h)
 {
   crypto_int32 h0 = h[0];
   crypto_int32 h1 = h[1];
@@ -906,7 +906,7 @@ void fe_tobytes(unsigned char *s,fe h)
   s[31] = h9 >> 18;
 }
 
-void fe_invert(fe out,fe z)
+void fe_invert(fe out, fe z)
 {
   fe t0;
   fe t1;
@@ -964,114 +964,114 @@ void fe_invert(fe out,fe z)
 /* qhasm: enter pow225521 */
 
 /* qhasm: z2 = z1^2^1 */
-/* asm 1: fe_sq(>z2=fe#1,<z1=fe#11); for (i = 1;i < 1;++i) fe_sq(>z2=fe#1,>z2=fe#1); */
-/* asm 2: fe_sq(>z2=t0,<z1=z); for (i = 1;i < 1;++i) fe_sq(>z2=t0,>z2=t0); */
-fe_sq(t0,z); for (i = 1;i < 1;++i) fe_sq(t0,t0);
+/* asm 1: fe_sq(>z2=fe#1, <z1=fe#11); for (i = 1;i < 1;++i) fe_sq(>z2=fe#1, >z2=fe#1); */
+/* asm 2: fe_sq(>z2=t0, <z1=z); for (i = 1;i < 1;++i) fe_sq(>z2=t0, >z2=t0); */
+fe_sq(t0, z); for (i = 1;i < 1;++i) fe_sq(t0, t0);
 
 /* qhasm: z8 = z2^2^2 */
-/* asm 1: fe_sq(>z8=fe#2,<z2=fe#1); for (i = 1;i < 2;++i) fe_sq(>z8=fe#2,>z8=fe#2); */
-/* asm 2: fe_sq(>z8=t1,<z2=t0); for (i = 1;i < 2;++i) fe_sq(>z8=t1,>z8=t1); */
-fe_sq(t1,t0); for (i = 1;i < 2;++i) fe_sq(t1,t1);
+/* asm 1: fe_sq(>z8=fe#2, <z2=fe#1); for (i = 1;i < 2;++i) fe_sq(>z8=fe#2, >z8=fe#2); */
+/* asm 2: fe_sq(>z8=t1, <z2=t0); for (i = 1;i < 2;++i) fe_sq(>z8=t1, >z8=t1); */
+fe_sq(t1, t0); for (i = 1;i < 2;++i) fe_sq(t1, t1);
 
 /* qhasm: z9 = z1*z8 */
-/* asm 1: fe_mul(>z9=fe#2,<z1=fe#11,<z8=fe#2); */
-/* asm 2: fe_mul(>z9=t1,<z1=z,<z8=t1); */
-fe_mul(t1,z,t1);
+/* asm 1: fe_mul(>z9=fe#2, <z1=fe#11, <z8=fe#2); */
+/* asm 2: fe_mul(>z9=t1, <z1=z, <z8=t1); */
+fe_mul(t1, z, t1);
 
 /* qhasm: z11 = z2*z9 */
-/* asm 1: fe_mul(>z11=fe#1,<z2=fe#1,<z9=fe#2); */
-/* asm 2: fe_mul(>z11=t0,<z2=t0,<z9=t1); */
-fe_mul(t0,t0,t1);
+/* asm 1: fe_mul(>z11=fe#1, <z2=fe#1, <z9=fe#2); */
+/* asm 2: fe_mul(>z11=t0, <z2=t0, <z9=t1); */
+fe_mul(t0, t0, t1);
 
 /* qhasm: z22 = z11^2^1 */
-/* asm 1: fe_sq(>z22=fe#3,<z11=fe#1); for (i = 1;i < 1;++i) fe_sq(>z22=fe#3,>z22=fe#3); */
-/* asm 2: fe_sq(>z22=t2,<z11=t0); for (i = 1;i < 1;++i) fe_sq(>z22=t2,>z22=t2); */
-fe_sq(t2,t0); for (i = 1;i < 1;++i) fe_sq(t2,t2);
+/* asm 1: fe_sq(>z22=fe#3, <z11=fe#1); for (i = 1;i < 1;++i) fe_sq(>z22=fe#3, >z22=fe#3); */
+/* asm 2: fe_sq(>z22=t2, <z11=t0); for (i = 1;i < 1;++i) fe_sq(>z22=t2, >z22=t2); */
+fe_sq(t2, t0); for (i = 1;i < 1;++i) fe_sq(t2, t2);
 
 /* qhasm: z_5_0 = z9*z22 */
-/* asm 1: fe_mul(>z_5_0=fe#2,<z9=fe#2,<z22=fe#3); */
-/* asm 2: fe_mul(>z_5_0=t1,<z9=t1,<z22=t2); */
-fe_mul(t1,t1,t2);
+/* asm 1: fe_mul(>z_5_0=fe#2, <z9=fe#2, <z22=fe#3); */
+/* asm 2: fe_mul(>z_5_0=t1, <z9=t1, <z22=t2); */
+fe_mul(t1, t1, t2);
 
 /* qhasm: z_10_5 = z_5_0^2^5 */
-/* asm 1: fe_sq(>z_10_5=fe#3,<z_5_0=fe#2); for (i = 1;i < 5;++i) fe_sq(>z_10_5=fe#3,>z_10_5=fe#3); */
-/* asm 2: fe_sq(>z_10_5=t2,<z_5_0=t1); for (i = 1;i < 5;++i) fe_sq(>z_10_5=t2,>z_10_5=t2); */
-fe_sq(t2,t1); for (i = 1;i < 5;++i) fe_sq(t2,t2);
+/* asm 1: fe_sq(>z_10_5=fe#3, <z_5_0=fe#2); for (i = 1;i < 5;++i) fe_sq(>z_10_5=fe#3, >z_10_5=fe#3); */
+/* asm 2: fe_sq(>z_10_5=t2, <z_5_0=t1); for (i = 1;i < 5;++i) fe_sq(>z_10_5=t2, >z_10_5=t2); */
+fe_sq(t2, t1); for (i = 1;i < 5;++i) fe_sq(t2, t2);
 
 /* qhasm: z_10_0 = z_10_5*z_5_0 */
-/* asm 1: fe_mul(>z_10_0=fe#2,<z_10_5=fe#3,<z_5_0=fe#2); */
-/* asm 2: fe_mul(>z_10_0=t1,<z_10_5=t2,<z_5_0=t1); */
-fe_mul(t1,t2,t1);
+/* asm 1: fe_mul(>z_10_0=fe#2, <z_10_5=fe#3, <z_5_0=fe#2); */
+/* asm 2: fe_mul(>z_10_0=t1, <z_10_5=t2, <z_5_0=t1); */
+fe_mul(t1, t2, t1);
 
 /* qhasm: z_20_10 = z_10_0^2^10 */
-/* asm 1: fe_sq(>z_20_10=fe#3,<z_10_0=fe#2); for (i = 1;i < 10;++i) fe_sq(>z_20_10=fe#3,>z_20_10=fe#3); */
-/* asm 2: fe_sq(>z_20_10=t2,<z_10_0=t1); for (i = 1;i < 10;++i) fe_sq(>z_20_10=t2,>z_20_10=t2); */
-fe_sq(t2,t1); for (i = 1;i < 10;++i) fe_sq(t2,t2);
+/* asm 1: fe_sq(>z_20_10=fe#3, <z_10_0=fe#2); for (i = 1;i < 10;++i) fe_sq(>z_20_10=fe#3, >z_20_10=fe#3); */
+/* asm 2: fe_sq(>z_20_10=t2, <z_10_0=t1); for (i = 1;i < 10;++i) fe_sq(>z_20_10=t2, >z_20_10=t2); */
+fe_sq(t2, t1); for (i = 1;i < 10;++i) fe_sq(t2, t2);
 
 /* qhasm: z_20_0 = z_20_10*z_10_0 */
-/* asm 1: fe_mul(>z_20_0=fe#3,<z_20_10=fe#3,<z_10_0=fe#2); */
-/* asm 2: fe_mul(>z_20_0=t2,<z_20_10=t2,<z_10_0=t1); */
-fe_mul(t2,t2,t1);
+/* asm 1: fe_mul(>z_20_0=fe#3, <z_20_10=fe#3, <z_10_0=fe#2); */
+/* asm 2: fe_mul(>z_20_0=t2, <z_20_10=t2, <z_10_0=t1); */
+fe_mul(t2, t2, t1);
 
 /* qhasm: z_40_20 = z_20_0^2^20 */
-/* asm 1: fe_sq(>z_40_20=fe#4,<z_20_0=fe#3); for (i = 1;i < 20;++i) fe_sq(>z_40_20=fe#4,>z_40_20=fe#4); */
-/* asm 2: fe_sq(>z_40_20=t3,<z_20_0=t2); for (i = 1;i < 20;++i) fe_sq(>z_40_20=t3,>z_40_20=t3); */
-fe_sq(t3,t2); for (i = 1;i < 20;++i) fe_sq(t3,t3);
+/* asm 1: fe_sq(>z_40_20=fe#4, <z_20_0=fe#3); for (i = 1;i < 20;++i) fe_sq(>z_40_20=fe#4, >z_40_20=fe#4); */
+/* asm 2: fe_sq(>z_40_20=t3, <z_20_0=t2); for (i = 1;i < 20;++i) fe_sq(>z_40_20=t3, >z_40_20=t3); */
+fe_sq(t3, t2); for (i = 1;i < 20;++i) fe_sq(t3, t3);
 
 /* qhasm: z_40_0 = z_40_20*z_20_0 */
-/* asm 1: fe_mul(>z_40_0=fe#3,<z_40_20=fe#4,<z_20_0=fe#3); */
-/* asm 2: fe_mul(>z_40_0=t2,<z_40_20=t3,<z_20_0=t2); */
-fe_mul(t2,t3,t2);
+/* asm 1: fe_mul(>z_40_0=fe#3, <z_40_20=fe#4, <z_20_0=fe#3); */
+/* asm 2: fe_mul(>z_40_0=t2, <z_40_20=t3, <z_20_0=t2); */
+fe_mul(t2, t3, t2);
 
 /* qhasm: z_50_10 = z_40_0^2^10 */
-/* asm 1: fe_sq(>z_50_10=fe#3,<z_40_0=fe#3); for (i = 1;i < 10;++i) fe_sq(>z_50_10=fe#3,>z_50_10=fe#3); */
-/* asm 2: fe_sq(>z_50_10=t2,<z_40_0=t2); for (i = 1;i < 10;++i) fe_sq(>z_50_10=t2,>z_50_10=t2); */
-fe_sq(t2,t2); for (i = 1;i < 10;++i) fe_sq(t2,t2);
+/* asm 1: fe_sq(>z_50_10=fe#3, <z_40_0=fe#3); for (i = 1;i < 10;++i) fe_sq(>z_50_10=fe#3, >z_50_10=fe#3); */
+/* asm 2: fe_sq(>z_50_10=t2, <z_40_0=t2); for (i = 1;i < 10;++i) fe_sq(>z_50_10=t2, >z_50_10=t2); */
+fe_sq(t2, t2); for (i = 1;i < 10;++i) fe_sq(t2, t2);
 
 /* qhasm: z_50_0 = z_50_10*z_10_0 */
-/* asm 1: fe_mul(>z_50_0=fe#2,<z_50_10=fe#3,<z_10_0=fe#2); */
-/* asm 2: fe_mul(>z_50_0=t1,<z_50_10=t2,<z_10_0=t1); */
-fe_mul(t1,t2,t1);
+/* asm 1: fe_mul(>z_50_0=fe#2, <z_50_10=fe#3, <z_10_0=fe#2); */
+/* asm 2: fe_mul(>z_50_0=t1, <z_50_10=t2, <z_10_0=t1); */
+fe_mul(t1, t2, t1);
 
 /* qhasm: z_100_50 = z_50_0^2^50 */
-/* asm 1: fe_sq(>z_100_50=fe#3,<z_50_0=fe#2); for (i = 1;i < 50;++i) fe_sq(>z_100_50=fe#3,>z_100_50=fe#3); */
-/* asm 2: fe_sq(>z_100_50=t2,<z_50_0=t1); for (i = 1;i < 50;++i) fe_sq(>z_100_50=t2,>z_100_50=t2); */
-fe_sq(t2,t1); for (i = 1;i < 50;++i) fe_sq(t2,t2);
+/* asm 1: fe_sq(>z_100_50=fe#3, <z_50_0=fe#2); for (i = 1;i < 50;++i) fe_sq(>z_100_50=fe#3, >z_100_50=fe#3); */
+/* asm 2: fe_sq(>z_100_50=t2, <z_50_0=t1); for (i = 1;i < 50;++i) fe_sq(>z_100_50=t2, >z_100_50=t2); */
+fe_sq(t2, t1); for (i = 1;i < 50;++i) fe_sq(t2, t2);
 
 /* qhasm: z_100_0 = z_100_50*z_50_0 */
-/* asm 1: fe_mul(>z_100_0=fe#3,<z_100_50=fe#3,<z_50_0=fe#2); */
-/* asm 2: fe_mul(>z_100_0=t2,<z_100_50=t2,<z_50_0=t1); */
-fe_mul(t2,t2,t1);
+/* asm 1: fe_mul(>z_100_0=fe#3, <z_100_50=fe#3, <z_50_0=fe#2); */
+/* asm 2: fe_mul(>z_100_0=t2, <z_100_50=t2, <z_50_0=t1); */
+fe_mul(t2, t2, t1);
 
 /* qhasm: z_200_100 = z_100_0^2^100 */
-/* asm 1: fe_sq(>z_200_100=fe#4,<z_100_0=fe#3); for (i = 1;i < 100;++i) fe_sq(>z_200_100=fe#4,>z_200_100=fe#4); */
-/* asm 2: fe_sq(>z_200_100=t3,<z_100_0=t2); for (i = 1;i < 100;++i) fe_sq(>z_200_100=t3,>z_200_100=t3); */
-fe_sq(t3,t2); for (i = 1;i < 100;++i) fe_sq(t3,t3);
+/* asm 1: fe_sq(>z_200_100=fe#4, <z_100_0=fe#3); for (i = 1;i < 100;++i) fe_sq(>z_200_100=fe#4, >z_200_100=fe#4); */
+/* asm 2: fe_sq(>z_200_100=t3, <z_100_0=t2); for (i = 1;i < 100;++i) fe_sq(>z_200_100=t3, >z_200_100=t3); */
+fe_sq(t3, t2); for (i = 1;i < 100;++i) fe_sq(t3, t3);
 
 /* qhasm: z_200_0 = z_200_100*z_100_0 */
-/* asm 1: fe_mul(>z_200_0=fe#3,<z_200_100=fe#4,<z_100_0=fe#3); */
-/* asm 2: fe_mul(>z_200_0=t2,<z_200_100=t3,<z_100_0=t2); */
-fe_mul(t2,t3,t2);
+/* asm 1: fe_mul(>z_200_0=fe#3, <z_200_100=fe#4, <z_100_0=fe#3); */
+/* asm 2: fe_mul(>z_200_0=t2, <z_200_100=t3, <z_100_0=t2); */
+fe_mul(t2, t3, t2);
 
 /* qhasm: z_250_50 = z_200_0^2^50 */
-/* asm 1: fe_sq(>z_250_50=fe#3,<z_200_0=fe#3); for (i = 1;i < 50;++i) fe_sq(>z_250_50=fe#3,>z_250_50=fe#3); */
-/* asm 2: fe_sq(>z_250_50=t2,<z_200_0=t2); for (i = 1;i < 50;++i) fe_sq(>z_250_50=t2,>z_250_50=t2); */
-fe_sq(t2,t2); for (i = 1;i < 50;++i) fe_sq(t2,t2);
+/* asm 1: fe_sq(>z_250_50=fe#3, <z_200_0=fe#3); for (i = 1;i < 50;++i) fe_sq(>z_250_50=fe#3, >z_250_50=fe#3); */
+/* asm 2: fe_sq(>z_250_50=t2, <z_200_0=t2); for (i = 1;i < 50;++i) fe_sq(>z_250_50=t2, >z_250_50=t2); */
+fe_sq(t2, t2); for (i = 1;i < 50;++i) fe_sq(t2, t2);
 
 /* qhasm: z_250_0 = z_250_50*z_50_0 */
-/* asm 1: fe_mul(>z_250_0=fe#2,<z_250_50=fe#3,<z_50_0=fe#2); */
-/* asm 2: fe_mul(>z_250_0=t1,<z_250_50=t2,<z_50_0=t1); */
-fe_mul(t1,t2,t1);
+/* asm 1: fe_mul(>z_250_0=fe#2, <z_250_50=fe#3, <z_50_0=fe#2); */
+/* asm 2: fe_mul(>z_250_0=t1, <z_250_50=t2, <z_50_0=t1); */
+fe_mul(t1, t2, t1);
 
 /* qhasm: z_255_5 = z_250_0^2^5 */
-/* asm 1: fe_sq(>z_255_5=fe#2,<z_250_0=fe#2); for (i = 1;i < 5;++i) fe_sq(>z_255_5=fe#2,>z_255_5=fe#2); */
-/* asm 2: fe_sq(>z_255_5=t1,<z_250_0=t1); for (i = 1;i < 5;++i) fe_sq(>z_255_5=t1,>z_255_5=t1); */
-fe_sq(t1,t1); for (i = 1;i < 5;++i) fe_sq(t1,t1);
+/* asm 1: fe_sq(>z_255_5=fe#2, <z_250_0=fe#2); for (i = 1;i < 5;++i) fe_sq(>z_255_5=fe#2, >z_255_5=fe#2); */
+/* asm 2: fe_sq(>z_255_5=t1, <z_250_0=t1); for (i = 1;i < 5;++i) fe_sq(>z_255_5=t1, >z_255_5=t1); */
+fe_sq(t1, t1); for (i = 1;i < 5;++i) fe_sq(t1, t1);
 
 /* qhasm: z_255_21 = z_255_5*z11 */
-/* asm 1: fe_mul(>z_255_21=fe#12,<z_255_5=fe#2,<z11=fe#1); */
-/* asm 2: fe_mul(>z_255_21=out,<z_255_5=t1,<z11=t0); */
-fe_mul(out,t1,t0);
+/* asm 1: fe_mul(>z_255_21=fe#12, <z_255_5=fe#2, <z11=fe#1); */
+/* asm 2: fe_mul(>z_255_21=out, <z_255_5=t1, <z11=t0); */
+fe_mul(out, t1, t0);
 
 /* qhasm: return */
 
@@ -1100,10 +1100,10 @@ int crypto_scalarmult_ref10(unsigned char *q,
   e[0] &= 248;
   e[31] &= 127;
   e[31] |= 64;
-  fe_frombytes(x1,p);
+  fe_frombytes(x1, p);
   fe_1(x2);
   fe_0(z2);
-  fe_copy(x3,x1);
+  fe_copy(x3, x1);
   fe_1(z3);
 
   swap = 0;
@@ -1111,8 +1111,8 @@ int crypto_scalarmult_ref10(unsigned char *q,
     b = e[pos / 8] >> (pos & 7);
     b &= 1;
     swap ^= b;
-    fe_cswap(x2,x3,swap);
-    fe_cswap(z2,z3,swap);
+    fe_cswap(x2, x3, swap);
+    fe_cswap(z2, z3, swap);
     swap = b;
 /* qhasm: fe X2 */
 
@@ -1161,112 +1161,112 @@ int crypto_scalarmult_ref10(unsigned char *q,
 /* qhasm: enter ladder */
 
 /* qhasm: D = X3-Z3 */
-/* asm 1: fe_sub(>D=fe#5,<X3=fe#3,<Z3=fe#4); */
-/* asm 2: fe_sub(>D=tmp0,<X3=x3,<Z3=z3); */
-fe_sub(tmp0,x3,z3);
+/* asm 1: fe_sub(>D=fe#5, <X3=fe#3, <Z3=fe#4); */
+/* asm 2: fe_sub(>D=tmp0, <X3=x3, <Z3=z3); */
+fe_sub(tmp0, x3, z3);
 
 /* qhasm: B = X2-Z2 */
-/* asm 1: fe_sub(>B=fe#6,<X2=fe#1,<Z2=fe#2); */
-/* asm 2: fe_sub(>B=tmp1,<X2=x2,<Z2=z2); */
-fe_sub(tmp1,x2,z2);
+/* asm 1: fe_sub(>B=fe#6, <X2=fe#1, <Z2=fe#2); */
+/* asm 2: fe_sub(>B=tmp1, <X2=x2, <Z2=z2); */
+fe_sub(tmp1, x2, z2);
 
 /* qhasm: A = X2+Z2 */
-/* asm 1: fe_add(>A=fe#1,<X2=fe#1,<Z2=fe#2); */
-/* asm 2: fe_add(>A=x2,<X2=x2,<Z2=z2); */
-fe_add(x2,x2,z2);
+/* asm 1: fe_add(>A=fe#1, <X2=fe#1, <Z2=fe#2); */
+/* asm 2: fe_add(>A=x2, <X2=x2, <Z2=z2); */
+fe_add(x2, x2, z2);
 
 /* qhasm: C = X3+Z3 */
-/* asm 1: fe_add(>C=fe#2,<X3=fe#3,<Z3=fe#4); */
-/* asm 2: fe_add(>C=z2,<X3=x3,<Z3=z3); */
-fe_add(z2,x3,z3);
+/* asm 1: fe_add(>C=fe#2, <X3=fe#3, <Z3=fe#4); */
+/* asm 2: fe_add(>C=z2, <X3=x3, <Z3=z3); */
+fe_add(z2, x3, z3);
 
 /* qhasm: DA = D*A */
-/* asm 1: fe_mul(>DA=fe#4,<D=fe#5,<A=fe#1); */
-/* asm 2: fe_mul(>DA=z3,<D=tmp0,<A=x2); */
-fe_mul(z3,tmp0,x2);
+/* asm 1: fe_mul(>DA=fe#4, <D=fe#5, <A=fe#1); */
+/* asm 2: fe_mul(>DA=z3, <D=tmp0, <A=x2); */
+fe_mul(z3, tmp0, x2);
 
 /* qhasm: CB = C*B */
-/* asm 1: fe_mul(>CB=fe#2,<C=fe#2,<B=fe#6); */
-/* asm 2: fe_mul(>CB=z2,<C=z2,<B=tmp1); */
-fe_mul(z2,z2,tmp1);
+/* asm 1: fe_mul(>CB=fe#2, <C=fe#2, <B=fe#6); */
+/* asm 2: fe_mul(>CB=z2, <C=z2, <B=tmp1); */
+fe_mul(z2, z2, tmp1);
 
 /* qhasm: BB = B^2 */
-/* asm 1: fe_sq(>BB=fe#5,<B=fe#6); */
-/* asm 2: fe_sq(>BB=tmp0,<B=tmp1); */
-fe_sq(tmp0,tmp1);
+/* asm 1: fe_sq(>BB=fe#5, <B=fe#6); */
+/* asm 2: fe_sq(>BB=tmp0, <B=tmp1); */
+fe_sq(tmp0, tmp1);
 
 /* qhasm: AA = A^2 */
-/* asm 1: fe_sq(>AA=fe#6,<A=fe#1); */
-/* asm 2: fe_sq(>AA=tmp1,<A=x2); */
-fe_sq(tmp1,x2);
+/* asm 1: fe_sq(>AA=fe#6, <A=fe#1); */
+/* asm 2: fe_sq(>AA=tmp1, <A=x2); */
+fe_sq(tmp1, x2);
 
 /* qhasm: t0 = DA+CB */
-/* asm 1: fe_add(>t0=fe#3,<DA=fe#4,<CB=fe#2); */
-/* asm 2: fe_add(>t0=x3,<DA=z3,<CB=z2); */
-fe_add(x3,z3,z2);
+/* asm 1: fe_add(>t0=fe#3, <DA=fe#4, <CB=fe#2); */
+/* asm 2: fe_add(>t0=x3, <DA=z3, <CB=z2); */
+fe_add(x3, z3, z2);
 
 /* qhasm: assign x3 to t0 */
 
 /* qhasm: t1 = DA-CB */
-/* asm 1: fe_sub(>t1=fe#2,<DA=fe#4,<CB=fe#2); */
-/* asm 2: fe_sub(>t1=z2,<DA=z3,<CB=z2); */
-fe_sub(z2,z3,z2);
+/* asm 1: fe_sub(>t1=fe#2, <DA=fe#4, <CB=fe#2); */
+/* asm 2: fe_sub(>t1=z2, <DA=z3, <CB=z2); */
+fe_sub(z2, z3, z2);
 
 /* qhasm: X4 = AA*BB */
-/* asm 1: fe_mul(>X4=fe#1,<AA=fe#6,<BB=fe#5); */
-/* asm 2: fe_mul(>X4=x2,<AA=tmp1,<BB=tmp0); */
-fe_mul(x2,tmp1,tmp0);
+/* asm 1: fe_mul(>X4=fe#1, <AA=fe#6, <BB=fe#5); */
+/* asm 2: fe_mul(>X4=x2, <AA=tmp1, <BB=tmp0); */
+fe_mul(x2, tmp1, tmp0);
 
 /* qhasm: E = AA-BB */
-/* asm 1: fe_sub(>E=fe#6,<AA=fe#6,<BB=fe#5); */
-/* asm 2: fe_sub(>E=tmp1,<AA=tmp1,<BB=tmp0); */
-fe_sub(tmp1,tmp1,tmp0);
+/* asm 1: fe_sub(>E=fe#6, <AA=fe#6, <BB=fe#5); */
+/* asm 2: fe_sub(>E=tmp1, <AA=tmp1, <BB=tmp0); */
+fe_sub(tmp1, tmp1, tmp0);
 
 /* qhasm: t2 = t1^2 */
-/* asm 1: fe_sq(>t2=fe#2,<t1=fe#2); */
-/* asm 2: fe_sq(>t2=z2,<t1=z2); */
-fe_sq(z2,z2);
+/* asm 1: fe_sq(>t2=fe#2, <t1=fe#2); */
+/* asm 2: fe_sq(>t2=z2, <t1=z2); */
+fe_sq(z2, z2);
 
 /* qhasm: t3 = a24*E */
-/* asm 1: fe_mul121666(>t3=fe#4,<E=fe#6); */
-/* asm 2: fe_mul121666(>t3=z3,<E=tmp1); */
-fe_mul121666(z3,tmp1);
+/* asm 1: fe_mul121666(>t3=fe#4, <E=fe#6); */
+/* asm 2: fe_mul121666(>t3=z3, <E=tmp1); */
+fe_mul121666(z3, tmp1);
 
 /* qhasm: X5 = t0^2 */
-/* asm 1: fe_sq(>X5=fe#3,<t0=fe#3); */
-/* asm 2: fe_sq(>X5=x3,<t0=x3); */
-fe_sq(x3,x3);
+/* asm 1: fe_sq(>X5=fe#3, <t0=fe#3); */
+/* asm 2: fe_sq(>X5=x3, <t0=x3); */
+fe_sq(x3, x3);
 
 /* qhasm: t4 = BB+t3 */
-/* asm 1: fe_add(>t4=fe#5,<BB=fe#5,<t3=fe#4); */
-/* asm 2: fe_add(>t4=tmp0,<BB=tmp0,<t3=z3); */
-fe_add(tmp0,tmp0,z3);
+/* asm 1: fe_add(>t4=fe#5, <BB=fe#5, <t3=fe#4); */
+/* asm 2: fe_add(>t4=tmp0, <BB=tmp0, <t3=z3); */
+fe_add(tmp0, tmp0, z3);
 
 /* qhasm: Z5 = X1*t2 */
-/* asm 1: fe_mul(>Z5=fe#4,x1,<t2=fe#2); */
-/* asm 2: fe_mul(>Z5=z3,x1,<t2=z2); */
-fe_mul(z3,x1,z2);
+/* asm 1: fe_mul(>Z5=fe#4, x1, <t2=fe#2); */
+/* asm 2: fe_mul(>Z5=z3, x1, <t2=z2); */
+fe_mul(z3, x1, z2);
 
 /* qhasm: Z4 = E*t4 */
-/* asm 1: fe_mul(>Z4=fe#2,<E=fe#6,<t4=fe#5); */
-/* asm 2: fe_mul(>Z4=z2,<E=tmp1,<t4=tmp0); */
-fe_mul(z2,tmp1,tmp0);
+/* asm 1: fe_mul(>Z4=fe#2, <E=fe#6, <t4=fe#5); */
+/* asm 2: fe_mul(>Z4=z2, <E=tmp1, <t4=tmp0); */
+fe_mul(z2, tmp1, tmp0);
 
 /* qhasm: return */
   }
-  fe_cswap(x2,x3,swap);
-  fe_cswap(z2,z3,swap);
+  fe_cswap(x2, x3, swap);
+  fe_cswap(z2, z3, swap);
 
-  fe_invert(z2,z2);
-  fe_mul(x2,x2,z2);
-  fe_tobytes(q,x2);
+  fe_invert(z2, z2);
+  fe_mul(x2, x2, z2);
+  fe_tobytes(q, x2);
   return 0;
 }
 
 static const unsigned char basepoint[32] = {9};
 
-int crypto_scalarmult_base_ref10(unsigned char *q,const unsigned char *n)
+int crypto_scalarmult_base_ref10(unsigned char *q, const unsigned char *n)
 {
-  return crypto_scalarmult_ref10(q,n,basepoint);
+  return crypto_scalarmult_ref10(q, n, basepoint);
 }
 

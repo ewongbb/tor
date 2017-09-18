@@ -114,7 +114,7 @@ static uint64_t expected_bandwidth_usage = 0;
 /** What unit are we using for our accounting? */
 static time_unit_t cfg_unit = UNIT_MONTH;
 
-/** How many days,hours,minutes into each unit does our accounting interval
+/** How many days, hours, minutes into each unit does our accounting interval
  * start? */
 /** @{ */
 static int cfg_start_day = 0,
@@ -163,7 +163,7 @@ accounting_parse_options(const or_options_t *options, int validate_only)
 {
   time_unit_t unit;
   int ok, idx;
-  long d,h,m;
+  long d, h, m;
   smartlist_t *items;
   const char *v = options->AccountingStart;
   const char *s;
@@ -181,12 +181,12 @@ accounting_parse_options(const or_options_t *options, int validate_only)
 
   items = smartlist_new();
   smartlist_split_string(items, v, NULL,
-                         SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK,0);
+                         SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
   if (smartlist_len(items)<2) {
     log_warn(LD_CONFIG, "Too few arguments to AccountingStart");
     goto err;
   }
-  s = smartlist_get(items,0);
+  s = smartlist_get(items, 0);
   if (0==strcasecmp(s, "month")) {
     unit = UNIT_MONTH;
   } else if (0==strcasecmp(s, "week")) {
@@ -195,14 +195,14 @@ accounting_parse_options(const or_options_t *options, int validate_only)
     unit = UNIT_DAY;
   } else {
     log_warn(LD_CONFIG,
-             "Unrecognized accounting unit '%s': only 'month', 'week',"
+             "Unrecognized accounting unit '%s': only 'month', 'week', "
              " and 'day' are supported.", s);
     goto err;
   }
 
   switch (unit) {
   case UNIT_WEEK:
-    d = tor_parse_long(smartlist_get(items,1), 10, 1, 7, &ok, NULL);
+    d = tor_parse_long(smartlist_get(items, 1), 10, 1, 7, &ok, NULL);
     if (!ok) {
       log_warn(LD_CONFIG, "Weekly accounting must begin on a day between "
                "1 (Monday) and 7 (Sunday)");
@@ -210,7 +210,7 @@ accounting_parse_options(const or_options_t *options, int validate_only)
     }
     break;
   case UNIT_MONTH:
-    d = tor_parse_long(smartlist_get(items,1), 10, 1, 28, &ok, NULL);
+    d = tor_parse_long(smartlist_get(items, 1), 10, 1, 28, &ok, NULL);
     if (!ok) {
       log_warn(LD_CONFIG, "Monthly accounting must begin on a day between "
                "1 and 28");
@@ -229,14 +229,14 @@ accounting_parse_options(const or_options_t *options, int validate_only)
 
   idx = unit==UNIT_DAY?1:2;
   if (smartlist_len(items) != (idx+1)) {
-    log_warn(LD_CONFIG,"Accounting unit '%s' requires %d argument%s.",
+    log_warn(LD_CONFIG, "Accounting unit '%s' requires %d argument%s.",
              s, idx, (idx>1)?"s":"");
     goto err;
   }
   s = smartlist_get(items, idx);
   h = tor_parse_long(s, 10, 0, 23, &ok, &cp);
   if (!ok) {
-    log_warn(LD_CONFIG,"Accounting start time not parseable: bad hour.");
+    log_warn(LD_CONFIG, "Accounting start time not parseable: bad hour.");
     goto err;
   }
   if (!cp || *cp!=':') {
@@ -274,7 +274,7 @@ accounting_parse_options(const or_options_t *options, int validate_only)
  * hibernate, return 1, else return 0.
  */
 MOCK_IMPL(int,
-accounting_is_enabled,(const or_options_t *options))
+accounting_is_enabled, (const or_options_t *options))
 {
   if (options->AccountingMax)
     return 1;
@@ -291,7 +291,7 @@ accounting_get_interval_length(void)
 
 /** Return the time at which the current accounting interval will end. */
 MOCK_IMPL(time_t,
-accounting_get_end_time,(void))
+accounting_get_end_time, (void))
 {
   return interval_end_time;
 }
@@ -815,7 +815,7 @@ hibernate_begin(hibernate_state_t new_state, time_t now)
 
   if (new_state == HIBERNATE_STATE_EXITING &&
       hibernate_state != HIBERNATE_STATE_LIVE) {
-    log_notice(LD_GENERAL,"SIGINT received %s; exiting now.",
+    log_notice(LD_GENERAL, "SIGINT received %s; exiting now.",
                hibernate_state == HIBERNATE_STATE_EXITING ?
                "a second time" : "while hibernating");
     tor_cleanup();
@@ -836,7 +836,7 @@ hibernate_begin(hibernate_state_t new_state, time_t now)
   /* XXX upload rendezvous service descriptors with no intro points */
 
   if (new_state == HIBERNATE_STATE_EXITING) {
-    log_notice(LD_GENERAL,"Interrupt: we have stopped accepting new "
+    log_notice(LD_GENERAL, "Interrupt: we have stopped accepting new "
                "connections, and will shut down in %d seconds. Interrupt "
                "again to exit now.", options->ShutdownWaitLength);
     shutdown_time = time(NULL) + options->ShutdownWaitLength;
@@ -861,7 +861,7 @@ hibernate_end(hibernate_state_t new_state)
 
   /* listeners will be relaunched in run_scheduled_events() in main.c */
   if (hibernate_state != HIBERNATE_STATE_INITIAL)
-    log_notice(LD_ACCT,"Hibernation period ended. Resuming normal activity.");
+    log_notice(LD_ACCT, "Hibernation period ended. Resuming normal activity.");
 
   hibernate_state = new_state;
   hibernate_end_time = 0; /* no longer hibernating */
@@ -877,7 +877,7 @@ hibernate_begin_shutdown(void)
 
 /** Return true iff we are currently hibernating. */
 MOCK_IMPL(int,
-we_are_hibernating,(void))
+we_are_hibernating, (void))
 {
   return hibernate_state != HIBERNATE_STATE_LIVE;
 }
@@ -896,7 +896,7 @@ hibernate_go_dormant(time_t now)
   else
     hibernate_begin(HIBERNATE_STATE_DORMANT, now);
 
-  log_notice(LD_ACCT,"Going dormant. Blowing away remaining connections.");
+  log_notice(LD_ACCT, "Going dormant. Blowing away remaining connections.");
 
   /* Close all OR/AP/exit conns. Leave dir conns because we still want
    * to be able to upload server descriptors so clients know we're still
@@ -908,7 +908,7 @@ hibernate_go_dormant(time_t now)
          (conn = connection_get_by_type(CONN_TYPE_EXIT))) {
     if (CONN_IS_EDGE(conn))
       connection_edge_end(TO_EDGE_CONN(conn), END_STREAM_REASON_HIBERNATING);
-    log_info(LD_NET,"Closing conn type %d", conn->type);
+    log_info(LD_NET, "Closing conn type %d", conn->type);
     if (conn->type == CONN_TYPE_AP) /* send socks failure if needed */
       connection_mark_unattached_ap(TO_ENTRY_CONN(conn),
                                     END_STREAM_REASON_HIBERNATING);
@@ -949,7 +949,7 @@ hibernate_end_time_elapsed(time_t now)
   } else {
     /* The interval has changed, and it isn't time to wake up yet. */
     hibernate_end_time = interval_wakeup_time;
-    format_iso_time(buf,interval_wakeup_time);
+    format_iso_time(buf, interval_wakeup_time);
     if (hibernate_state != HIBERNATE_STATE_DORMANT) {
       /* We weren't sleeping before; we should sleep now. */
       log_notice(LD_ACCT,
@@ -959,7 +959,7 @@ hibernate_end_time_elapsed(time_t now)
     } else {
       log_notice(LD_ACCT,
              "Accounting period ended. This period, we will hibernate"
-             " until %s UTC",buf);
+             " until %s UTC", buf);
     }
   }
 }
@@ -1008,7 +1008,7 @@ consider_hibernation(time_t now)
                  "No new connections will be accepted");
       hibernate_begin(HIBERNATE_STATE_LOWBANDWIDTH, now);
     } else if (accounting_enabled && now < interval_wakeup_time) {
-      format_local_iso_time(buf,interval_wakeup_time);
+      format_local_iso_time(buf, interval_wakeup_time);
       log_notice(LD_ACCT,
                  "Commencing hibernation. We will wake up at %s local time.",
                  buf);

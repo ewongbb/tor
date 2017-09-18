@@ -108,7 +108,7 @@ HT_GENERATE2(channel_gid_map, channel_s, gidmap_node,
              channel_id_hash, channel_id_eq,
              0.6, tor_reallocarray_, tor_free_)
 
-HANDLE_IMPL(channel, channel_s,)
+HANDLE_IMPL(channel, channel_s, )
 
 /* Counter for ID numbers */
 static uint64_t n_channels_allocated = 0;
@@ -3962,7 +3962,7 @@ channel_listener_dump_transport_statistics(channel_listener_t *chan_l,
  * endpoint for this channel; it should specify the actual address connected
  * to/from.
  *
- * Subsequent calls to channel_get_{actual,canonical}_remote_{address,descr}
+ * Subsequent calls to channel_get_{actual, canonical}_remote_{address, descr}
  * may invalidate the return value from this function.
  */
 const char *
@@ -3978,7 +3978,7 @@ channel_get_actual_remote_descr(channel_t *chan)
 /**
  * Return the text address of the remote endpoint.
  *
- * Subsequent calls to channel_get_{actual,canonical}_remote_{address,descr}
+ * Subsequent calls to channel_get_{actual, canonical}_remote_{address, descr}
  * may invalidate the return value from this function.
  */
 const char *
@@ -3995,7 +3995,7 @@ channel_get_actual_remote_address(channel_t *chan)
  * endpoint for this channel; it should use the known canonical address for
  * this OR's identity digest if possible.
  *
- * Subsequent calls to channel_get_{actual,canonical}_remote_{address,descr}
+ * Subsequent calls to channel_get_{actual, canonical}_remote_{address, descr}
  * may invalidate the return value from this function.
  */
 const char *
@@ -4679,7 +4679,7 @@ channel_num_circuits(channel_t *chan)
  * connection_or_set_circid_type()
  */
 MOCK_IMPL(void,
-channel_set_circid_type,(channel_t *chan,
+channel_set_circid_type, (channel_t *chan,
                          crypto_pk_t *identity_rcvd,
                          int consider_identity))
 {

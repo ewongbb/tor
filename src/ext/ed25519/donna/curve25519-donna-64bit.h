@@ -32,7 +32,7 @@ curve25519_add(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 	out[4] = a[4] + b[4];
 }
 
-/* out = a + b, where a and/or b are the result of a basic op (add,sub) */
+/* out = a + b, where a and/or b are the result of a basic op (add, sub) */
 DONNA_INLINE static void
 curve25519_add_after_basic(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 	out[0] = a[0] + b[0];
@@ -69,7 +69,7 @@ curve25519_sub(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 	out[4] = a[4] + twoP1234 - b[4];
 }
 
-/* out = a - b, where a and/or b are the result of a basic op (add,sub) */
+/* out = a - b, where a and/or b are the result of a basic op (add, sub) */
 DONNA_INLINE static void
 curve25519_sub_after_basic(bignum25519 out, const bignum25519 a, const bignum25519 b) {
 	out[0] = a[0] + fourP0    - b[0];
@@ -109,7 +109,7 @@ curve25519_mul(bignum25519 out, const bignum25519 in2, const bignum25519 in) {
 	uint128_t mul;
 #endif
 	uint128_t t[5];
-	uint64_t r0,r1,r2,r3,r4,s0,s1,s2,s3,s4,c;
+	uint64_t r0, r1, r2, r3, r4, s0, s1, s2, s3, s4, c;
 
 	r0 = in[0];
 	r1 = in[1];
@@ -182,8 +182,8 @@ curve25519_square_times(bignum25519 out, const bignum25519 in, uint64_t count) {
 	uint128_t mul;
 #endif
 	uint128_t t[5];
-	uint64_t r0,r1,r2,r3,r4,c;
-	uint64_t d0,d1,d2,d4,d419;
+	uint64_t r0, r1, r2, r3, r4, c;
+	uint64_t d0, d1, d2, d4, d419;
 
 	r0 = in[0];
 	r1 = in[1];
@@ -239,8 +239,8 @@ curve25519_square(bignum25519 out, const bignum25519 in) {
 	uint128_t mul;
 #endif
 	uint128_t t[5];
-	uint64_t r0,r1,r2,r3,r4,c;
-	uint64_t d0,d1,d2,d4,d419;
+	uint64_t r0, r1, r2, r3, r4, c;
+	uint64_t d0, d1, d2, d4, d419;
 
 	r0 = in[0];
 	r1 = in[1];
@@ -286,8 +286,8 @@ curve25519_square(bignum25519 out, const bignum25519 in) {
 /* Take a little-endian, 32-byte number and expand it into polynomial form */
 DONNA_INLINE static void
 curve25519_expand(bignum25519 out, const unsigned char *in) {
-	static const union { uint8_t b[2]; uint16_t s; } endian_check = {{1,0}};
-	uint64_t x0,x1,x2,x3;
+	static const union { uint8_t b[2]; uint16_t s; } endian_check = {{1, 0}};
+	uint64_t x0, x1, x2, x3;
 
 	if (endian_check.s == 1) {
 		x0 = *(uint64_t *)(in + 0);
@@ -362,10 +362,10 @@ curve25519_contract(unsigned char *out, const bignum25519 input) {
 	/* now between 2^255 and 2^256-20, and offset by 2^255. */
 	curve25519_contract_carry_final()
 
-	#define write51full(n,shift) \
+	#define write51full(n, shift) \
 		f = ((t[n] >> shift) | (t[n+1] << (51 - shift))); \
 		for (i = 0; i < 8; i++, f >>= 8) *out++ = (unsigned char)f;
-	#define write51(n) write51full(n,13*n)
+	#define write51(n) write51full(n, 13*n)
 	write51(0)
 	write51(1)
 	write51(2)
@@ -398,7 +398,7 @@ curve25519_move_conditional_bytes(uint8_t out[96], const uint8_t in[96], uint64_
 DONNA_INLINE static void
 curve25519_swap_conditional(bignum25519 a, bignum25519 b, uint64_t iswap) {
 	const uint64_t swap = (uint64_t)(-(int64_t)iswap);
-	uint64_t x0,x1,x2,x3,x4;
+	uint64_t x0, x1, x2, x3, x4;
 
 	x0 = swap & (a[0] ^ b[0]); a[0] ^= x0; b[0] ^= x0;
 	x1 = swap & (a[1] ^ b[1]); a[1] ^= x1; b[1] ^= x1;

@@ -120,10 +120,10 @@ command_time_process_cell(cell_t *cell, channel_t *chan, int *time,
   time_passed = tv_udiff(&start, &end) ;
 
   if (time_passed > 10000) { /* more than 10ms */
-    log_debug(LD_OR,"That call just took %ld ms.",time_passed/1000);
+    log_debug(LD_OR, "That call just took %ld ms.", time_passed/1000);
   }
   if (time_passed < 0) {
-    log_info(LD_GENERAL,"That call took us back in time!");
+    log_info(LD_GENERAL, "That call took us back in time!");
     time_passed = 0;
   }
   *time += time_passed;
@@ -340,11 +340,11 @@ command_process_create_cell(cell_t *cell, channel_t *chan)
     /* hand it off to the cpuworkers, and then return. */
 
     if (assign_onionskin_to_cpuworker(circ, create_cell) < 0) {
-      log_debug(LD_GENERAL,"Failed to hand off onionskin. Closing.");
+      log_debug(LD_GENERAL, "Failed to hand off onionskin. Closing.");
       circuit_mark_for_close(TO_CIRCUIT(circ), END_CIRC_REASON_RESOURCELIMIT);
       return;
     }
-    log_debug(LD_OR,"success: handed off onionskin.");
+    log_debug(LD_OR, "success: handed off onionskin.");
   } else {
     /* This is a CREATE_FAST cell; we can handle it immediately without using
      * a CPU worker. */
@@ -373,7 +373,7 @@ command_process_create_cell(cell_t *cell, channel_t *chan)
                                        rend_circ_nonce);
     tor_free(create_cell);
     if (len < 0) {
-      log_warn(LD_OR,"Failed to generate key material. Closing.");
+      log_warn(LD_OR, "Failed to generate key material. Closing.");
       circuit_mark_for_close(TO_CIRCUIT(circ), END_CIRC_REASON_INTERNAL);
       return;
     }
@@ -383,7 +383,7 @@ command_process_create_cell(cell_t *cell, channel_t *chan)
     if (onionskin_answer(circ, &created_cell,
                          (const char *)keys, sizeof(keys),
                          rend_circ_nonce)<0) {
-      log_warn(LD_OR,"Failed to reply to CREATE_FAST cell. Closing.");
+      log_warn(LD_OR, "Failed to reply to CREATE_FAST cell. Closing.");
       circuit_mark_for_close(TO_CIRCUIT(circ), END_CIRC_REASON_INTERNAL);
       return;
     }
@@ -415,7 +415,7 @@ command_process_created_cell(cell_t *cell, channel_t *chan)
   }
 
   if (circ->n_circ_id != cell->circ_id || circ->n_chan != chan) {
-    log_fn(LOG_PROTOCOL_WARN,LD_PROTOCOL,
+    log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
            "got created cell from Tor client? Closing.");
     circuit_mark_for_close(circ, END_CIRC_REASON_TORPROTOCOL);
     return;
@@ -430,15 +430,15 @@ command_process_created_cell(cell_t *cell, channel_t *chan)
   if (CIRCUIT_IS_ORIGIN(circ)) { /* we're the OP. Handshake this. */
     origin_circuit_t *origin_circ = TO_ORIGIN_CIRCUIT(circ);
     int err_reason = 0;
-    log_debug(LD_OR,"at OP. Finishing handshake.");
+    log_debug(LD_OR, "at OP. Finishing handshake.");
     if ((err_reason = circuit_finish_handshake(origin_circ,
                                         &extended_cell.created_cell)) < 0) {
       circuit_mark_for_close(circ, -err_reason);
       return;
     }
-    log_debug(LD_OR,"Moving to next skin.");
+    log_debug(LD_OR, "Moving to next skin.");
     if ((err_reason = circuit_send_next_onion_skin(origin_circ)) < 0) {
-      log_info(LD_OR,"circuit_send_next_onion_skin failed.");
+      log_info(LD_OR, "circuit_send_next_onion_skin failed.");
       /* XXX push this circuit_close lower */
       circuit_mark_for_close(circ, -err_reason);
       return;
@@ -487,7 +487,7 @@ command_process_relay_cell(cell_t *cell, channel_t *chan)
   }
 
   if (circ->state == CIRCUIT_STATE_ONIONSKIN_PENDING) {
-    log_fn(LOG_PROTOCOL_WARN,LD_PROTOCOL,"circuit in create_wait. Closing.");
+    log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL, "circuit in create_wait. Closing.");
     circuit_mark_for_close(circ, END_CIRC_REASON_TORPROTOCOL);
     return;
   }
@@ -514,7 +514,7 @@ command_process_relay_cell(cell_t *cell, channel_t *chan)
        * gone from the network, so any such cells now are surprising. */
       log_warn(LD_OR,
                "Received an inbound RELAY_EARLY cell on circuit %u."
-               " Closing circuit. Please report this event,"
+               " Closing circuit. Please report this event, "
                " along with the following message.",
                (unsigned)cell->circ_id);
       if (CIRCUIT_IS_ORIGIN(circ)) {
@@ -541,7 +541,7 @@ command_process_relay_cell(cell_t *cell, channel_t *chan)
   }
 
   if ((reason = circuit_receive_relay_cell(cell, circ, direction)) < 0) {
-    log_fn(LOG_PROTOCOL_WARN,LD_PROTOCOL,"circuit_receive_relay_cell "
+    log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL, "circuit_receive_relay_cell "
            "(%s) failed. Closing.",
            direction==CELL_DIRECTION_OUT?"forward":"backward");
     circuit_mark_for_close(circ, -reason);
@@ -577,12 +577,12 @@ command_process_destroy_cell(cell_t *cell, channel_t *chan)
 
   circ = circuit_get_by_circid_channel(cell->circ_id, chan);
   if (!circ) {
-    log_info(LD_OR,"unknown circuit %u on connection from %s. Dropping.",
+    log_info(LD_OR, "unknown circuit %u on connection from %s. Dropping.",
              (unsigned)cell->circ_id,
              channel_get_canonical_remote_descr(chan));
     return;
   }
-  log_debug(LD_OR,"Received for circID %u.",(unsigned)cell->circ_id);
+  log_debug(LD_OR, "Received for circID %u.", (unsigned)cell->circ_id);
 
   reason = (uint8_t)cell->payload[0];
   circ->received_destroy = 1;

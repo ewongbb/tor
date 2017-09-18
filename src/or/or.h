@@ -1606,7 +1606,7 @@ typedef struct or_connection_t {
                         * "none negotiated yet." */
   uint16_t idle_timeout; /**< How long can this connection sit with no
                           * circuits on it before we close it? Based on
-                          * IDLE_CIRCUIT_TIMEOUT_{NON,}CANONICAL and
+                          * IDLE_CIRCUIT_TIMEOUT_{NON, }CANONICAL and
                           * on is_canonical, randomized. */
   or_handshake_state_t *handshake_state; /**< If we are setting this connection
                                           * up, state information to do so. */
@@ -4428,7 +4428,7 @@ typedef struct {
   char *GeoIPFile;
   char *GeoIPv6File;
 
-  /** Autobool: if auto, then any attempt to Exclude{Exit,}Nodes a particular
+  /** Autobool: if auto, then any attempt to Exclude{Exit, }Nodes a particular
    * country code will exclude all nodes in ?? and A1.  If true, all nodes in
    * ?? and A1 are excluded. Has no effect if we don't know any GeoIP data. */
   int GeoIPExcludeUnknown;

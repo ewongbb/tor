@@ -31,10 +31,10 @@ isaacp_mix(isaacp_state *st) {
 	b = b + c;
 
 	for (i = 0; i < 256; i += 4) {
-		isaacp_step(0, ROTL32(a,13))
+		isaacp_step(0, ROTL32(a, 13))
 		isaacp_step(1, ROTR32(a, 6))
 		isaacp_step(2, ROTL32(a, 2))
-		isaacp_step(3, ROTR32(a,16))
+		isaacp_step(3, ROTR32(a, 16))
 	}
 
 	st->a = a;

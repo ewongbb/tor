@@ -34,10 +34,10 @@ test_crypto_s2k_rfc2440(void *arg)
 
   secret_to_key_rfc2440(buf+9, 20, "", 0, buf);
   crypto_digest(buf2+9, buf3, 1024);
-  tt_mem_op(buf,OP_EQ, buf2, 29);
+  tt_mem_op(buf, OP_EQ, buf2, 29);
 
-  memcpy(buf,"vrbacrda",8);
-  memcpy(buf2,"vrbacrda",8);
+  memcpy(buf, "vrbacrda", 8);
+  memcpy(buf2, "vrbacrda", 8);
   buf[8] = 96;
   buf2[8] = 96;
   secret_to_key_rfc2440(buf+9, 20, "12345678", 8, buf);
@@ -45,7 +45,7 @@ test_crypto_s2k_rfc2440(void *arg)
     memcpy(buf3+i, "vrbacrda12345678", 16);
   }
   crypto_digest(buf2+9, buf3, 65536);
-  tt_mem_op(buf,OP_EQ, buf2, 29);
+  tt_mem_op(buf, OP_EQ, buf2, 29);
 
  done:
   tor_free(buf3);
@@ -147,10 +147,10 @@ test_libscrypt_eq_openssl(void *arg)
 
   (void)arg;
 
-  memset(buf1,0,64);
-  memset(buf2,0,64);
+  memset(buf1, 0, 64);
+  memset(buf2, 0, 64);
 
-  /* NOTE: we're using N,r the way OpenSSL and libscrypt define them,
+  /* NOTE: we're using N, r the way OpenSSL and libscrypt define them,
    * not the way draft-josefsson-scrypt-kdf-00.txt define them.
    */
   N = 16;
@@ -169,8 +169,8 @@ test_libscrypt_eq_openssl(void *arg)
 
   tt_mem_op(buf1, OP_EQ, buf2, 64);
 
-  memset(buf1,0,64);
-  memset(buf2,0,64);
+  memset(buf1, 0, 64);
+  memset(buf2, 0, 64);
 
   N = 1024;
   r = 8;
@@ -190,8 +190,8 @@ test_libscrypt_eq_openssl(void *arg)
 
   tt_mem_op(buf1, OP_EQ, buf2, 64);
 
-  memset(buf1,0,64);
-  memset(buf2,0,64);
+  memset(buf1, 0, 64);
+  memset(buf2, 0, 64);
 
   N = 16384;
   r = 8;
@@ -215,8 +215,8 @@ test_libscrypt_eq_openssl(void *arg)
 
   tt_mem_op(buf1, OP_EQ, buf2, 64);
 
-  memset(buf1,0,64);
-  memset(buf2,0,64);
+  memset(buf1, 0, 64);
+  memset(buf2, 0, 64);
 
   N = 1048576;
   maxmem = 2 * 1024 * 1024 * (uint64_t)1024; // 2 GB

@@ -83,7 +83,7 @@ clear_log_messages(void)
   messages = NULL;
 }
 
-#define setup_options(opt,dflt)              \
+#define setup_options(opt, dflt)              \
   do {                                       \
     opt = options_new();                     \
     opt->command = CMD_RUN_TOR;              \
@@ -1576,7 +1576,7 @@ test_options_validate__max_client_circuits(void *ignored)
 
   ret = options_validate(tdata->old_opt, tdata->opt, tdata->def_opt, 0, &msg);
   tt_int_op(ret, OP_EQ, -1);
-  tt_str_op(msg, OP_EQ, "MaxClientCircuitsPending must be between 1 and 1024,"
+  tt_str_op(msg, OP_EQ, "MaxClientCircuitsPending must be between 1 and 1024, "
             " but was set to 0");
   tor_free(msg);
 
@@ -1588,7 +1588,7 @@ test_options_validate__max_client_circuits(void *ignored)
 
   ret = options_validate(tdata->old_opt, tdata->opt, tdata->def_opt, 0, &msg);
   tt_int_op(ret, OP_EQ, -1);
-  tt_str_op(msg, OP_EQ, "MaxClientCircuitsPending must be between 1 and 1024,"
+  tt_str_op(msg, OP_EQ, "MaxClientCircuitsPending must be between 1 and 1024, "
             " but was set to 1025");
   tor_free(msg);
 
@@ -2450,7 +2450,7 @@ test_options_validate__bandwidth(void *ignored)
                                 );
   ret = options_validate(tdata->old_opt, tdata->opt, tdata->def_opt, 0, &msg);
   tt_int_op(ret, OP_EQ, -1);
-  tt_str_op(msg, OP_EQ, "BandwidthRate is set to 1 bytes/second. For servers,"
+  tt_str_op(msg, OP_EQ, "BandwidthRate is set to 1 bytes/second. For servers, "
             " it must be at least 76800.");
   tor_free(msg);
 

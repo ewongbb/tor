@@ -82,7 +82,7 @@ void check_descriptor_ipaddress_changed(time_t now);
 void router_new_address_suggestion(const char *suggestion,
                                    const dir_connection_t *d_conn);
 int router_compare_to_my_exit_policy(const tor_addr_t *addr, uint16_t port);
-MOCK_DECL(int, router_my_exit_policy_is_reject_star,(void));
+MOCK_DECL(int, router_my_exit_policy_is_reject_star, (void));
 MOCK_DECL(const routerinfo_t *, router_get_my_routerinfo, (void));
 extrainfo_t *router_get_my_extrainfo(void);
 const char *router_get_my_descriptor(void);
@@ -91,7 +91,7 @@ int router_digest_is_me(const char *digest);
 const uint8_t *router_get_my_id_digest(void);
 int router_extrainfo_digest_is_me(const char *digest);
 int router_is_me(const routerinfo_t *router);
-MOCK_DECL(int,router_pick_published_address,(const or_options_t *options,
+MOCK_DECL(int, router_pick_published_address, (const or_options_t *options,
                                              uint32_t *addr,
                                              int cache_only));
 int router_build_fresh_descriptor(routerinfo_t **r, extrainfo_t **e);

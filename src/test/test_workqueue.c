@@ -172,7 +172,7 @@ handle_reply(void *arg)
 #ifdef TRACK_RESPONSES
   rsa_work_t *rw = arg; /* Naughty cast, but only looking at serial. */
   tor_assert(! bitarray_is_set(received, rw->serial));
-  bitarray_set(received,rw->serial);
+  bitarray_set(received, rw->serial);
 #endif
 
   tor_free(arg);
@@ -326,7 +326,7 @@ help(void)
      "  -L <lowwater> Add items whenever fewer than this many are pending\n"
      "  -C <cancel>   Try to cancel N items of every batch that we add\n"
      "  -R <ratio>    Make one out of this many items be a slow (RSA) one\n"
-     "  --no-{eventfd2,eventfd,pipe2,pipe,socketpair}\n"
+     "  --no-{eventfd2, eventfd, pipe2, pipe, socketpair}\n"
      "                Disable one of the alert_socket backends.");
 }
 

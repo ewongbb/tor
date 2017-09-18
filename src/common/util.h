@@ -90,7 +90,7 @@ extern int dmalloc_free(const char *file, const int line, void *pnt,
 
 #define tor_malloc(size)       tor_malloc_(size DMALLOC_ARGS)
 #define tor_malloc_zero(size)  tor_malloc_zero_(size DMALLOC_ARGS)
-#define tor_calloc(nmemb,size) tor_calloc_(nmemb, size DMALLOC_ARGS)
+#define tor_calloc(nmemb, size) tor_calloc_(nmemb, size DMALLOC_ARGS)
 #define tor_realloc(ptr, size) tor_realloc_(ptr, size DMALLOC_ARGS)
 #define tor_reallocarray(ptr, sz1, sz2) \
   tor_reallocarray_((ptr), (sz1), (sz2) DMALLOC_ARGS)
@@ -134,9 +134,9 @@ void tor_log_mallinfo(int severity);
 
 /* Logic */
 /** Macro: true if two values have the same boolean value. */
-#define bool_eq(a,b) (!(a)==!(b))
+#define bool_eq(a, b) (!(a)==!(b))
 /** Macro: true if two values have different boolean values. */
-#define bool_neq(a,b) (!(a)!=!(b))
+#define bool_neq(a, b) (!(a)!=!(b))
 
 /* Math functions */
 double tor_mathlog(double d) ATTR_CONST;
@@ -157,7 +157,7 @@ void simplify_fraction64(uint64_t *numer, uint64_t *denom);
 /* Compute the CEIL of <b>a</b> divided by <b>b</b>, for nonnegative <b>a</b>
  * and positive <b>b</b>.  Works on integer types only. Not defined if a+(b-1)
  * can overflow. */
-#define CEIL_DIV(a,b) (((a)+((b)-1))/(b))
+#define CEIL_DIV(a, b) (((a)+((b)-1))/(b))
 
 /* Return <b>v</b> if it's between <b>min</b> and <b>max</b>.  Otherwise
  * return <b>min</b> if <b>v</b> is smaller than <b>min</b>, or <b>max</b> if
@@ -165,7 +165,7 @@ void simplify_fraction64(uint64_t *numer, uint64_t *denom);
  *
  * Requires that <b>min</b> is no more than <b>max</b>. May evaluate any of
  * its arguments more than once! */
-#define CLAMP(min,v,max)                        \
+#define CLAMP(min, v, max)                        \
   ( ((v) < (min)) ? (min) :                     \
     ((v) > (max)) ? (max) :                     \
     (v) )
@@ -180,14 +180,14 @@ int tor_strisprint(const char *s) ATTR_NONNULL((1));
 int tor_strisnonupper(const char *s) ATTR_NONNULL((1));
 int tor_strisspace(const char *s);
 int strcmp_opt(const char *s1, const char *s2);
-int strcmpstart(const char *s1, const char *s2) ATTR_NONNULL((1,2));
-int strcmp_len(const char *s1, const char *s2, size_t len) ATTR_NONNULL((1,2));
-int strcasecmpstart(const char *s1, const char *s2) ATTR_NONNULL((1,2));
-int strcmpend(const char *s1, const char *s2) ATTR_NONNULL((1,2));
-int strcasecmpend(const char *s1, const char *s2) ATTR_NONNULL((1,2));
+int strcmpstart(const char *s1, const char *s2) ATTR_NONNULL((1, 2));
+int strcmp_len(const char *s1, const char *s2, size_t len) ATTR_NONNULL((1, 2));
+int strcasecmpstart(const char *s1, const char *s2) ATTR_NONNULL((1, 2));
+int strcmpend(const char *s1, const char *s2) ATTR_NONNULL((1, 2));
+int strcasecmpend(const char *s1, const char *s2) ATTR_NONNULL((1, 2));
 int fast_memcmpstart(const void *mem, size_t memlen, const char *prefix);
 
-void tor_strstrip(char *s, const char *strip) ATTR_NONNULL((1,2));
+void tor_strstrip(char *s, const char *strip) ATTR_NONNULL((1, 2));
 long tor_parse_long(const char *s, int base, long min,
                     long max, int *ok, char **next);
 unsigned long tor_parse_ulong(const char *s, int base, unsigned long min,
@@ -301,7 +301,7 @@ typedef struct ratelim_t {
 char *rate_limit_log(ratelim_t *lim, time_t now);
 
 /* File helpers */
-ssize_t write_all(tor_socket_t fd, const char *buf, size_t count,int isSocket);
+ssize_t write_all(tor_socket_t fd, const char *buf, size_t count, int isSocket);
 ssize_t read_all(tor_socket_t fd, char *buf, size_t count, int isSocket);
 
 /** Status of an I/O stream. */
@@ -316,7 +316,7 @@ const char *stream_status_to_string(enum stream_status stream_status);
 
 enum stream_status get_string_from_pipe(int fd, char *buf, size_t count);
 
-MOCK_DECL(int,tor_unlink,(const char *pathname));
+MOCK_DECL(int, tor_unlink, (const char *pathname));
 
 /** Return values from file_status(); see that function's documentation
  * for details. */
@@ -349,9 +349,9 @@ FILE *fdopen_file(open_file_t *file_data);
 int finish_writing_to_file(open_file_t *file_data);
 int abort_writing_to_file(open_file_t *file_data);
 MOCK_DECL(int,
-write_str_to_file,(const char *fname, const char *str, int bin));
+write_str_to_file, (const char *fname, const char *str, int bin));
 MOCK_DECL(int,
-write_bytes_to_file,(const char *fname, const char *str, size_t len,
+write_bytes_to_file, (const char *fname, const char *str, size_t len,
                      int bin));
 /** An ad-hoc type to hold a string of characters and a count; used by
  * write_chunks_to_file. */
@@ -496,11 +496,11 @@ int tor_process_get_stdout_pipe(process_handle_t *process_handle);
 
 #ifdef _WIN32
 MOCK_DECL(struct smartlist_t *,
-tor_get_lines_from_handle,(HANDLE *handle,
+tor_get_lines_from_handle, (HANDLE *handle,
                            enum stream_status *stream_status));
 #else
 MOCK_DECL(struct smartlist_t *,
-tor_get_lines_from_handle,(int fd,
+tor_get_lines_from_handle, (int fd,
                            enum stream_status *stream_status));
 #endif
 
@@ -508,7 +508,7 @@ int
 tor_terminate_process(process_handle_t *process_handle);
 
 MOCK_DECL(void,
-tor_process_handle_destroy,(process_handle_t *process_handle,
+tor_process_handle_destroy, (process_handle_t *process_handle,
                             int also_terminate_process));
 
 /* ===== Insecure rng */
@@ -523,7 +523,7 @@ int32_t tor_weak_random(tor_weak_rng_t *weak_rng);
 int32_t tor_weak_random_range(tor_weak_rng_t *rng, int32_t top);
 /** Randomly return true according to <b>rng</b> with probability 1 in
  * <b>n</b> */
-#define tor_weak_random_one_in_n(rng, n) (0==tor_weak_random_range((rng),(n)))
+#define tor_weak_random_one_in_n(rng, n) (0==tor_weak_random_range((rng), (n)))
 
 int format_hex_number_sigsafe(unsigned long x, char *buf, int max_len);
 int format_dec_number_sigsafe(unsigned long x, char *buf, int max_len);

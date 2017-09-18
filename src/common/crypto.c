@@ -87,7 +87,7 @@ ENABLE_GCC_WARNING(redundant-decls)
 #define DISABLE_ENGINES
 #endif
 
-#if OPENSSL_VERSION_NUMBER >= OPENSSL_VER(1,1,0,0,5) && \
+#if OPENSSL_VERSION_NUMBER >= OPENSSL_VER(1, 1, 0, 0, 5) && \
   !defined(LIBRESSL_VERSION_NUMBER)
 /* OpenSSL as of 1.1.0pre4 has an "new" thread API, which doesn't require
  * seting up various callbacks.
@@ -381,7 +381,7 @@ crypto_global_init(int useAccel, const char *accelName, const char *accelDir)
         }
       }
       if (e) {
-        log_info(LD_CRYPTO, "Loaded OpenSSL hardware acceleration engine,"
+        log_info(LD_CRYPTO, "Loaded OpenSSL hardware acceleration engine, "
                  " setting default ciphers.");
         ENGINE_set_default(e, ENGINE_METHOD_ALL);
       }
@@ -479,7 +479,7 @@ crypto_pk_get_rsa_(crypto_pk_t *env)
  * private is set, include the private-key portion of the key. Return a valid
  * pointer on success, and NULL on failure. */
 MOCK_IMPL(EVP_PKEY *,
-crypto_pk_get_evp_pkey_,(crypto_pk_t *env, int private))
+crypto_pk_get_evp_pkey_, (crypto_pk_t *env, int private))
 {
   RSA *key = NULL;
   EVP_PKEY *pkey = NULL;
@@ -516,7 +516,7 @@ crypto_dh_get_dh_(crypto_dh_t *dh)
  * be set.
  */
 MOCK_IMPL(crypto_pk_t *,
-crypto_pk_new,(void))
+crypto_pk_new, (void))
 {
   RSA *rsa;
 
@@ -606,7 +606,7 @@ crypto_cipher_free(crypto_cipher_t *env)
  * Return 0 on success, -1 on failure.
  */
 MOCK_IMPL(int,
-crypto_pk_generate_key_with_bits,(crypto_pk_t *env, int bits))
+crypto_pk_generate_key_with_bits, (crypto_pk_t *env, int bits))
 {
   tor_assert(env);
 
@@ -668,7 +668,7 @@ crypto_pk_read_private_key_from_string(crypto_pk_t *env,
   if (env->key)
     RSA_free(env->key);
 
-  env->key = PEM_read_bio_RSAPrivateKey(b,NULL,NULL,NULL);
+  env->key = PEM_read_bio_RSAPrivateKey(b, NULL, NULL, NULL);
 
   BIO_free(b);
 
@@ -734,7 +734,7 @@ crypto_pk_write_key_to_string_impl(crypto_pk_t *env, char **dest,
   if (is_public)
     r = PEM_write_bio_RSAPublicKey(b, env->key);
   else
-    r = PEM_write_bio_RSAPrivateKey(b, env->key, NULL,NULL,0,NULL,NULL);
+    r = PEM_write_bio_RSAPrivateKey(b, env->key, NULL, NULL, 0, NULL, NULL);
 
   if (!r) {
     crypto_log_errors(LOG_WARN, "writing RSA key to string");
@@ -827,7 +827,7 @@ crypto_pk_write_private_key_to_filename(crypto_pk_t *env,
 
   if (!(bio = BIO_new(BIO_s_mem())))
     return -1;
-  if (PEM_write_bio_RSAPrivateKey(bio, env->key, NULL,NULL,0,NULL,NULL)
+  if (PEM_write_bio_RSAPrivateKey(bio, env->key, NULL, NULL, 0, NULL, NULL)
       == 0) {
     crypto_log_errors(LOG_WARN, "writing private key");
     BIO_free(bio);
@@ -855,7 +855,7 @@ crypto_pk_check_key(crypto_pk_t *env)
 
   r = RSA_check_key(env->key);
   if (r <= 0)
-    crypto_log_errors(LOG_WARN,"checking RSA key");
+    crypto_log_errors(LOG_WARN, "checking RSA key");
   return r;
 }
 
@@ -1108,7 +1108,7 @@ crypto_pk_private_decrypt(crypto_pk_t *env, char *to,
  * at least the length of the modulus of <b>env</b>.
  */
 MOCK_IMPL(int,
-crypto_pk_public_checksig,(const crypto_pk_t *env, char *to,
+crypto_pk_public_checksig, (const crypto_pk_t *env, char *to,
                            size_t tolen,
                            const char *from, size_t fromlen))
 {
@@ -1135,7 +1135,7 @@ crypto_pk_public_checksig,(const crypto_pk_t *env, char *to,
  * SHA1(data).  Else return -1.
  */
 MOCK_IMPL(int,
-crypto_pk_public_checksig_digest,(crypto_pk_t *env, const char *data,
+crypto_pk_public_checksig_digest, (crypto_pk_t *env, const char *data,
                                   size_t datalen, const char *sig,
                                   size_t siglen))
 {
@@ -1150,13 +1150,13 @@ crypto_pk_public_checksig_digest,(crypto_pk_t *env, const char *data,
   tor_assert(datalen < SIZE_T_CEILING);
   tor_assert(siglen < SIZE_T_CEILING);
 
-  if (crypto_digest(digest,data,datalen)<0) {
+  if (crypto_digest(digest, data, datalen)<0) {
     log_warn(LD_BUG, "couldn't compute digest");
     return -1;
   }
   buflen = crypto_pk_keysize(env);
   buf = tor_malloc(buflen);
-  r = crypto_pk_public_checksig(env,buf,buflen,sig,siglen);
+  r = crypto_pk_public_checksig(env, buf, buflen, sig, siglen);
   if (r != DIGEST_LEN) {
     log_warn(LD_CRYPTO, "Invalid signature");
     tor_free(buf);
@@ -1218,9 +1218,9 @@ crypto_pk_private_sign_digest(crypto_pk_t *env, char *to, size_t tolen,
 {
   int r;
   char digest[DIGEST_LEN];
-  if (crypto_digest(digest,from,fromlen)<0)
+  if (crypto_digest(digest, from, fromlen)<0)
     return -1;
-  r = crypto_pk_private_sign(env,to,tolen,digest,DIGEST_LEN);
+  r = crypto_pk_private_sign(env, to, tolen, digest, DIGEST_LEN);
   memwipe(digest, 0, sizeof(digest));
   return r;
 }
@@ -1264,9 +1264,9 @@ crypto_pk_obsolete_public_hybrid_encrypt(crypto_pk_t *env,
 
   if (!force && fromlen+overhead <= pkeylen) {
     /* It all fits in a single encrypt. */
-    return crypto_pk_public_encrypt(env,to,
+    return crypto_pk_public_encrypt(env, to,
                                     tolen,
-                                    from,fromlen,padding);
+                                    from, fromlen, padding);
   }
   tor_assert(tolen >= fromlen + overhead + CIPHER_KEY_LEN);
   tor_assert(tolen >= pkeylen);
@@ -1282,7 +1282,7 @@ crypto_pk_obsolete_public_hybrid_encrypt(crypto_pk_t *env,
   /* Length of symmetrically encrypted data. */
   symlen = fromlen-(pkeylen-overhead-CIPHER_KEY_LEN);
 
-  outlen = crypto_pk_public_encrypt(env,to,tolen,buf,pkeylen-overhead,padding);
+  outlen = crypto_pk_public_encrypt(env, to, tolen, buf, pkeylen-overhead, padding);
   if (outlen!=(int)pkeylen) {
     goto err;
   }
@@ -1328,12 +1328,12 @@ crypto_pk_obsolete_private_hybrid_decrypt(crypto_pk_t *env,
   pkeylen = crypto_pk_keysize(env);
 
   if (fromlen <= pkeylen) {
-    return crypto_pk_private_decrypt(env,to,tolen,from,fromlen,padding,
+    return crypto_pk_private_decrypt(env, to, tolen, from, fromlen, padding,
                                      warnOnFailure);
   }
 
   buf = tor_malloc(pkeylen);
-  outlen = crypto_pk_private_decrypt(env,buf,pkeylen,from,pkeylen,padding,
+  outlen = crypto_pk_private_decrypt(env, buf, pkeylen, from, pkeylen, padding,
                                      warnOnFailure);
   if (outlen<0) {
     log_fn(warnOnFailure?LOG_WARN:LOG_DEBUG, LD_CRYPTO,
@@ -1349,19 +1349,19 @@ crypto_pk_obsolete_private_hybrid_decrypt(crypto_pk_t *env,
   if (!cipher) {
     goto err;
   }
-  memcpy(to,buf+CIPHER_KEY_LEN,outlen-CIPHER_KEY_LEN);
+  memcpy(to, buf+CIPHER_KEY_LEN, outlen-CIPHER_KEY_LEN);
   outlen -= CIPHER_KEY_LEN;
   tor_assert(tolen - outlen >= fromlen - pkeylen);
   r = crypto_cipher_decrypt(cipher, to+outlen, from+pkeylen, fromlen-pkeylen);
   if (r<0)
     goto err;
-  memwipe(buf,0,pkeylen);
+  memwipe(buf, 0, pkeylen);
   tor_free(buf);
   crypto_cipher_free(cipher);
   tor_assert(outlen + fromlen < INT_MAX);
   return (int)(outlen + (fromlen-pkeylen));
  err:
-  memwipe(buf,0,pkeylen);
+  memwipe(buf, 0, pkeylen);
   tor_free(buf);
   crypto_cipher_free(cipher);
   return -1;
@@ -1387,7 +1387,7 @@ crypto_pk_asn1_encode(crypto_pk_t *pk, char *dest, size_t dest_len)
   /* We don't encode directly into 'dest', because that would be illegal
    * type-punning.  (C99 is smarter than me, C99 is smarter than me...)
    */
-  memcpy(dest,buf,len);
+  memcpy(dest, buf, len);
   OPENSSL_free(buf);
   return len;
 }
@@ -1402,11 +1402,11 @@ crypto_pk_asn1_decode(const char *str, size_t len)
   unsigned char *buf;
   const unsigned char *cp;
   cp = buf = tor_malloc(len);
-  memcpy(buf,str,len);
+  memcpy(buf, str, len);
   rsa = d2i_RSAPublicKey(NULL, &cp, len);
   tor_free(buf);
   if (!rsa) {
-    crypto_log_errors(LOG_WARN,"decoding public key");
+    crypto_log_errors(LOG_WARN, "decoding public key");
     return NULL;
   }
   return crypto_new_pk_from_rsa_(rsa);
@@ -1490,7 +1490,7 @@ crypto_pk_get_fingerprint(crypto_pk_t *pk, char *fp_out, int add_space)
   if (crypto_pk_get_digest(pk, digest)) {
     return -1;
   }
-  base16_encode(hexdigest,sizeof(hexdigest),digest,DIGEST_LEN);
+  base16_encode(hexdigest, sizeof(hexdigest), digest, DIGEST_LEN);
   if (add_space) {
     crypto_add_spaces_to_fp(fp_out, FINGERPRINT_LEN+1, hexdigest);
   } else {
@@ -1715,7 +1715,7 @@ crypto_digest(char *digest, const char *m, size_t len)
 {
   tor_assert(m);
   tor_assert(digest);
-  if (SHA1((const unsigned char*)m,len,(unsigned char*)digest) == NULL)
+  if (SHA1((const unsigned char*)m, len, (unsigned char*)digest) == NULL)
     return -1;
   return 0;
 }
@@ -1733,9 +1733,9 @@ crypto_digest256(char *digest, const char *m, size_t len,
 
   int ret = 0;
   if (algorithm == DIGEST_SHA256)
-    ret = (SHA256((const uint8_t*)m,len,(uint8_t*)digest) != NULL);
+    ret = (SHA256((const uint8_t*)m, len, (uint8_t*)digest) != NULL);
   else
-    ret = (sha3_256((uint8_t *)digest, DIGEST256_LEN,(const uint8_t *)m, len)
+    ret = (sha3_256((uint8_t *)digest, DIGEST256_LEN, (const uint8_t *)m, len)
            > -1);
 
   if (!ret)
@@ -1756,7 +1756,7 @@ crypto_digest512(char *digest, const char *m, size_t len,
 
   int ret = 0;
   if (algorithm == DIGEST_SHA512)
-    ret = (SHA512((const unsigned char*)m,len,(unsigned char*)digest)
+    ret = (SHA512((const unsigned char*)m, len, (unsigned char*)digest)
            != NULL);
   else
     ret = (sha3_512((uint8_t*)digest, DIGEST512_LEN, (const uint8_t*)m, len)
@@ -1857,7 +1857,7 @@ struct crypto_digest_t {
     SHA_CTX sha1; /**< state for SHA1 */
     SHA256_CTX sha2; /**< state for SHA256 */
     SHA512_CTX sha512; /**< state for SHA512 */
-    keccak_state sha3; /**< state for SHA3-[256,512] */
+    keccak_state sha3; /**< state for SHA3-[256, 512] */
   } d;
 };
 
@@ -2083,7 +2083,7 @@ crypto_digest_assign(crypto_digest_t *into,
   tor_assert(from);
   tor_assert(into->algorithm == from->algorithm);
   const size_t alloc_bytes = crypto_digest_alloc_bytes(from->algorithm);
-  memcpy(into,from,alloc_bytes);
+  memcpy(into, from, alloc_bytes);
 }
 
 /** Given a list of strings in <b>lst</b>, set the <b>len_out</b>-byte digest
@@ -2478,7 +2478,7 @@ crypto_dh_get_bytes(crypto_dh_t *dh)
   return DH_size(dh->dh);
 }
 
-/** Generate \<x,g^x\> for our part of the key exchange.  Return 0 on
+/** Generate \<x, g^x\> for our part of the key exchange.  Return 0 on
  * success, -1 on failure.
  */
 int
@@ -2571,7 +2571,7 @@ crypto_dh_get_public(crypto_dh_t *dh, char *pubkey, size_t pubkey_len)
 }
 
 /** Check for bad Diffie-Hellman public keys (g^x).  Return 0 if the key is
- * okay (in the subgroup [2,p-2]), or -1 if it's bad.
+ * okay (in the subgroup [2, p-2]), or -1 if it's bad.
  * See http://www.cl.cam.ac.uk/ftp/users/rja14/psandqs.ps.gz for some tips.
  */
 static int
@@ -2585,13 +2585,13 @@ tor_check_dh_key(int severity, const BIGNUM *bn)
   if (BUG(!dh_param_p))
     init_dh_param(); //LCOV_EXCL_LINE we already checked whether we did this.
   BN_set_word(x, 1);
-  if (BN_cmp(bn,x)<=0) {
+  if (BN_cmp(bn, x)<=0) {
     log_fn(severity, LD_CRYPTO, "DH key must be at least 2.");
     goto err;
   }
-  BN_copy(x,dh_param_p);
+  BN_copy(x, dh_param_p);
   BN_sub_word(x, 1);
-  if (BN_cmp(bn,x)>=0) {
+  if (BN_cmp(bn, x)>=0) {
     log_fn(severity, LD_CRYPTO, "DH key must be at most p-2.");
     goto err;
   }
@@ -2633,14 +2633,14 @@ crypto_dh_compute_secret(int severity, crypto_dh_t *dh,
     goto error;
   if (tor_check_dh_key(severity, pubkey_bn)<0) {
     /* Check for invalid public keys. */
-    log_fn(severity, LD_CRYPTO,"Rejected invalid g^x");
+    log_fn(severity, LD_CRYPTO, "Rejected invalid g^x");
     goto error;
   }
   secret_tmp_len = crypto_dh_get_bytes(dh);
   secret_tmp = tor_malloc(secret_tmp_len);
   result = DH_compute_key((unsigned char*)secret_tmp, pubkey_bn, dh->dh);
   if (result < 0) {
-    log_warn(LD_CRYPTO,"DH_compute_key() failed.");
+    log_warn(LD_CRYPTO, "DH_compute_key() failed.");
     goto error;
   }
   secret_len = result;
@@ -3101,7 +3101,7 @@ crypto_rand_int(unsigned int max)
   tor_assert(max <= ((unsigned int)INT_MAX)+1);
   tor_assert(max > 0); /* don't div by 0 */
 
-  /* We ignore any values that are >= 'cutoff,' to avoid biasing the
+  /* We ignore any values that are >= 'cutoff, ' to avoid biasing the
    * distribution with clipping at the upper end of unsigned int's
    * range.
    */
@@ -3156,7 +3156,7 @@ crypto_rand_uint64(uint64_t max)
   tor_assert(max < UINT64_MAX);
   tor_assert(max > 0); /* don't div by 0 */
 
-  /* We ignore any values that are >= 'cutoff,' to avoid biasing the
+  /* We ignore any values that are >= 'cutoff, ' to avoid biasing the
    * distribution with clipping at the upper end of unsigned int's
    * range.
    */
@@ -3236,7 +3236,7 @@ smartlist_choose(const smartlist_t *sl)
 {
   int len = smartlist_len(sl);
   if (len)
-    return smartlist_get(sl,crypto_rand_int(len));
+    return smartlist_get(sl, crypto_rand_int(len));
   return NULL; /* no elements to choose from */
 }
 
@@ -3291,9 +3291,9 @@ memwipe(void *mem, uint8_t byte, size_t sz)
 
 #if defined(SecureZeroMemory) || defined(HAVE_SECUREZEROMEMORY)
   /* Here's what you do on windows. */
-  SecureZeroMemory(mem,sz);
+  SecureZeroMemory(mem, sz);
 #elif defined(HAVE_RTLSECUREZEROMEMORY)
-  RtlSecureZeroMemory(mem,sz);
+  RtlSecureZeroMemory(mem, sz);
 #elif defined(HAVE_EXPLICIT_BZERO)
   /* The BSDs provide this. */
   explicit_bzero(mem, sz);

@@ -31,7 +31,7 @@ ge25519_full_to_pniels(ge25519_pniels *p, const ge25519 *r) {
 
 static void
 ge25519_add_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519 *q) {
-	bignum25519 a,b,c,d,t,u;
+	bignum25519 a, b, c, d, t, u;
 
 	curve25519_sub(a, p->y, p->x);
 	curve25519_add(b, p->y, p->x);
@@ -52,7 +52,7 @@ ge25519_add_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519 *q) {
 
 static void
 ge25519_double_p1p1(ge25519_p1p1 *r, const ge25519 *p) {
-	bignum25519 a,b,c;
+	bignum25519 a, b, c;
 
 	curve25519_square(a, p->x);
 	curve25519_square(b, p->y);
@@ -70,7 +70,7 @@ static void
 ge25519_nielsadd2_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519_niels *q, unsigned char signbit) {
 	const bignum25519 *qb = (const bignum25519 *)q;
 	bignum25519 *rb = (bignum25519 *)r;
-	bignum25519 a,b,c;
+	bignum25519 a, b, c;
 
 	curve25519_sub(a, p->y, p->x);
 	curve25519_add(b, p->y, p->x);
@@ -89,7 +89,7 @@ static void
 ge25519_pnielsadd_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519_pniels *q, unsigned char signbit) {
 	const bignum25519 *qb = (const bignum25519 *)q;
 	bignum25519 *rb = (bignum25519 *)r;
-	bignum25519 a,b,c;
+	bignum25519 a, b, c;
 
 	curve25519_sub(a, p->y, p->x);
 	curve25519_add(b, p->y, p->x);
@@ -128,7 +128,7 @@ ge25519_add(ge25519 *r, const ge25519 *p,  const ge25519 *q) {
 
 static void
 ge25519_nielsadd2(ge25519 *r, const ge25519_niels *q) {
-	bignum25519 a,b,c,e,f,g,h;
+	bignum25519 a, b, c, e, f, g, h;
 
 	curve25519_sub(a, r->y, r->x);
 	curve25519_add(b, r->y, r->x);
@@ -148,7 +148,7 @@ ge25519_nielsadd2(ge25519 *r, const ge25519_niels *q) {
 
 static void
 ge25519_pnielsadd(ge25519_pniels *r, const ge25519 *p, const ge25519_pniels *q) {
-	bignum25519 a,b,c,x,y,z,t;
+	bignum25519 a, b, c, x, y, z, t;
 
 	curve25519_sub(a, p->y, p->x);
 	curve25519_add(b, p->y, p->x);

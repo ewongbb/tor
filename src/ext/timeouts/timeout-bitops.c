@@ -169,7 +169,7 @@ naive_clz(int bits, uint64_t v)
 		r++;
 		bit >>= 1;
 	}
-	/* printf("clz(%d,%lx) -> %d\n", bits, v, r); */
+	/* printf("clz(%d, %lx) -> %d\n", bits, v, r); */
 	return r;
 }
 
@@ -184,7 +184,7 @@ naive_ctz(int bits, uint64_t v)
 		if (r == bits)
 			break;
 	}
-	/* printf("ctz(%d,%lx) -> %d\n", bits, v, r); */
+	/* printf("ctz(%d, %lx) -> %d\n", bits, v, r); */
 	return r;
 }
 

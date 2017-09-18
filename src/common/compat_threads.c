@@ -258,7 +258,7 @@ alert_sockets_create(alert_sockets_t *socks_out, uint32_t flags)
     socks[0] = eventfd(0, EFD_CLOEXEC|EFD_NONBLOCK);
 #endif
   if (socks[0] < 0 && !(flags & ASOCKS_NOEVENTFD)) {
-    socks[0] = eventfd(0,0);
+    socks[0] = eventfd(0, 0);
     if (socks[0] >= 0) {
       if (fcntl(socks[0], F_SETFD, FD_CLOEXEC) < 0 ||
           set_socket_nonblocking(socks[0]) < 0) {

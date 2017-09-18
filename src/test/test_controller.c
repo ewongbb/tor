@@ -150,7 +150,7 @@ test_getinfo_helper_onion(void *arg)
 static void
 test_rend_service_parse_port_config(void *arg)
 {
-  const char *sep = ",";
+  const char *sep = ", ";
   rend_service_port_config_t *cfg = NULL;
   char *err_msg = NULL;
 
@@ -161,21 +161,21 @@ test_rend_service_parse_port_config(void *arg)
   tt_assert(cfg);
   tt_ptr_op(err_msg, OP_EQ, NULL);
 
-  /* Test "VIRTPORT,TARGET" (Target is port). */
+  /* Test "VIRTPORT, TARGET" (Target is port). */
   rend_service_port_config_free(cfg);
-  cfg = rend_service_parse_port_config("80,8080", sep, &err_msg);
+  cfg = rend_service_parse_port_config("80, 8080", sep, &err_msg);
   tt_assert(cfg);
   tt_ptr_op(err_msg, OP_EQ, NULL);
 
-  /* Test "VIRTPORT,TARGET" (Target is IPv4:port). */
+  /* Test "VIRTPORT, TARGET" (Target is IPv4:port). */
   rend_service_port_config_free(cfg);
-  cfg = rend_service_parse_port_config("80,192.0.2.1:8080", sep, &err_msg);
+  cfg = rend_service_parse_port_config("80, 192.0.2.1:8080", sep, &err_msg);
   tt_assert(cfg);
   tt_ptr_op(err_msg, OP_EQ, NULL);
 
-  /* Test "VIRTPORT,TARGET" (Target is IPv6:port). */
+  /* Test "VIRTPORT, TARGET" (Target is IPv6:port). */
   rend_service_port_config_free(cfg);
-  cfg = rend_service_parse_port_config("80,[2001:db8::1]:8080", sep, &err_msg);
+  cfg = rend_service_parse_port_config("80, [2001:db8::1]:8080", sep, &err_msg);
   tt_assert(cfg);
   tt_ptr_op(err_msg, OP_EQ, NULL);
   rend_service_port_config_free(cfg);

@@ -107,7 +107,7 @@ static int ol_entries[MAX_ONION_HANDSHAKE_TYPE+1];
 static int num_ntors_per_tap(void);
 static void onion_queue_entry_remove(onion_queue_t *victim);
 
-/* XXXX Check lengths vs MAX_ONIONSKIN_{CHALLENGE,REPLY}_LEN.
+/* XXXX Check lengths vs MAX_ONIONSKIN_{CHALLENGE, REPLY}_LEN.
  *
  * (By which I think I meant, "make sure that no
  * X_ONIONSKIN_CHALLENGE/REPLY_LEN is greater than
@@ -211,7 +211,7 @@ onion_pending_add(or_circuit_t *circ, create_cell_t *onionskin)
                "Your computer is too slow to handle this many circuit "
                "creation requests! Please consider using the "
                "MaxAdvertisedBandwidth config option or choosing a more "
-               "restricted exit policy.%s",m);
+               "restricted exit policy.%s", m);
       tor_free(m);
     }
     tor_free(tmp);
@@ -395,7 +395,7 @@ clear_pending_onions(void)
   int i;
   for (i=0; i<=MAX_ONION_HANDSHAKE_TYPE; i++) {
     for (victim = TOR_TAILQ_FIRST(&ol_list[i]); victim; victim = next) {
-      next = TOR_TAILQ_NEXT(victim,next);
+      next = TOR_TAILQ_NEXT(victim, next);
       onion_queue_entry_remove(victim);
     }
     tor_assert(TOR_TAILQ_EMPTY(&ol_list[i]));
@@ -1099,7 +1099,7 @@ extended_cell_parse(extended_cell_t *cell_out,
 }
 
 /** Fill <b>cell_out</b> with a correctly formatted version of the
- * CREATE{,_FAST,2} cell in <b>cell_in</b>. Return 0 on success, -1 on
+ * CREATE{, _FAST, 2} cell in <b>cell_in</b>. Return 0 on success, -1 on
  * failure.  This is a cell we didn't originate if <b>relayed</b> is true. */
 static int
 create_cell_format_impl(cell_t *cell_out, const create_cell_t *cell_in,
@@ -1154,7 +1154,7 @@ create_cell_format_relayed(cell_t *cell_out, const create_cell_t *cell_in)
 }
 
 /** Fill <b>cell_out</b> with a correctly formatted version of the
- * CREATED{,_FAST,2} cell in <b>cell_in</b>. Return 0 on success, -1 on
+ * CREATED{, _FAST, 2} cell in <b>cell_in</b>. Return 0 on success, -1 on
  * failure. */
 int
 created_cell_format(cell_t *cell_out, const created_cell_t *cell_in)
@@ -1197,7 +1197,7 @@ should_include_ed25519_id_extend_cells(const networkstatus_t *ns,
                                        1 /*max*/);
 }
 
-/** Format the EXTEND{,2} cell in <b>cell_in</b>, storing its relay payload in
+/** Format the EXTEND{, 2} cell in <b>cell_in</b>, storing its relay payload in
  * <b>payload_out</b>, the number of bytes used in *<b>len_out</b>, and the
  * relay command in *<b>command_out</b>. The <b>payload_out</b> must have
  * RELAY_PAYLOAD_SIZE bytes available.  Return 0 on success, -1 on failure. */
@@ -1291,7 +1291,7 @@ extend_cell_format(uint8_t *command_out, uint16_t *len_out,
   return 0;
 }
 
-/** Format the EXTENDED{,2} cell in <b>cell_in</b>, storing its relay payload
+/** Format the EXTENDED{, 2} cell in <b>cell_in</b>, storing its relay payload
  * in <b>payload_out</b>, the number of bytes used in *<b>len_out</b>, and the
  * relay command in *<b>command_out</b>. The <b>payload_out</b> must have
  * RELAY_PAYLOAD_SIZE bytes available.  Return 0 on success, -1 on failure. */

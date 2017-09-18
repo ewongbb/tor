@@ -1062,7 +1062,7 @@ hs_build_blinded_keypair(const ed25519_keypair_t *kp,
  *    +------------------------------------------------------------------+
  */
 MOCK_IMPL(int,
-hs_in_period_between_tp_and_srv,(const networkstatus_t *consensus, time_t now))
+hs_in_period_between_tp_and_srv, (const networkstatus_t *consensus, time_t now))
 {
   time_t valid_after;
   time_t srv_start_time, tp_start_time;
@@ -1229,7 +1229,7 @@ hs_get_previous_srv(uint64_t time_period_num, const networkstatus_t *ns)
 int32_t
 hs_get_hsdir_n_replicas(void)
 {
-  /* The [1,16] range is a specification requirement. */
+  /* The [1, 16] range is a specification requirement. */
   return networkstatus_get_param(NULL, "hsdir_n_replicas",
                                  HS_DEFAULT_HSDIR_N_REPLICAS, 1, 16);
 }
@@ -1239,7 +1239,7 @@ hs_get_hsdir_n_replicas(void)
 int32_t
 hs_get_hsdir_spread_fetch(void)
 {
-  /* The [1,128] range is a specification requirement. */
+  /* The [1, 128] range is a specification requirement. */
   return networkstatus_get_param(NULL, "hsdir_spread_fetch",
                                  HS_DEFAULT_HSDIR_SPREAD_FETCH, 1, 128);
 }
@@ -1249,7 +1249,7 @@ hs_get_hsdir_spread_fetch(void)
 int32_t
 hs_get_hsdir_spread_store(void)
 {
-  /* The [1,128] range is a specification requirement. */
+  /* The [1, 128] range is a specification requirement. */
   return networkstatus_get_param(NULL, "hsdir_spread_store",
                                  HS_DEFAULT_HSDIR_SPREAD_STORE, 1, 128);
 }

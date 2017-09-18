@@ -303,7 +303,7 @@ test_upload_and_download_hs_desc(void *arg)
 
   /* Publish descriptor to the HSDir */
   {
-    retval = handle_post_hs_descriptor("/tor/hs/3/publish",published_desc_str);
+    retval = handle_post_hs_descriptor("/tor/hs/3/publish", published_desc_str);
     tt_int_op(retval, OP_EQ, 200);
   }
 
@@ -367,13 +367,13 @@ test_hsdir_revision_counter_check(void *arg)
 
   /* Publish descriptor to the HSDir */
   {
-    retval = handle_post_hs_descriptor("/tor/hs/3/publish",published_desc_str);
+    retval = handle_post_hs_descriptor("/tor/hs/3/publish", published_desc_str);
     tt_int_op(retval, OP_EQ, 200);
   }
 
   /* Try publishing again with the same revision counter: Should fail. */
   {
-    retval = handle_post_hs_descriptor("/tor/hs/3/publish",published_desc_str);
+    retval = handle_post_hs_descriptor("/tor/hs/3/publish", published_desc_str);
     tt_int_op(retval, OP_EQ, 400);
   }
 
@@ -406,7 +406,7 @@ test_hsdir_revision_counter_check(void *arg)
                                        &published_desc_str);
     tt_int_op(retval, OP_EQ, 0);
 
-    retval = handle_post_hs_descriptor("/tor/hs/3/publish",published_desc_str);
+    retval = handle_post_hs_descriptor("/tor/hs/3/publish", published_desc_str);
     tt_int_op(retval, OP_EQ, 200);
   }
 

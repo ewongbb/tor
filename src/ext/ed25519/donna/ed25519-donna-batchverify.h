@@ -230,7 +230,7 @@ ED25519_FN(ed25519_sign_open_batch) (const unsigned char **m, size_t *mlen, cons
 		for (i = 1; i < batchsize; i++)
 			add256_modm(batch.scalars[0], batch.scalars[0], batch.scalars[i]);
 
-		/* compute scalars[1]..scalars[batchsize] as r[i]*H(R[i],A[i],m[i]) */
+		/* compute scalars[1]..scalars[batchsize] as r[i]*H(R[i], A[i], m[i]) */
 		for (i = 0; i < batchsize; i++) {
 			ed25519_hram(hram, RS[i], pk[i], m[i], mlen[i]);
 			expand256_modm(batch.scalars[i+1], hram, 64);

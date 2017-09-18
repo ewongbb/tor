@@ -16,11 +16,11 @@
  **/
 
 #if !defined(LIBRESSL_VERSION_NUMBER) && \
-  OPENSSL_VERSION_NUMBER < OPENSSL_V_SERIES(1,0,1)
+  OPENSSL_VERSION_NUMBER < OPENSSL_V_SERIES(1, 0, 1)
 #error "We require OpenSSL >= 1.0.1"
 #endif
 
-#if OPENSSL_VERSION_NUMBER >= OPENSSL_V_SERIES(1,1,0) && \
+#if OPENSSL_VERSION_NUMBER >= OPENSSL_V_SERIES(1, 1, 0) && \
    ! defined(LIBRESSL_VERSION_NUMBER)
 /* We define this macro if we're trying to build with the majorly refactored
  * API in OpenSSL 1.1 */

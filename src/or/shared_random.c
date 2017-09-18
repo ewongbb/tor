@@ -1335,7 +1335,7 @@ sr_act_post_consensus(const networkstatus_t *consensus)
   /* Prepare our state so that it's ready for the next voting period. */
   {
     voting_schedule_t *voting_schedule =
-      get_voting_schedule(options,time(NULL), LOG_NOTICE);
+      get_voting_schedule(options, time(NULL), LOG_NOTICE);
     time_t interval_starts = voting_schedule->interval_starts;
     sr_state_update(interval_starts);
     voting_schedule_free(voting_schedule);

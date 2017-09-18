@@ -1780,7 +1780,7 @@ consensus_queue_compression_work(const char *consensus,
       base16_encode(d, sizeof(d), vi->identity_digest, DIGEST_LEN);
       smartlist_add_strdup(hexvoters, d);
     } SMARTLIST_FOREACH_END(vi);
-    char *signers = smartlist_join_strings(hexvoters, ",", 0, NULL);
+    char *signers = smartlist_join_strings(hexvoters, ", ", 0, NULL);
     config_line_prepend(&job->labels_in, LABEL_SIGNATORIES, signers);
     tor_free(signers);
     SMARTLIST_FOREACH(hexvoters, char *, cp, tor_free(cp));
@@ -1829,7 +1829,7 @@ consensus_cache_entry_get_voter_id_digests(const consensus_cache_entry_t *ent,
   s = consensus_cache_entry_get_value(ent, LABEL_SIGNATORIES);
   if (s == NULL)
     return -1;
-  smartlist_split_string(out, s, ",", SPLIT_SKIP_SPACE|SPLIT_STRIP_SPACE, 0);
+  smartlist_split_string(out, s, ", ", SPLIT_SKIP_SPACE|SPLIT_STRIP_SPACE, 0);
   return 0;
 }
 

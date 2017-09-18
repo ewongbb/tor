@@ -372,7 +372,7 @@ service_intro_point_new(const extend_info_t *ei, unsigned int is_legacy)
       goto err;
     }
     ip->time_to_expire = time(NULL) +
-      crypto_rand_int_range(intro_point_min_lifetime,intro_point_max_lifetime);
+      crypto_rand_int_range(intro_point_min_lifetime, intro_point_max_lifetime);
   }
 
   ip->replay_cache = replaycache_new(0, 0);

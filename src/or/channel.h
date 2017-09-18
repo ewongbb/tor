@@ -675,7 +675,7 @@ int channel_matches_extend_info(channel_t *chan, extend_info_t *extend_info);
 int channel_matches_target_addr_for_extend(channel_t *chan,
                                            const tor_addr_t *target);
 unsigned int channel_num_circuits(channel_t *chan);
-MOCK_DECL(void,channel_set_circid_type,(channel_t *chan,
+MOCK_DECL(void, channel_set_circid_type, (channel_t *chan,
                                         crypto_pk_t *identity_rcvd,
                                         int consider_identity));
 void channel_timestamp_client(channel_t *chan);
@@ -717,7 +717,7 @@ int packed_cell_is_destroy(channel_t *chan,
                            circid_t *circid_out);
 
 /* Declare the handle helpers */
-HANDLE_DECL(channel, channel_s,)
+HANDLE_DECL(channel, channel_s, )
 
 #endif
 

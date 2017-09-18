@@ -8,7 +8,7 @@
  * \file util_format.c
  *
  * \brief Miscellaneous functions for encoding and decoding various things
- *   in base{16,32,64}.
+ *   in base{16, 32, 64}.
  */
 
 #include "orconfig.h"
@@ -51,7 +51,7 @@ base32_encode(char *dest, size_t destlen, const char *src, size_t srclen)
   /* Make sure we leave no uninitialized data in the destination buffer. */
   memset(dest, 0, destlen);
 
-  for (i=0,bit=0; bit < nbits; ++i, bit+=5) {
+  for (i=0, bit=0; bit < nbits; ++i, bit+=5) {
     /* set v to the 16-bit value starting at src[bits/8], 0-padded. */
     size_t idx = bit / 8;
     v = ((uint8_t)src[idx]) << 8;
@@ -504,7 +504,7 @@ base16_decode(char *dest, size_t destlen, const char *src, size_t srclen)
 {
   const char *end;
   char *dest_orig = dest;
-  int v1,v2;
+  int v1, v2;
 
   if ((srclen % 2) != 0)
     return -1;

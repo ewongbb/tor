@@ -14,7 +14,7 @@ test_protover_parse(void *arg)
   (void) arg;
   char *re_encoded = NULL;
 
-  const char *orig = "Foo=1,3 Bar=3 Baz= Quux=9-12,14,15-16,900";
+  const char *orig = "Foo=1, 3 Bar=3 Baz= Quux=9-12, 14, 15-16, 900";
   smartlist_t *elts = parse_protocol_list(orig);
 
   tt_assert(elts);
@@ -101,13 +101,13 @@ test_protover_parse_fail(void *arg)
   /* Broken numbers */
   elts = parse_protocol_list("Link=fred");
   tt_ptr_op(elts, OP_EQ, NULL);
-  elts = parse_protocol_list("Link=1,fred");
+  elts = parse_protocol_list("Link=1, fred");
   tt_ptr_op(elts, OP_EQ, NULL);
-  elts = parse_protocol_list("Link=1,fred,3");
+  elts = parse_protocol_list("Link=1, fred, 3");
   tt_ptr_op(elts, OP_EQ, NULL);
 
   /* Broken range */
-  elts = parse_protocol_list("Link=1,9-8,3");
+  elts = parse_protocol_list("Link=1, 9-8, 3");
   tt_ptr_op(elts, OP_EQ, NULL);
 
  done:
@@ -125,18 +125,18 @@ test_protover_vote(void *arg)
   tt_str_op(result, OP_EQ, "");
   tor_free(result);
 
-  smartlist_add(lst, (void*) "Foo=1-10,500 Bar=1,3-7,8");
+  smartlist_add(lst, (void*) "Foo=1-10, 500 Bar=1, 3-7, 8");
   result = protover_compute_vote(lst, 1);
-  tt_str_op(result, OP_EQ, "Bar=1,3-8 Foo=1-10,500");
+  tt_str_op(result, OP_EQ, "Bar=1, 3-8 Foo=1-10, 500");
   tor_free(result);
 
-  smartlist_add(lst, (void*) "Quux=123-456,78 Bar=2-6,8 Foo=9");
+  smartlist_add(lst, (void*) "Quux=123-456, 78 Bar=2-6, 8 Foo=9");
   result = protover_compute_vote(lst, 1);
-  tt_str_op(result, OP_EQ, "Bar=1-8 Foo=1-10,500 Quux=78,123-456");
+  tt_str_op(result, OP_EQ, "Bar=1-8 Foo=1-10, 500 Quux=78, 123-456");
   tor_free(result);
 
   result = protover_compute_vote(lst, 2);
-  tt_str_op(result, OP_EQ, "Bar=3-6,8 Foo=9");
+  tt_str_op(result, OP_EQ, "Bar=3-6, 8 Foo=9");
   tor_free(result);
 
  done:

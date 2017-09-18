@@ -58,10 +58,10 @@ fetch_from_buf_http(buf_t *buf,
   crlf_offset = buf_find_string_offset(buf, "\r\n\r\n", 4);
   if (crlf_offset > (int)max_headerlen ||
       (crlf_offset < 0 && buf_datalen(buf) > max_headerlen)) {
-    log_debug(LD_HTTP,"headers too long.");
+    log_debug(LD_HTTP, "headers too long.");
     return -1;
   } else if (crlf_offset < 0) {
-    log_debug(LD_HTTP,"headers not all here yet.");
+    log_debug(LD_HTTP, "headers not all here yet.");
     return 0;
   }
   /* Okay, we have a full header.  Make sure it all appears in the first
@@ -71,15 +71,15 @@ fetch_from_buf_http(buf_t *buf,
   buf_pullup(buf, headerlen, &headers, &headers_in_chunk);
 
   bodylen = buf_datalen(buf) - headerlen;
-  log_debug(LD_HTTP,"headerlen %d, bodylen %d.", (int)headerlen, (int)bodylen);
+  log_debug(LD_HTTP, "headerlen %d, bodylen %d.", (int)headerlen, (int)bodylen);
 
   if (max_headerlen <= headerlen) {
-    log_warn(LD_HTTP,"headerlen %d larger than %d. Failing.",
+    log_warn(LD_HTTP, "headerlen %d larger than %d. Failing.",
              (int)headerlen, (int)max_headerlen-1);
     return -1;
   }
   if (max_bodylen <= bodylen) {
-    log_warn(LD_HTTP,"bodylen %d larger than %d. Failing.",
+    log_warn(LD_HTTP, "bodylen %d larger than %d. Failing.",
              (int)bodylen, (int)max_bodylen-1);
     return -1;
   }
@@ -91,16 +91,16 @@ fetch_from_buf_http(buf_t *buf,
     return -1;
   } else if (r == 1) {
     /* if content-length is malformed, then our body length is 0. fine. */
-    log_debug(LD_HTTP,"Got a contentlen of %d.",(int)contentlen);
+    log_debug(LD_HTTP, "Got a contentlen of %d.", (int)contentlen);
     if (bodylen < contentlen) {
       if (!force_complete) {
-        log_debug(LD_HTTP,"body not all here yet.");
+        log_debug(LD_HTTP, "body not all here yet.");
         return 0; /* not all there yet */
       }
     }
     if (bodylen > contentlen) {
       bodylen = contentlen;
-      log_debug(LD_HTTP,"bodylen reduced to %d.",(int)bodylen);
+      log_debug(LD_HTTP, "bodylen reduced to %d.", (int)bodylen);
     }
   } else {
     tor_assert(r == 0);

@@ -279,7 +279,7 @@ dirserv_router_get_status(const routerinfo_t *router, const char **msg,
   const int key_pinning = get_options()->AuthDirPinKeys;
 
   if (crypto_pk_get_digest(router->identity_pkey, d)) {
-    log_warn(LD_BUG,"Error computing fingerprint");
+    log_warn(LD_BUG, "Error computing fingerprint");
     if (msg)
       *msg = "Bug: Error computing fingerprint";
     return FP_REJECT;
@@ -313,7 +313,7 @@ dirserv_router_get_status(const routerinfo_t *router, const char **msg,
                    router->cache_info.signing_key_cert->signing_key.pubkey)) {
       log_fn(severity, LD_DIR,
              "Descriptor from router %s has an Ed25519 key, "
-               "but the <rsa,ed25519> keys don't match what they were before.",
+               "but the <rsa, ed25519> keys don't match what they were before.",
                router_describe(router));
       if (key_pinning) {
         if (msg) {
@@ -393,7 +393,7 @@ dirserv_get_status_impl(const char *id_digest, const char *nickname,
 
   /* Versions before Tor 0.2.4.18-rc are too old to support, and are
    * missing some important security fixes too. Disable them. */
-  if (platform && !tor_version_as_new_as(platform,"0.2.4.18-rc")) {
+  if (platform && !tor_version_as_new_as(platform, "0.2.4.18-rc")) {
     if (msg)
       *msg = "Tor version is insecure or unsupported. Please upgrade!";
     return FP_REJECT;
@@ -403,8 +403,8 @@ dirserv_get_status_impl(const char *id_digest, const char *nickname,
    * keep their consensus up to date so they make bad guards.
    * The simple fix is to just drop them from the network. */
   if (platform &&
-      tor_version_as_new_as(platform,"0.2.9.0-alpha") &&
-      !tor_version_as_new_as(platform,"0.2.9.5-alpha")) {
+      tor_version_as_new_as(platform, "0.2.9.0-alpha") &&
+      !tor_version_as_new_as(platform, "0.2.9.5-alpha")) {
     if (msg)
       *msg = "Tor version contains bug 20499. Please upgrade!";
     return FP_REJECT;
@@ -484,7 +484,7 @@ dirserv_router_has_valid_address(routerinfo_t *ri)
 }
 
 /** Check whether we, as a directory server, want to accept <b>ri</b>.  If so,
- * set its is_valid,running fields and return 0.  Otherwise, return -1.
+ * set its is_valid, running fields and return 0.  Otherwise, return -1.
  *
  * If the router is rejected, set *<b>msg</b> to an explanation of why.
  *
@@ -523,7 +523,7 @@ authdir_wants_to_reject_router(routerinfo_t *ri, const char **msg,
            router_describe(ri),
            (int)((now-ri->cache_info.published_on)/60),
            esc_router_info(ri));
-    *msg = "Rejected: Server is expired, or your clock is too far in the past,"
+    *msg = "Rejected: Server is expired, or your clock is too far in the past, "
       " or your timezone is not correct.";
     return -1;
   }
@@ -831,7 +831,7 @@ dirserv_add_extrainfo(extrainfo_t *ei, const char **msg)
     if (sd) {
       log_info(LD_GENERAL, "Marking extrainfo with descriptor %s as "
                "rejected, and therefore undownloadable",
-               hex_str((char*)d,DIGEST_LEN));
+               hex_str((char*)d, DIGEST_LEN));
       download_status_mark_impossible(&sd->ei_dl_status);
     }
     extrainfo_free(ei);
@@ -1062,12 +1062,12 @@ format_versions_list(config_line_t *ln)
   char *result;
   versions = smartlist_new();
   for ( ; ln; ln = ln->next) {
-    smartlist_split_string(versions, ln->value, ",",
+    smartlist_split_string(versions, ln->value, ", ",
                            SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
   }
   sort_version_list(versions, 1);
-  result = smartlist_join_strings(versions,",",0,NULL);
-  SMARTLIST_FOREACH(versions,char *,s,tor_free(s));
+  result = smartlist_join_strings(versions, ", ", 0, NULL);
+  SMARTLIST_FOREACH(versions, char *, s, tor_free(s));
   smartlist_free(versions);
   return result;
 }
@@ -2190,7 +2190,7 @@ routers_make_ed_keys_unique(smartlist_t *routers)
       if (ri2_pub < ri_pub ||
           (ri2_pub == ri_pub &&
            fast_memcmp(ri->cache_info.signed_descriptor_digest,
-                     ri2->cache_info.signed_descriptor_digest,DIGEST_LEN)<0)) {
+                     ri2->cache_info.signed_descriptor_digest, DIGEST_LEN)<0)) {
         digest256map_set(by_ed_key, pk, ri);
         ri2->omit_from_vote = 1;
       } else {
@@ -3016,7 +3016,7 @@ dirserv_generate_networkstatus_vote_obj(crypto_pk_t *private_key,
       dirvote_get_start_of_next_interval(now, (int)last_consensus_interval,
                                       options->TestingV3AuthVotingStartOffset);
     format_iso_time(tbuf, v3_out->valid_after);
-    log_notice(LD_DIR,"Choosing valid-after time in vote as %s: "
+    log_notice(LD_DIR, "Choosing valid-after time in vote as %s: "
                "consensus_set=%d, last_interval=%d",
                tbuf, current_consensus?1:0, (int)last_consensus_interval);
   }
@@ -3218,7 +3218,7 @@ dirserv_get_routerdescs(smartlist_t *descs_out, const char *key,
        {
          signed_descriptor_t *sd = router_get_by_descriptor_digest(d);
          if (sd)
-           smartlist_add(descs_out,sd);
+           smartlist_add(descs_out, sd);
        });
     SMARTLIST_FOREACH(digests, char *, d, tor_free(d));
     smartlist_free(digests);
@@ -3374,7 +3374,7 @@ dirserv_single_reachability_test(time_t now, routerinfo_t *router)
   }
 
   /* IPv4. */
-  log_debug(LD_OR,"Testing reachability of %s at %s:%u.",
+  log_debug(LD_OR, "Testing reachability of %s at %s:%u.",
             router->nickname, fmt_addr32(router->addr), router->or_port);
   tor_addr_from_ipv4h(&router_addr, router->addr);
   chan = channel_tls_connect(&router_addr, router->or_port,

@@ -45,7 +45,7 @@ static const char test_md3[] =
   "qj2fRZzfxlc88G/tmiaHshmdtEpklZ740OFqaaJVj4LjPMKFNE+J7Xc1142BE9Ci\n"
   "KgsbjGYe2RY261aADRWLetJ8T9QDMm+JngL4288hc8pq1uB/3TAbAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
-  "p accept 1-700,800-1000\n"
+  "p accept 1-700, 800-1000\n"
   "family nodeX nodeY nodeZ\n";
 
 static void
@@ -392,7 +392,7 @@ static const char test_md_8[] =
   "st7WvrVy/jA9v/fsezNAPskBanecHRSkdMTpkcgRPMHE7CTGEwIy1Yp1X4bPgDlC\n"
   "VCnbs5Pcts5HnWEYNK7qHDAUn+IlmjOO+pTUY8uyq+GQVz6H9wFlAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
-  "p reject 25,119,135-139,445,563,1214,4661-4666,6346-6429,6699,6881-6999\n";
+  "p reject 25, 119, 135-139, 445, 563, 1214, 4661-4666, 6346-6429, 6699, 6881-6999\n";
 
 static const char test_md_16[] =
   "onion-key\n"
@@ -402,7 +402,7 @@ static const char test_md_16[] =
   "VCnbs5Pcts5HnWEYNK7qHDAUn+IlmjOO+pTUY8uyq+GQVz6H9wFlAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
   "ntor-onion-key Gg73xH7+kTfT6bi1uNVx9gwQdQas9pROIfmc4NpAdC4=\n"
-  "p reject 25,119,135-139,445,563,1214,4661-4666,6346-6429,6699,6881-6999\n";
+  "p reject 25, 119, 135-139, 445, 563, 1214, 4661-4666, 6346-6429, 6699, 6881-6999\n";
 
 static const char test_md_18[] =
   "onion-key\n"
@@ -412,7 +412,7 @@ static const char test_md_18[] =
   "VCnbs5Pcts5HnWEYNK7qHDAUn+IlmjOO+pTUY8uyq+GQVz6H9wFlAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
   "ntor-onion-key Gg73xH7+kTfT6bi1uNVx9gwQdQas9pROIfmc4NpAdC4=\n"
-  "p reject 25,119,135-139,445,563,1214,4661-4666,6346-6429,6699,6881-6999\n"
+  "p reject 25, 119, 135-139, 445, 563, 1214, 4661-4666, 6346-6429, 6699, 6881-6999\n"
   "id rsa1024 Cd47okjCHD83YGzThGBDptXs9Z4\n";
 
 static const char test_md2_18[] =
@@ -501,7 +501,7 @@ static const char MD_PARSE_TEST_DATA[] =
   "DBr/ij6+JqgVFeriuiMzHKREytzjdaTuKsKBFFpLwb+Ppcjr5nMIH/AR6/aHO8hW\n"
   "T3B9lx5T6Kl7CqZ4yqXxYRHzn50EPTIZuz0y9se4J4gi9mLmL+pHAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
-  "p accept 20-23,43,53,79-81,88,110,143,194,220,443,464,531,543-544\n"
+  "p accept 20-23, 43, 53, 79-81, 88, 110, 143, 194, 220, 443, 464, 531, 543-544\n"
   "id rsa1024 GEo59/iR1GWSIWZDzXTd5QxtqnU\n"
   /* Bad 0: I've messed with the onion-key in the second one. */
   "onion-key\n"
@@ -521,7 +521,7 @@ static const char MD_PARSE_TEST_DATA[] =
   "iFZ8337kgczkaY+IOfSuhtbOUyDOoDpRJheIKBNq0ZiTqtLbbadVAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
   "ntor-onion-key ncfiHJjSgdDEW/gc6q6/7idac7j+x7ejQrRm6i75pGA=\n"
-  "p accept 443,6660-6669,6697,7000-7001\n"
+  "p accept 443, 6660-6669, 6697, 7000-7001\n"
   "id rsa1024 XXuLzw3mfBELEq3veXoNhdehwD4\n"
   /* Good 2 */
   "onion-key\n"
@@ -560,7 +560,7 @@ static const char MD_PARSE_TEST_DATA[] =
   "h8G5OJZHRarJQyCIf7vpZQAi0oP0OkGGaCaDQsM+D8TnqhnU++RWGnMqY/cXxPrL\n"
   "MEq+n6aGiLmzkO7ah8yorZpoREk4GqLUIN89/tHHGOhJL3c4CPGjAgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
-  "p reject 25,119,135-139,445,563,1214,4661-4666,6346-6429,6699,6881-6999\n"
+  "p reject 25, 119, 135-139, 445, 563, 1214, 4661-4666, 6346-6429, 6699, 6881-6999\n"
   "id rsa1234 jlqAKFD2E7uMKv+8TmKSeo7NBho\n"
   /* Good 5: Extra id type. */
   "onion-key\n"
@@ -620,7 +620,7 @@ static const char MD_PARSE_TEST_DATA[] =
   "zmWIfeduXSavIsb3a43/MLIz/9qO0TkgAAiuQr79JlwKhLdzCqTLAgED\n"
   "-----END RSA PUBLIC KEY-----\n"
   "ntor-onion-key NkRB4wTUFogiVp5jYmjGORe2ffb/y5Kk8Itw8jdzMjA=\n"
-  "p reject 25,119,135-139,445,563,1214,4661-4666,6346-6429,6699,6881-6999\n"
+  "p reject 25, 119, 135-139, 445, 563, 1214, 4661-4666, 6346-6429, 6699, 6881-6999\n"
   "id rsa1024 fKvYjP7TAjCC1FzYee5bYAwYkoDg\n"
   /* Bad 3: Bogus annotation */
   "@last-listed with strange aeons\n"
@@ -631,7 +631,7 @@ static const char MD_PARSE_TEST_DATA[] =
   "DOfDauV02CAnADNMLJEf1voY3oBVvYyIsmHxn5i1R19ZYIiR8NX5AgMBAAE=\n"
   "-----END RSA PUBLIC KEY-----\n"
   "ntor-onion-key m4xcFXMWMjCvZDXq8FT3XmS0EHYseGOeu+fV+6FYDlk=\n"
-  "p accept 20-23,43,53,79-81,88,110,143,194,220,389,443,464,531,543-544\n"
+  "p accept 20-23, 43, 53, 79-81, 88, 110, 143, 194, 220, 389, 443, 464, 531, 543-544\n"
   "id rsa1024 SSbfNE9vmaiwRKH+eqNAkiKQhds\n"
   /* Good 10: Normal, with added ipv6 address and added other address */
   "onion-key\n"
@@ -665,16 +665,16 @@ test_md_parse(void *arg)
   tt_int_op(smartlist_len(mds), OP_EQ, 11);
   tt_int_op(smartlist_len(invalid), OP_EQ, 4);
 
-  test_memeq_hex(smartlist_get(invalid,0),
+  test_memeq_hex(smartlist_get(invalid, 0),
                  "5d76bf1c6614e885614a1e0ad074e1ab"
                  "4ea14655ebeefb1736a71b5ed8a15a51");
-  test_memeq_hex(smartlist_get(invalid,1),
+  test_memeq_hex(smartlist_get(invalid, 1),
                  "2fde0ee3343669c2444cd9d53cbd39c6"
                  "a7d1fc0513513e840ca7f6e68864b36c");
-  test_memeq_hex(smartlist_get(invalid,2),
+  test_memeq_hex(smartlist_get(invalid, 2),
                  "20d1576c5ab11bbcff0dedb1db4a3cfc"
                  "c8bc8dd839d8cbfef92d00a1a7d7b294");
-  test_memeq_hex(smartlist_get(invalid,3),
+  test_memeq_hex(smartlist_get(invalid, 3),
                  "074770f394c73dbde7b44412e9692add"
                  "691a478d4727f9804b77646c95420a96");
 
@@ -777,14 +777,14 @@ test_md_reject_cache(void *arg)
   mc = get_microdesc_cache();
 #define ADD(hex)                                                        \
   do {                                                                  \
-    tt_int_op(sizeof(buf),OP_EQ,base16_decode(buf,sizeof(buf),          \
-                hex,strlen(hex)));\
+    tt_int_op(sizeof(buf), OP_EQ, base16_decode(buf, sizeof(buf),          \
+                hex, strlen(hex)));\
     smartlist_add(wanted, tor_memdup(buf, DIGEST256_LEN));              \
   } while (0)
 
-  /* invalid,0 */
+  /* invalid, 0 */
   ADD("5d76bf1c6614e885614a1e0ad074e1ab4ea14655ebeefb1736a71b5ed8a15a51");
-  /* invalid,2 */
+  /* invalid, 2 */
   ADD("20d1576c5ab11bbcff0dedb1db4a3cfcc8bc8dd839d8cbfef92d00a1a7d7b294");
   /* valid, 6 */
   ADD("53f740bd222ab37f19f604b1d3759aa65eff1fbce9ac254bd0fa50d4af9b1bae");

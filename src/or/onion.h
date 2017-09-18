@@ -54,7 +54,7 @@ int onion_skin_client_handshake(int type,
 
 /** A parsed CREATE, CREATE_FAST, or CREATE2 cell. */
 typedef struct create_cell_t {
-  /** The cell command. One of CREATE{,_FAST,2} */
+  /** The cell command. One of CREATE{, _FAST, 2} */
   uint8_t cell_type;
   /** One of the ONION_HANDSHAKE_TYPE_* values */
   uint16_t handshake_type;
@@ -66,7 +66,7 @@ typedef struct create_cell_t {
 
 /** A parsed CREATED, CREATED_FAST, or CREATED2 cell. */
 typedef struct created_cell_t {
-  /** The cell command. One of CREATED{,_FAST,2} */
+  /** The cell command. One of CREATED{, _FAST, 2} */
   uint8_t cell_type;
   /** The number of bytes used in <b>reply</b>. */
   uint16_t handshake_len;

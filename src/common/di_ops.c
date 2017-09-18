@@ -35,7 +35,7 @@ tor_memcmp(const void *a, const void *b, size_t len)
 
   /* This loop goes from the end of the arrays to the start.  At the
    * start of every iteration, before we decrement i, we have set
-   * "retval" equal to the result of memcmp(a+i,b+i,len-i).  During the
+   * "retval" equal to the result of memcmp(a+i, b+i, len-i).  During the
    * loop, we update retval by leaving it unchanged if x[i]==y[i] and
    * setting it to x[i]-y[i] if x[i]!= y[i].
    *
@@ -93,10 +93,10 @@ tor_memcmp(const void *a, const void *b, size_t len)
  * Timing-safe memory comparison.  Return true if the <b>sz</b> bytes at
  * <b>a</b> are the same as the <b>sz</b> bytes at <b>b</b>, and 0 otherwise.
  *
- * This implementation differs from !memcmp(a,b,sz) in that its timing
+ * This implementation differs from !memcmp(a, b, sz) in that its timing
  * behavior is not data-dependent: it should return in the same amount of time
  * regardless of the contents of <b>a</b> and <b>b</b>.  It differs from
- * !tor_memcmp(a,b,sz) by being faster.
+ * !tor_memcmp(a, b, sz) by being faster.
  */
 int
 tor_memeq(const void *a, const void *b, size_t sz)
@@ -227,9 +227,9 @@ safe_mem_is_zero(const void *mem, size_t sz)
 }
 
 /** Time-invariant 64-bit greater-than; works on two integers in the range
- * (0,INT64_MAX). */
+ * (0, INT64_MAX). */
 #if SIZEOF_VOID_P == 8
-#define gt_i64_timei(a,b) ((a) > (b))
+#define gt_i64_timei(a, b) ((a) > (b))
 #else
 static inline int
 gt_i64_timei(uint64_t a, uint64_t b)

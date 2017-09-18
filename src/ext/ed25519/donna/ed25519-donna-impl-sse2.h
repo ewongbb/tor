@@ -38,7 +38,7 @@ ge25519_full_to_pniels(ge25519_pniels *p, const ge25519 *r) {
 
 static void
 ge25519_add_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519 *q) {
-	bignum25519 ALIGN(16) a,b,c,d;
+	bignum25519 ALIGN(16) a, b, c, d;
 	packed32bignum25519 ALIGN(16) xx, yy, yypxx, yymxx, bd, ac, bdmac, bdpac;
 	packed64bignum25519 ALIGN(16) at, bu, atbu, ptz, qtz, cd;
 
@@ -67,7 +67,7 @@ ge25519_add_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519 *q) {
 
 static void
 ge25519_double_p1p1(ge25519_p1p1 *r, const ge25519 *p) {
-	bignum25519 ALIGN(16) a,b,c,x;
+	bignum25519 ALIGN(16) a, b, c, x;
 	packed64bignum25519 ALIGN(16) xy, zx, ab, cx;
 	packed32bignum25519 ALIGN(16) xc, yz, xt, yc, ac, bc;
 
@@ -93,7 +93,7 @@ static void
 ge25519_nielsadd2_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519_niels *q, unsigned char signbit) {
 	const bignum25519 *qb = (const bignum25519 *)q;
 	bignum25519 *rb = (bignum25519 *)r;
-	bignum25519 ALIGN(16) a,b,c;
+	bignum25519 ALIGN(16) a, b, c;
 	packed64bignum25519 ALIGN(16) ab, yx, aybx;
 	packed32bignum25519 ALIGN(16) bd, ac, bdac;
 
@@ -118,7 +118,7 @@ static void
 ge25519_pnielsadd_p1p1(ge25519_p1p1 *r, const ge25519 *p, const ge25519_pniels *q, unsigned char signbit) {
 	const bignum25519 *qb = (const bignum25519 *)q;
 	bignum25519 *rb = (bignum25519 *)r;
-	bignum25519 ALIGN(16) a,b,c;
+	bignum25519 ALIGN(16) a, b, c;
 	packed64bignum25519 ALIGN(16) ab, yx, aybx, zt, zt2d, tc;
 	packed32bignum25519 ALIGN(16) bd, ac, bdac;
 
@@ -167,7 +167,7 @@ static void
 ge25519_nielsadd2(ge25519 *r, const ge25519_niels *q) {
 	packed64bignum25519 ALIGN(16) ab, yx, aybx, eg, ff, hh, xz, ty;
 	packed32bignum25519 ALIGN(16) bd, ac, bdac;
-	bignum25519 ALIGN(16) a,b,c,d,e,f,g,h;
+	bignum25519 ALIGN(16) a, b, c, d, e, f, g, h;
 
 	curve25519_sub(a, r->y, r->x);
 	curve25519_add(b, r->y, r->x);
