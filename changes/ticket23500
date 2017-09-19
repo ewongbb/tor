@@ -1,0 +1,3 @@
+  o Enhancement: 
+    - Added check to checkSpace.pl for there being no space after
+      a comma within parenthesis.
