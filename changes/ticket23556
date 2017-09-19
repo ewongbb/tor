@@ -1,0 +1,4 @@
+  o Enhancement:
+    - Added a check for double semi-colons at the end of lines for
+      checkSpace.pl
+
