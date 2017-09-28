@@ -4862,7 +4862,7 @@ tor_version_parse_platform(const char *platform,
   char tmp[128];
   char *s, *s2, *start;
 
-  if (strcmpstart(platform,"Tor ")) /* nonstandard Tor; say 0. */
+  if (strcmpstart(platform, "Tor ")) /* nonstandard Tor; say 0. */
     return 0;
 
   start = (char *)eat_whitespace(platform+3);
@@ -4877,7 +4877,7 @@ tor_version_parse_platform(const char *platform,
   strlcpy(tmp, start, s-start+1);
 
   if (tor_version_parse(tmp, router_version)<0) {
-    log_info(LD_DIR,"Router version '%s' unparseable.",tmp);
+    log_info(LD_DIR, "Router version '%s' unparseable.", tmp);
     return -1;
   }
 
@@ -4906,7 +4906,7 @@ tor_version_as_new_as(const char *platform, const char *cutoff)
   tor_assert(platform);
 
   if (tor_version_parse(cutoff, &cutoff_version)<0) {
-    log_warn(LD_BUG,"cutoff version '%s' unparseable.",cutoff);
+    log_warn(LD_BUG, "cutoff version '%s' unparseable.", cutoff);
     return 0;
   }
 
@@ -5015,7 +5015,7 @@ tor_version_parse(const char *s, tor_version_t *out)
 
   if (!strcmpstart(cp, "(r")) {
     cp += 2;
-    out->svn_revision = (int) strtol(cp,&eos,10);
+    out->svn_revision = (int) strtol(cp, &eos, 10);
   } else if (!strcmpstart(cp, "(git-")) {
     char *close_paren = strchr(cp, ')');
     int hexlen;
@@ -5106,7 +5106,7 @@ compare_tor_version_str_ptr_(const void **_a, const void **_b)
   cb = tor_version_parse(b, &vb);
   /* If they both parse, compare them. */
   if (!ca && !cb)
-    return tor_version_compare(&va,&vb);
+    return tor_version_compare(&va, &vb);
   /* If one parses, it comes first. */
   if (!ca && cb)
     return -1;
@@ -5527,8 +5527,8 @@ rend_parse_introduction_points(rend_service_descriptor_t *parsed,
 
     /* Parse onion port. */
     tok = find_by_keyword(tokens, R_IPO_ONION_PORT);
-    info->port = (uint16_t) tor_parse_long(tok->args[0],10,1,65535,
-                                           &num_ok,NULL);
+    info->port = (uint16_t) tor_parse_long(tok->args[0], 10, 1, 65535,
+                                           &num_ok, NULL);
     if (!info->port || !num_ok) {
       log_warn(LD_REND, "Introduction point onion port %s is invalid",
                escaped(tok->args[0]));
