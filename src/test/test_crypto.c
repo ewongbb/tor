@@ -2656,10 +2656,10 @@ test_crypto_ed25519_storage(void *arg)
   char *tag = NULL;
 
   keypair = tor_malloc_zero(sizeof(ed25519_keypair_t));
-  tt_int_op(0,OP_EQ,ed25519_keypair_generate(keypair, 0));
-  tt_int_op(0,OP_EQ,
+  tt_int_op(0, OP_EQ, ed25519_keypair_generate(keypair, 0));
+  tt_int_op(0, OP_EQ,
             ed25519_seckey_write_to_file(&keypair->seckey, fname_1, "foo"));
-  tt_int_op(0,OP_EQ,
+  tt_int_op(0, OP_EQ,
             ed25519_pubkey_write_to_file(&keypair->pubkey, fname_2, "bar"));
 
   tt_int_op(-1, OP_EQ, ed25519_pubkey_read_from_file(&pub, &tag, fname_1));
