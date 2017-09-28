@@ -1677,15 +1677,15 @@ test_util_config_line_crlf(void *arg)
 
   str = parse_config_line_from_str_verbose(str, &k, &v, &err);
   tt_assert(str);
-  tt_str_op(k, OP_EQ,"Hello");
-  tt_str_op(v, OP_EQ,"world");
+  tt_str_op(k, OP_EQ, "Hello");
+  tt_str_op(v, OP_EQ, "world");
   tt_ptr_op(err, OP_EQ, NULL);
   tor_free(k); tor_free(v);
 
   str = parse_config_line_from_str_verbose(str, &k, &v, &err);
   tt_assert(str);
-  tt_str_op(k, OP_EQ,"Hello");
-  tt_str_op(v, OP_EQ,"nice big world");
+  tt_str_op(k, OP_EQ, "Hello");
+  tt_str_op(v, OP_EQ, "nice big world");
   tt_ptr_op(err, OP_EQ, NULL);
   tor_free(k); tor_free(v);
   tt_str_op(str, OP_EQ, "");
@@ -1801,13 +1801,15 @@ test_util_escape_string_socks(void *arg)
 
   /** Simple backslash escape. */
   (void)arg;
-  escaped_string = tor_escape_str_for_pt_args("This is a backslash: \\",";\\");
+  escaped_string = tor_escape_str_for_pt_args("This is a backslash: \\",
+                                              ";\\");
   tt_assert(escaped_string);
   tt_str_op(escaped_string, OP_EQ, "This is a backslash: \\\\");
   tor_free(escaped_string);
 
   /** Simple semicolon escape. */
-  escaped_string = tor_escape_str_for_pt_args("First rule:Do not use ;",";\\");
+  escaped_string = tor_escape_str_for_pt_args("First rule:Do not use ;",
+                                              ";\\");
   tt_assert(escaped_string);
   tt_str_op(escaped_string, OP_EQ, "First rule:Do not use \\;");
   tor_free(escaped_string);
@@ -2079,16 +2081,16 @@ test_util_parse_integer(void *arg)
 
   /* Test parse_long */
   /* Empty/zero input */
-  tt_int_op(0L, OP_EQ, tor_parse_long("",10,0,100,&i,NULL));
+  tt_int_op(0L, OP_EQ, tor_parse_long("", 10, 0, 100, &i, NULL));
   tt_int_op(0, OP_EQ, i);
-  tt_int_op(0L, OP_EQ, tor_parse_long("0",10,0,100,&i,NULL));
+  tt_int_op(0L, OP_EQ, tor_parse_long("0", 10, 0, 100, &i, NULL));
   tt_int_op(1, OP_EQ, i);
   /* Normal cases */
-  tt_int_op(10L, OP_EQ, tor_parse_long("10",10,0,100,&i,NULL));
+  tt_int_op(10L, OP_EQ, tor_parse_long("10", 10, 0, 100, &i, NULL));
   tt_int_op(1, OP_EQ, i);
-  tt_int_op(10L, OP_EQ, tor_parse_long("10",10,0,10,&i,NULL));
+  tt_int_op(10L, OP_EQ, tor_parse_long("10", 10, 0, 10, &i, NULL));
   tt_int_op(1, OP_EQ, i);
-  tt_int_op(10L, OP_EQ, tor_parse_long("10",10,10,100,&i,NULL));
+  tt_int_op(10L, OP_EQ, tor_parse_long("10", 10, 10, 100, &i, NULL));
   tt_int_op(1, OP_EQ, i);
   tt_int_op(-50L, OP_EQ, tor_parse_long("-50", 10, -100, 100, &i, NULL));
   tt_int_op(1, OP_EQ, i);

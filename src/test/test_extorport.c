@@ -205,14 +205,14 @@ test_ext_or_init_auth(void *arg)
   cp = read_file_to_str(fn, RFTS_BIN, &st);
   tt_ptr_op(cp, OP_NE, NULL);
   tt_u64_op((uint64_t)st.st_size, OP_EQ, 64);
-  tt_mem_op(cp,OP_EQ, "! Extended ORPort Auth Cookie !\x0a", 32);
-  tt_mem_op(cp+32,OP_EQ, ext_or_auth_cookie, 32);
+  tt_mem_op(cp, OP_EQ, "! Extended ORPort Auth Cookie !\x0a", 32);
+  tt_mem_op(cp+32, OP_EQ, ext_or_auth_cookie, 32);
   memcpy(cookie0, ext_or_auth_cookie, 32);
   tt_assert(!tor_mem_is_zero((char*)ext_or_auth_cookie, 32));
 
   /* Operation should be idempotent. */
   tt_int_op(0, OP_EQ, init_ext_or_cookie_authentication(1));
-  tt_mem_op(cookie0,OP_EQ, ext_or_auth_cookie, 32);
+  tt_mem_op(cookie0, OP_EQ, ext_or_auth_cookie, 32);
 
  done:
   tor_free(cp);
@@ -282,15 +282,15 @@ test_ext_or_cookie_auth(void *arg)
                      46+32+32);
   crypto_hmac_sha256(hmac2, (char*)ext_or_auth_cookie, 32, client_hash_input,
                      46+32+32);
-  tt_mem_op(hmac1,OP_EQ, reply, 32);
-  tt_mem_op(hmac2,OP_EQ, client_hash, 32);
+  tt_mem_op(hmac1, OP_EQ, reply, 32);
+  tt_mem_op(hmac2, OP_EQ, client_hash, 32);
 
   /* Now do it again and make sure that the results are *different* */
   tt_int_op(0, OP_EQ,
             handle_client_auth_nonce(client_nonce, 32, &client_hash2, &reply2,
                                      &reply_len));
-  tt_mem_op(reply2,OP_NE, reply, reply_len);
-  tt_mem_op(client_hash2,OP_NE, client_hash, 32);
+  tt_mem_op(reply2, OP_NE, reply, reply_len);
+  tt_mem_op(client_hash2, OP_NE, client_hash, 32);
   /* But that this one checks out too. */
   memcpy(server_hash_input+46+32, reply2+32, 32);
   memcpy(client_hash_input+46+32, reply2+32, 32);
@@ -299,8 +299,8 @@ test_ext_or_cookie_auth(void *arg)
                      46+32+32);
   crypto_hmac_sha256(hmac2, (char*)ext_or_auth_cookie, 32, client_hash_input,
                      46+32+32);
-  tt_mem_op(hmac1,OP_EQ, reply2, 32);
-  tt_mem_op(hmac2,OP_EQ, client_hash2, 32);
+  tt_mem_op(hmac1, OP_EQ, reply2, 32);
+  tt_mem_op(hmac2, OP_EQ, client_hash2, 32);
 
  done:
   tor_free(reply);
@@ -340,7 +340,7 @@ test_ext_or_cookie_auth_testvec(void *arg)
                                      &reply_len));
   tt_ptr_op(reply, OP_NE, NULL );
   tt_uint_op(reply_len, OP_EQ, 64);
-  tt_mem_op(reply+32,OP_EQ, "te road There is always another ", 32);
+  tt_mem_op(reply+32, OP_EQ, "te road There is always another ", 32);
   /* HMACSHA256("Gliding wrapt in a brown mantle,"
    *     "ExtORPort authentication server-to-client hash"
    *     "But when I look ahead up the write road There is always another ");
@@ -529,18 +529,18 @@ test_ext_or_handshake(void *arg)
   tt_int_op(0, OP_EQ, connection_ext_or_process_inbuf(conn));
   tt_ptr_op(NULL, OP_NE, conn->ext_or_transport);
   tt_str_op("rfc1149", OP_EQ, conn->ext_or_transport);
-  tt_int_op(is_reading,OP_EQ,1);
+  tt_int_op(is_reading, OP_EQ,1);
   tt_int_op(TO_CONN(conn)->state, OP_EQ, EXT_OR_CONN_STATE_OPEN);
   /* DONE */
   WRITE("\x00\x00\x00\x00", 4);
   tt_int_op(0, OP_EQ, connection_ext_or_process_inbuf(conn));
   tt_int_op(TO_CONN(conn)->state, OP_EQ, EXT_OR_CONN_STATE_FLUSHING);
-  tt_int_op(is_reading,OP_EQ,0);
+  tt_int_op(is_reading, OP_EQ,0);
   CONTAINS("\x10\x00\x00\x00", 4);
-  tt_int_op(handshake_start_called,OP_EQ,0);
+  tt_int_op(handshake_start_called, OP_EQ,0);
   tt_int_op(0, OP_EQ, connection_ext_or_finished_flushing(conn));
-  tt_int_op(is_reading,OP_EQ,1);
-  tt_int_op(handshake_start_called,OP_EQ,1);
+  tt_int_op(is_reading, OP_EQ,1);
+  tt_int_op(handshake_start_called, OP_EQ,1);
   tt_int_op(TO_CONN(conn)->type, OP_EQ, CONN_TYPE_OR);
   tt_int_op(TO_CONN(conn)->state, OP_EQ, 0);
   close_closeable_connections();

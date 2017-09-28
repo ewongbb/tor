@@ -647,7 +647,7 @@ test_entry_guard_parse_from_state_full(void *arg)
 
   config_line_t *ln;
   for (ln = lines; ln; ln = ln->next) {
-    smartlist_add_asprintf(text, "%s %s\n",ln->key, ln->value);
+    smartlist_add_asprintf(text, "%s %s\n", ln->key, ln->value);
   }
   joined = smartlist_join_strings(text, "", 0, NULL);
   tt_str_op(joined, OP_EQ,

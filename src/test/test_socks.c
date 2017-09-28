@@ -149,11 +149,11 @@ test_socks_5_unsupported_commands(void *ptr)
   tt_int_op(fetch_from_buf_socks(buf, socks, get_options()->TestSocks,
                                get_options()->SafeSocks), OP_EQ, -1);
 
-  tt_int_op(5, OP_EQ,socks->socks_version);
-  tt_int_op(10, OP_EQ,socks->replylen);
-  tt_int_op(5, OP_EQ,socks->reply[0]);
-  tt_int_op(SOCKS5_COMMAND_NOT_SUPPORTED, OP_EQ,socks->reply[1]);
-  tt_int_op(1, OP_EQ,socks->reply[3]);
+  tt_int_op(5, OP_EQ, socks->socks_version);
+  tt_int_op(10, OP_EQ, socks->replylen);
+  tt_int_op(5, OP_EQ, socks->reply[0]);
+  tt_int_op(SOCKS5_COMMAND_NOT_SUPPORTED, OP_EQ, socks->reply[1]);
+  tt_int_op(1, OP_EQ, socks->reply[3]);
 
   buf_clear(buf);
   socks_request_clear(socks);
@@ -161,20 +161,20 @@ test_socks_5_unsupported_commands(void *ptr)
   /* SOCKS 5 Send unsupported UDP_ASSOCIATE [03] command */
   ADD_DATA(buf, "\x05\x02\x00\x01");
   tt_int_op(fetch_from_buf_socks(buf, socks, get_options()->TestSocks,
-                               get_options()->SafeSocks), OP_EQ, 0);
+                                 get_options()->SafeSocks), OP_EQ, 0);
   tt_int_op(5, OP_EQ, socks->socks_version);
   tt_int_op(2, OP_EQ, socks->replylen);
   tt_int_op(5, OP_EQ, socks->reply[0]);
   tt_int_op(0, OP_EQ, socks->reply[1]);
   ADD_DATA(buf, "\x05\x03\x00\x01\x02\x02\x02\x01\x01\x01");
   tt_int_op(fetch_from_buf_socks(buf, socks, get_options()->TestSocks,
-                               get_options()->SafeSocks), OP_EQ, -1);
+                                 get_options()->SafeSocks), OP_EQ, -1);
 
-  tt_int_op(5, OP_EQ,socks->socks_version);
-  tt_int_op(10, OP_EQ,socks->replylen);
-  tt_int_op(5, OP_EQ,socks->reply[0]);
-  tt_int_op(SOCKS5_COMMAND_NOT_SUPPORTED, OP_EQ,socks->reply[1]);
-  tt_int_op(1, OP_EQ,socks->reply[3]);
+  tt_int_op(5, OP_EQ, socks->socks_version);
+  tt_int_op(10, OP_EQ, socks->replylen);
+  tt_int_op(5, OP_EQ, socks->reply[0]);
+  tt_int_op(SOCKS5_COMMAND_NOT_SUPPORTED, OP_EQ, socks->reply[1]);
+  tt_int_op(1, OP_EQ, socks->reply[3]);
 
  done:
   ;
@@ -453,13 +453,13 @@ test_socks_5_malformed_commands(void *ptr)
   ADD_DATA(buf, "\x05\x01\x00");
   ADD_DATA(buf, "\x05\xF1\x00\x03\x0Etorproject.org\x11\x11");
   tt_int_op(fetch_from_buf_socks(buf, socks, get_options()->TestSocks,
-                                   get_options()->SafeSocks), OP_EQ, -1);
+                                 get_options()->SafeSocks), OP_EQ, -1);
 
-  tt_int_op(5, OP_EQ,socks->socks_version);
-  tt_int_op(10, OP_EQ,socks->replylen);
-  tt_int_op(5, OP_EQ,socks->reply[0]);
-  tt_int_op(SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED, OP_EQ,socks->reply[1]);
-  tt_int_op(1, OP_EQ,socks->reply[3]);
+  tt_int_op(5, OP_EQ, socks->socks_version);
+  tt_int_op(10, OP_EQ, socks->replylen);
+  tt_int_op(5, OP_EQ, socks->reply[0]);
+  tt_int_op(SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED, OP_EQ, socks->reply[1]);
+  tt_int_op(1, OP_EQ, socks->reply[3]);
 
   buf_clear(buf);
   socks_request_clear(socks);
@@ -470,13 +470,13 @@ test_socks_5_malformed_commands(void *ptr)
   ADD_DATA(buf, "\x05\x01\x00");
   ADD_DATA(buf, "\x05\x01\x00\x03\x09\"\"\"\"\".com\x11\x11");
   tt_int_op(fetch_from_buf_socks(buf, socks, get_options()->TestSocks,
-                                   get_options()->SafeSocks), OP_EQ, -1);
+                                 get_options()->SafeSocks), OP_EQ, -1);
 
-  tt_int_op(5, OP_EQ,socks->socks_version);
-  tt_int_op(10, OP_EQ,socks->replylen);
-  tt_int_op(5, OP_EQ,socks->reply[0]);
-  tt_int_op(SOCKS5_GENERAL_ERROR, OP_EQ,socks->reply[1]);
-  tt_int_op(1, OP_EQ,socks->reply[3]);
+  tt_int_op(5, OP_EQ, socks->socks_version);
+  tt_int_op(10, OP_EQ, socks->replylen);
+  tt_int_op(5, OP_EQ, socks->reply[0]);
+  tt_int_op(SOCKS5_GENERAL_ERROR, OP_EQ, socks->reply[1]);
+  tt_int_op(1, OP_EQ, socks->reply[3]);
 
   buf_clear(buf);
   socks_request_clear(socks);
@@ -485,13 +485,13 @@ test_socks_5_malformed_commands(void *ptr)
   ADD_DATA(buf, "\x05\x01\x00");
   ADD_DATA(buf, "\x05\x01\x00\x23\x02\x02\x02\x02\x11\x11");
   tt_int_op(fetch_from_buf_socks(buf, socks, get_options()->TestSocks,
-                                   get_options()->SafeSocks), OP_EQ, -1);
+                                 get_options()->SafeSocks), OP_EQ, -1);
 
-  tt_int_op(5, OP_EQ,socks->socks_version);
-  tt_int_op(10, OP_EQ,socks->replylen);
-  tt_int_op(5, OP_EQ,socks->reply[0]);
-  tt_int_op(SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED, OP_EQ,socks->reply[1]);
-  tt_int_op(1, OP_EQ,socks->reply[3]);
+  tt_int_op(5, OP_EQ, socks->socks_version);
+  tt_int_op(10, OP_EQ, socks->replylen);
+  tt_int_op(5, OP_EQ, socks->reply[0]);
+  tt_int_op(SOCKS5_ADDRESS_TYPE_NOT_SUPPORTED, OP_EQ, socks->reply[1]);
+  tt_int_op(1, OP_EQ, socks->reply[3]);
 
  done:
   ;

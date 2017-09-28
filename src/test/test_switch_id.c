@@ -46,7 +46,7 @@ check_can_bind_low_ports(void)
     }
 
     int one = 1;
-    if (setsockopt(fd, SOL_SOCKET,SO_REUSEADDR, (void*)&one,
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&one,
                    (socklen_t)sizeof(one))) {
       perror("setsockopt");
       tor_close_socket_simple(fd);

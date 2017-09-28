@@ -40,7 +40,7 @@ test_routerkeys_write_fingerprint(void *arg)
   set_client_identity_key(crypto_pk_dup_key(key));
 
   tt_int_op(0, OP_EQ, check_private_dir(ddir, CPD_CREATE, NULL));
-  tt_int_op(crypto_pk_cmp_keys(get_server_identity_key(),key),OP_EQ,0);
+  tt_int_op(crypto_pk_cmp_keys(get_server_identity_key(), key), OP_EQ, 0);
 
   /* Write fingerprint file */
   tt_int_op(0, OP_EQ, router_write_fingerprint(0));
@@ -92,8 +92,8 @@ test_routerkeys_ed_certs(void *args)
   uint8_t *junk = NULL;
   char *base64 = NULL;
 
-  tt_int_op(0, OP_EQ,ed25519_keypair_generate(&kp1, 0));
-  tt_int_op(0, OP_EQ,ed25519_keypair_generate(&kp2, 0));
+  tt_int_op(0, OP_EQ, ed25519_keypair_generate(&kp1, 0));
+  tt_int_op(0, OP_EQ, ed25519_keypair_generate(&kp2, 0));
 
   for (int i = 0; i <= 1; ++i) {
     uint32_t flags = i ? CERT_FLAG_INCLUDE_SIGNING_KEY : 0;
@@ -601,12 +601,12 @@ test_routerkeys_cross_certify_tap(void *args)
 
   n = crypto_pk_public_checksig(onion_key, buf, sizeof(buf),
                                 (char*)cc, cc_len);
-  tt_int_op(n, OP_GT,0);
-  tt_int_op(n, OP_EQ,52);
+  tt_int_op(n, OP_GT, 0);
+  tt_int_op(n, OP_EQ, 52);
 
   crypto_pk_get_digest(id_key, digest);
-  tt_mem_op(buf, OP_EQ,digest,20);
-  tt_mem_op(buf+20,OP_EQ,master_key.pubkey,32);
+  tt_mem_op(buf, OP_EQ, digest, 20);
+  tt_mem_op(buf+20, OP_EQ, master_key.pubkey, 32);
 
   tt_int_op(0, OP_EQ, check_tap_onion_key_crosscert(cc, cc_len,
                                     onion_key, &master_key, (uint8_t*)digest));
