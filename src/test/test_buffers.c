@@ -37,7 +37,7 @@ test_buffers_basic(void *arg)
     TT_DIE(("Assertion failed."));
 
   //test_eq(buf_capacity(buf), 4096);
-  tt_int_op(buf_datalen(buf),OP_EQ, 0);
+  tt_int_op(buf_datalen(buf), OP_EQ, 0);
 
   /****
    * General pointer frobbing
@@ -47,16 +47,16 @@ test_buffers_basic(void *arg)
   }
   buf_add(buf, str, 256);
   buf_add(buf, str, 256);
-  tt_int_op(buf_datalen(buf),OP_EQ, 512);
+  tt_int_op(buf_datalen(buf), OP_EQ, 512);
   buf_get_bytes(buf, str2, 200);
-  tt_mem_op(str,OP_EQ, str2, 200);
-  tt_int_op(buf_datalen(buf),OP_EQ, 312);
+  tt_mem_op(str, OP_EQ, str2, 200);
+  tt_int_op(buf_datalen(buf), OP_EQ, 312);
   memset(str2, 0, sizeof(str2));
 
   buf_get_bytes(buf, str2, 256);
-  tt_mem_op(str+200,OP_EQ, str2, 56);
-  tt_mem_op(str,OP_EQ, str2+56, 200);
-  tt_int_op(buf_datalen(buf),OP_EQ, 56);
+  tt_mem_op(str+200, OP_EQ, str2, 56);
+  tt_mem_op(str, OP_EQ, str2+56, 200);
+  tt_int_op(buf_datalen(buf), OP_EQ, 56);
   memset(str2, 0, sizeof(str2));
   /* Okay, now we should be 512 bytes into the 4096-byte buffer.  If we add
    * another 3584 bytes, we hit the end. */
@@ -64,16 +64,16 @@ test_buffers_basic(void *arg)
     buf_add(buf, str, 256);
   }
   buf_assert_ok(buf);
-  tt_int_op(buf_datalen(buf),OP_EQ, 3896);
+  tt_int_op(buf_datalen(buf), OP_EQ, 3896);
   buf_get_bytes(buf, str2, 56);
-  tt_int_op(buf_datalen(buf),OP_EQ, 3840);
-  tt_mem_op(str+200,OP_EQ, str2, 56);
+  tt_int_op(buf_datalen(buf), OP_EQ, 3840);
+  tt_mem_op(str+200, OP_EQ, str2, 56);
   for (j=0;j<15;++j) {
     memset(str2, 0, sizeof(str2));
     buf_get_bytes(buf, str2, 256);
-    tt_mem_op(str,OP_EQ, str2, 256);
+    tt_mem_op(str, OP_EQ, str2, 256);
   }
-  tt_int_op(buf_datalen(buf),OP_EQ, 0);
+  tt_int_op(buf_datalen(buf), OP_EQ, 0);
   buf_free(buf);
   buf = NULL;
 
@@ -83,7 +83,7 @@ test_buffers_basic(void *arg)
   buf_add(buf, str+1, 255);
   //test_eq(buf_capacity(buf), 256);
   buf_get_bytes(buf, str2, 254);
-  tt_mem_op(str+1,OP_EQ, str2, 254);
+  tt_mem_op(str+1, OP_EQ, str2, 254);
   //test_eq(buf_capacity(buf), 256);
   buf_assert_ok(buf);
   buf_add(buf, str, 32);
@@ -92,15 +92,15 @@ test_buffers_basic(void *arg)
   buf_add(buf, str, 256);
   buf_assert_ok(buf);
   //test_eq(buf_capacity(buf), 512);
-  tt_int_op(buf_datalen(buf),OP_EQ, 33+256);
+  tt_int_op(buf_datalen(buf), OP_EQ, 33+256);
   buf_get_bytes(buf, str2, 33);
-  tt_int_op(*str2,OP_EQ, str[255]);
+  tt_int_op(*str2, OP_EQ, str[255]);
 
-  tt_mem_op(str2+1,OP_EQ, str, 32);
+  tt_mem_op(str2+1, OP_EQ, str, 32);
   //test_eq(buf_capacity(buf), 512);
-  tt_int_op(buf_datalen(buf),OP_EQ, 256);
+  tt_int_op(buf_datalen(buf), OP_EQ, 256);
   buf_get_bytes(buf, str2, 256);
-  tt_mem_op(str,OP_EQ, str2, 256);
+  tt_mem_op(str, OP_EQ, str2, 256);
 
   /* now try shrinking: case 1. */
   buf_free(buf);
@@ -109,10 +109,10 @@ test_buffers_basic(void *arg)
     buf_add(buf, str,255);
   }
   //test_eq(buf_capacity(buf), 33668);
-  tt_int_op(buf_datalen(buf),OP_EQ, 17085);
+  tt_int_op(buf_datalen(buf), OP_EQ, 17085);
   for (j=0; j < 40; ++j) {
     buf_get_bytes(buf, str2, 255);
-    tt_mem_op(str2,OP_EQ, str, 255);
+    tt_mem_op(str2, OP_EQ, str, 255);
   }
 
   /* now try shrinking: case 2. */
@@ -123,7 +123,7 @@ test_buffers_basic(void *arg)
   }
   for (j=0; j < 20; ++j) {
     buf_get_bytes(buf, str2, 255);
-    tt_mem_op(str2,OP_EQ, str, 255);
+    tt_mem_op(str2, OP_EQ, str, 255);
   }
   for (j=0;j<80;++j) {
     buf_add(buf, str, 255);
@@ -131,7 +131,7 @@ test_buffers_basic(void *arg)
   //test_eq(buf_capacity(buf),33668);
   for (j=0; j < 120; ++j) {
     buf_get_bytes(buf, str2, 255);
-    tt_mem_op(str2,OP_EQ, str, 255);
+    tt_mem_op(str2, OP_EQ, str, 255);
   }
 
   /* Move from buf to buf. */
@@ -140,27 +140,27 @@ test_buffers_basic(void *arg)
   buf2 = buf_new_with_capacity(4096);
   for (j=0;j<100;++j)
     buf_add(buf, str, 255);
-  tt_int_op(buf_datalen(buf),OP_EQ, 25500);
+  tt_int_op(buf_datalen(buf), OP_EQ, 25500);
   for (j=0;j<100;++j) {
     r = 10;
     buf_move_to_buf(buf2, buf, &r);
-    tt_int_op(r,OP_EQ, 0);
+    tt_int_op(r, OP_EQ, 0);
   }
-  tt_int_op(buf_datalen(buf),OP_EQ, 24500);
-  tt_int_op(buf_datalen(buf2),OP_EQ, 1000);
+  tt_int_op(buf_datalen(buf), OP_EQ, 24500);
+  tt_int_op(buf_datalen(buf2), OP_EQ, 1000);
   for (j=0;j<3;++j) {
     buf_get_bytes(buf2, str2, 255);
-    tt_mem_op(str2,OP_EQ, str, 255);
+    tt_mem_op(str2, OP_EQ, str, 255);
   }
   r = 8192; /*big move*/
   buf_move_to_buf(buf2, buf, &r);
-  tt_int_op(r,OP_EQ, 0);
+  tt_int_op(r, OP_EQ, 0);
   r = 30000; /* incomplete move */
   buf_move_to_buf(buf2, buf, &r);
-  tt_int_op(r,OP_EQ, 13692);
+  tt_int_op(r, OP_EQ, 13692);
   for (j=0;j<97;++j) {
     buf_get_bytes(buf2, str2, 255);
-    tt_mem_op(str2,OP_EQ, str, 255);
+    tt_mem_op(str2, OP_EQ, str, 255);
   }
   buf_free(buf);
   buf_free(buf2);
@@ -170,16 +170,16 @@ test_buffers_basic(void *arg)
   cp = "Testing. This is a moderately long Testing string.";
   for (j = 0; cp[j]; j++)
     buf_add(buf, cp+j, 1);
-  tt_int_op(0,OP_EQ, buf_find_string_offset(buf, "Testing", 7));
-  tt_int_op(1,OP_EQ, buf_find_string_offset(buf, "esting", 6));
-  tt_int_op(1,OP_EQ, buf_find_string_offset(buf, "est", 3));
-  tt_int_op(39,OP_EQ, buf_find_string_offset(buf, "ing str", 7));
-  tt_int_op(35,OP_EQ, buf_find_string_offset(buf, "Testing str", 11));
-  tt_int_op(32,OP_EQ, buf_find_string_offset(buf, "ng ", 3));
-  tt_int_op(43,OP_EQ, buf_find_string_offset(buf, "string.", 7));
-  tt_int_op(-1,OP_EQ, buf_find_string_offset(buf, "shrdlu", 6));
-  tt_int_op(-1,OP_EQ, buf_find_string_offset(buf, "Testing thing", 13));
-  tt_int_op(-1,OP_EQ, buf_find_string_offset(buf, "ngx", 3));
+  tt_int_op(0, OP_EQ, buf_find_string_offset(buf, "Testing", 7));
+  tt_int_op(1, OP_EQ, buf_find_string_offset(buf, "esting", 6));
+  tt_int_op(1, OP_EQ, buf_find_string_offset(buf, "est", 3));
+  tt_int_op(39, OP_EQ, buf_find_string_offset(buf, "ing str", 7));
+  tt_int_op(35, OP_EQ, buf_find_string_offset(buf, "Testing str", 11));
+  tt_int_op(32, OP_EQ, buf_find_string_offset(buf, "ng ", 3));
+  tt_int_op(43, OP_EQ, buf_find_string_offset(buf, "string.", 7));
+  tt_int_op(-1, OP_EQ, buf_find_string_offset(buf, "shrdlu", 6));
+  tt_int_op(-1, OP_EQ, buf_find_string_offset(buf, "Testing thing", 13));
+  tt_int_op(-1, OP_EQ, buf_find_string_offset(buf, "ngx", 3));
   buf_free(buf);
   buf = NULL;
 
@@ -242,15 +242,15 @@ test_buffer_pullup(void *arg)
   /* Make room for 3000 bytes in the first chunk, so that the pullup-move code
    * can get tested. */
   tt_int_op(buf_get_bytes(buf, tmp, 3000), OP_EQ, 3000);
-  tt_mem_op(tmp,OP_EQ, stuff, 3000);
+  tt_mem_op(tmp, OP_EQ, stuff, 3000);
   buf_pullup(buf, 2048, &cp, &sz);
   buf_assert_ok(buf);
   tt_ptr_op(cp, OP_NE, NULL);
   tt_int_op(sz, OP_GE, 2048);
-  tt_mem_op(cp,OP_EQ, stuff+3000, 2048);
+  tt_mem_op(cp, OP_EQ, stuff+3000, 2048);
   tt_int_op(3000, OP_EQ, buf_datalen(buf));
   tt_int_op(buf_get_bytes(buf, tmp, 3000), OP_EQ, 0);
-  tt_mem_op(tmp,OP_EQ, stuff+3000, 2048);
+  tt_mem_op(tmp, OP_EQ, stuff+3000, 2048);
 
   buf_free(buf);
 
@@ -269,16 +269,16 @@ test_buffer_pullup(void *arg)
   buf_assert_ok(buf);
   tt_ptr_op(cp, OP_NE, NULL);
   tt_int_op(sz, OP_GE, 12500);
-  tt_mem_op(cp,OP_EQ, stuff, 12500);
+  tt_mem_op(cp, OP_EQ, stuff, 12500);
   tt_int_op(buf_datalen(buf), OP_EQ, 16000);
 
   buf_get_bytes(buf, tmp, 12400);
-  tt_mem_op(tmp,OP_EQ, stuff, 12400);
+  tt_mem_op(tmp, OP_EQ, stuff, 12400);
   tt_int_op(buf_datalen(buf), OP_EQ, 3600);
   buf_get_bytes(buf, tmp, 3500);
-  tt_mem_op(tmp,OP_EQ, stuff+12400, 3500);
+  tt_mem_op(tmp, OP_EQ, stuff+12400, 3500);
   buf_get_bytes(buf, tmp, 100);
-  tt_mem_op(tmp,OP_EQ, stuff+15900, 10);
+  tt_mem_op(tmp, OP_EQ, stuff+15900, 10);
 
   buf_free(buf);
 
@@ -291,7 +291,7 @@ test_buffer_pullup(void *arg)
   buf_assert_ok(buf);
   tt_ptr_op(cp, OP_NE, NULL);
   tt_int_op(sz, OP_EQ, 7900);
-  tt_mem_op(cp,OP_EQ, stuff+100, 7900);
+  tt_mem_op(cp, OP_EQ, stuff+100, 7900);
 
   buf_free(buf);
   buf = NULL;
@@ -341,7 +341,7 @@ test_buffer_copy(void *arg)
   tt_mem_op(b, OP_EQ, s, len);
   /* Clear buf for next test */
   buf_get_bytes(buf, b, len);
-  tt_int_op(buf_datalen(buf),OP_EQ,0);
+  tt_int_op(buf_datalen(buf), OP_EQ,0);
 
   /* Okay, now let's try a bigger buffer. */
   s = "Quis autem vel eum iure reprehenderit qui in ea voluptate velit "
@@ -357,7 +357,7 @@ test_buffer_copy(void *arg)
   tt_int_op(buf_datalen(buf2), OP_EQ, buf_datalen(buf));
   for (i = 0; i < 256; ++i) {
     buf_get_bytes(buf2, b, len+1);
-    tt_int_op((unsigned char)b[0],OP_EQ,i);
+    tt_int_op((unsigned char)b[0], OP_EQ,i);
     tt_mem_op(b+1, OP_EQ, s, len);
   }
 
