@@ -71,8 +71,8 @@ main(int argc, char **argv)
   monotime_get(&started_at);
   for (i = 0; i < N_TIMERS; ++i) {
     struct timeval delay;
-    delay.tv_sec = crypto_rand_int_range(0,MAX_DURATION);
-    delay.tv_usec = crypto_rand_int_range(0,1000000);
+    delay.tv_sec = crypto_rand_int_range(0, MAX_DURATION);
+    delay.tv_usec = crypto_rand_int_range(0, 1000000);
     delay_usec[i] = delay.tv_sec * 1000000 + delay.tv_usec;
     timeradd(&now, &delay, &fire_at[i]);
     timers[i] = timer_new(timer_cb, &timers[i]);
