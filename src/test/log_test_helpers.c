@@ -195,7 +195,7 @@ mock_saving_logv(int severity, log_domain_mask_t domain,
 {
   char *buf = tor_malloc_zero(10240);
   int n;
-  n = tor_vsnprintf(buf,10240,format,ap);
+  n = tor_vsnprintf(buf, 10240, format, ap);
   tor_assert(n < 10240-1);
   buf[n]='\n';
   buf[n+1]='\0';
