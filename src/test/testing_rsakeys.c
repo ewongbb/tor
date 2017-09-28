@@ -463,7 +463,7 @@ pk_generate_internal(int bits)
     pregen_array = pregen_keys_1024;
   }
   /* Either skip 1 or 2 keys. */
-  *idxp += crypto_rand_int_range(1,3);
+  *idxp += crypto_rand_int_range(1, 3);
   *idxp %= n_pregen;
   return crypto_pk_dup_key(pregen_array[*idxp]);
 #else

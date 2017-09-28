@@ -126,7 +126,7 @@ for my $fn (@ARGV) {
 
             ## Warn about there being no space after a comma.
             #
-            if (/\((\w+),[^\s]/) {
+            if (/,[^ ]([\w|\d]+)/g) {
                 msg "      Space missing after comma on $. in $fn.\n";
             }
             ## Warn about multiple internal spaces.
