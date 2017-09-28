@@ -952,7 +952,7 @@ handle_proxy_line(const char *line, managed_proxy_t *mp)
                "Could not launch managed proxy executable at '%s' ('%s').",
                mp->argv[0], strerror(saved_errno));
     } else { /* failed to parse error message */
-      log_warn(LD_GENERAL, 
+      log_warn(LD_GENERAL,
                "Could not launch managed proxy executable at '%s'.",
                mp->argv[0]);
     }
