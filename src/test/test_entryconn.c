@@ -121,7 +121,7 @@ test_entryconn_rewrite_automap_ipv4(void *arg)
   tt_str_op(rr.orig_address, OP_EQ, "www.mit.edu");
   tt_str_op(ec->original_dest_address, OP_EQ, "www.mit.edu");
 
-  tt_assert(!strcmpstart(ec->socks_request->address,"127.202."));
+  tt_assert(!strcmpstart(ec->socks_request->address, "127.202."));
 
   /* Connect to it and make sure we get the original address back. */
   strlcpy(ec2->socks_request->address, ec->socks_request->address,
@@ -195,7 +195,7 @@ test_entryconn_rewrite_automap_ipv6(void *arg)
   tt_str_op(ec->original_dest_address, OP_EQ, "www.mit.edu");
 
   /* Yes, this [ should be here. */
-  tt_assert(!strcmpstart(ec->socks_request->address,"[fe80:"));
+  tt_assert(!strcmpstart(ec->socks_request->address, "[fe80:"));
 
   /* Connect to it and make sure we get the original address back. */
   strlcpy(ec2->socks_request->address, ec->socks_request->address,
@@ -269,7 +269,7 @@ test_entryconn_rewrite_automap_reverse(void *arg)
   tt_str_op(rr.orig_address, OP_EQ, "www.poldy.bloom");
   tt_str_op(ec->original_dest_address, OP_EQ, "www.poldy.bloom");
 
-  tt_assert(!strcmpstart(ec->socks_request->address,"127.80."));
+  tt_assert(!strcmpstart(ec->socks_request->address, "127.80."));
 
   strlcpy(ec2->socks_request->address, ec->socks_request->address,
           sizeof(ec2->socks_request->address));
@@ -511,7 +511,7 @@ test_entryconn_rewrite_automap_exit(void *arg)
   tt_str_op(rr.orig_address, OP_EQ, "website.example.exit");
   tt_str_op(ec->original_dest_address, OP_EQ, "website.example.exit");
 
-  tt_assert(!strcmpstart(ec->socks_request->address,"127.1."));
+  tt_assert(!strcmpstart(ec->socks_request->address, "127.1."));
 
   /* Connect to it and make sure we get the original address back. */
   strlcpy(ec2->socks_request->address, ec->socks_request->address,

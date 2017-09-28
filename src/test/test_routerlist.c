@@ -254,11 +254,11 @@ test_router_pick_directory_server_impl(void *arg)
   con_md = networkstatus_parse_vote_from_string(consensus_text_md, NULL,
                                                 NS_TYPE_CONSENSUS);
   tt_assert(con_md);
-  tt_int_op(con_md->flavor,OP_EQ, FLAV_MICRODESC);
+  tt_int_op(con_md->flavor, OP_EQ, FLAV_MICRODESC);
   tt_assert(con_md->routerstatus_list);
   tt_int_op(smartlist_len(con_md->routerstatus_list), OP_EQ, 3);
   tt_assert(!networkstatus_set_current_consensus_from_ns(con_md,
-                                                 "microdesc"));
+                                                         "microdesc"));
 
   /* If the consensus time or flavor doesn't match, we are still
    * bootstrapping */

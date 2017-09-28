@@ -1034,11 +1034,11 @@ channel_tls_time_process_cell(cell_t *cell, channel_tls_t *chan, int *time,
   time_passed = tv_udiff(&start, &end) ;
 
   if (time_passed > 10000) { /* more than 10ms */
-    log_debug(LD_OR,"That call just took %ld ms.",time_passed/1000);
+    log_debug(LD_OR, "That call just took %ld ms.", time_passed/1000);
   }
 
   if (time_passed < 0) {
-    log_info(LD_GENERAL,"That call took us back in time!");
+    log_info(LD_GENERAL, "That call took us back in time!");
     time_passed = 0;
   }
 
@@ -1462,7 +1462,7 @@ channel_tls_process_versions_cell(var_cell_t *cell, channel_tls_t *chan)
   if ((cell->payload_len % 2) == 1) {
     log_fn(LOG_PROTOCOL_WARN, LD_OR,
            "Received a VERSION cell with odd payload length %d; "
-           "closing connection.",cell->payload_len);
+           "closing connection.", cell->payload_len);
     connection_or_close_for_error(chan->conn, 0);
     return;
   }
@@ -1862,7 +1862,7 @@ channel_tls_process_netinfo_cell(cell_t *cell, channel_tls_t *chan)
              tor_addr_is_null(&my_apparent_addr) ?
              "<none>" : fmt_and_decorate_addr(&my_apparent_addr));
   }
-  assert_connection_ok(TO_CONN(chan->conn),time(NULL));
+  assert_connection_ok(TO_CONN(chan->conn), time(NULL));
 }
 
 /** Types of certificates that we know how to parse from CERTS cells.  Each

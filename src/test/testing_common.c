@@ -72,7 +72,7 @@ setup_directory(void)
     const char *tmp = buf;
     const char *extra_backslash = "";
     /* If this fails, we're probably screwed anyway */
-    if (!GetTempPathA(sizeof(buf),buf))
+    if (!GetTempPathA(sizeof(buf), buf))
       tmp = "c:\\windows\\temp\\";
     if (strcmpend(tmp, "\\")) {
       /* According to MSDN, it should be impossible for GetTempPath to give us
@@ -112,7 +112,8 @@ get_fname_suffix(const char *name, const char *suffix)
   setup_directory();
   if (!name)
     return temp_dir;
-  tor_snprintf(buf,sizeof(buf),"%s/%s%s%s",temp_dir,name,suffix ? "_" : "",
+  tor_snprintf(buf, sizeof(buf), "%s/%s%s%s", temp_dir, name,
+               suffix ? "_" : "",
                suffix ? suffix : "");
   return buf;
 }
@@ -149,7 +150,7 @@ rm_rf(const char *dir)
     SMARTLIST_FOREACH_BEGIN(elements, const char *, cp) {
          char *tmp = NULL;
          tor_asprintf(&tmp, "%s"PATH_SEPARATOR"%s", dir, cp);
-         if (0 == stat(tmp,&st) && (st.st_mode & S_IFDIR)) {
+         if (0 == stat(tmp, &st) && (st.st_mode & S_IFDIR)) {
            rm_rf(tmp);
          } else {
            if (unlink(tmp)) {

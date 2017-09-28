@@ -193,7 +193,7 @@ parse_addr_policy(config_line_t *cfg, smartlist_t **dest,
     smartlist_split_string(entries, cfg->value, ",",
                            SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 0);
     SMARTLIST_FOREACH_BEGIN(entries, const char *, ent) {
-      log_debug(LD_CONFIG,"Adding new entry '%s'",ent);
+      log_debug(LD_CONFIG, "Adding new entry '%s'", ent);
       malformed_list = 0;
       item = router_parse_addr_policy_item_from_string(ent, assume_action,
                                                        &malformed_list);
@@ -1120,7 +1120,8 @@ validate_addr_policies(const or_options_t *options, char **msg)
   smartlist_t *addr_policy=NULL;
   *msg = NULL;
 
-  if (policies_parse_exit_policy_from_options(options,0,NULL,&addr_policy)) {
+  if (policies_parse_exit_policy_from_options(options, 0, NULL,
+                                              &addr_policy)) {
     REJECT("Error in ExitPolicy entry.");
   }
 
@@ -1486,8 +1487,8 @@ compare_unknown_tor_addr_to_addr_policy(uint16_t port,
  * addresses (127.0.0.1, and so on).  But we'll try this for now.
  */
 MOCK_IMPL(addr_policy_result_t,
-compare_tor_addr_to_addr_policy,(const tor_addr_t *addr, uint16_t port,
-                                 const smartlist_t *policy))
+compare_tor_addr_to_addr_policy, (const tor_addr_t *addr, uint16_t port,
+                                  const smartlist_t *policy))
 {
   if (!policy) {
     /* no policy? accept all. */
@@ -1562,7 +1563,7 @@ append_exit_policy_string(smartlist_t **policy, const char *more)
   tmp.value = (char*) more;
   tmp.next = NULL;
   if (parse_addr_policy(&tmp, policy, -1)<0) {
-    log_warn(LD_BUG, "Unable to parse internally generated policy %s",more);
+    log_warn(LD_BUG, "Unable to parse internally generated policy %s", more);
   }
 }
 
@@ -1980,7 +1981,7 @@ policies_parse_exit_policy(config_line_t *cfg, smartlist_t **dest,
   int reject_local_interfaces = (options &
                                  EXIT_POLICY_REJECT_LOCAL_INTERFACES) ? 1 : 0;
 
-  return policies_parse_exit_policy_internal(cfg,dest,ipv6_enabled,
+  return policies_parse_exit_policy_internal(cfg, dest, ipv6_enabled,
                                              reject_private,
                                              configured_addresses,
                                              reject_local_interfaces,
@@ -2714,7 +2715,7 @@ parse_short_policy(const char *summary)
       }
       high = low;
     } else {
-      log_fn(LOG_PROTOCOL_WARN, LD_DIR,"Found bad entry in policy summary %s",
+      log_fn(LOG_PROTOCOL_WARN, LD_DIR, "Found bad entry in policy summary %s",
              escaped(orig_summary));
       return NULL;
     }
@@ -2905,7 +2906,7 @@ policy_dump_to_string(const smartlist_t *policy_list,
     }
 
     pbuf = tor_malloc(POLICY_BUF_LEN);
-    bytes_written_to_pbuf = policy_write_item(pbuf,POLICY_BUF_LEN, tmpe, 1);
+    bytes_written_to_pbuf = policy_write_item(pbuf, POLICY_BUF_LEN, tmpe, 1);
 
     if (bytes_written_to_pbuf < 0) {
       log_warn(LD_BUG, "policy_dump_to_string ran out of room!");
@@ -2913,7 +2914,7 @@ policy_dump_to_string(const smartlist_t *policy_list,
       goto done;
     }
 
-    smartlist_add(policy_string_list,pbuf);
+    smartlist_add(policy_string_list, pbuf);
   } SMARTLIST_FOREACH_END(tmpe);
 
   policy_string = smartlist_join_strings(policy_string_list, "\n", 0, NULL);
@@ -3015,7 +3016,8 @@ getinfo_helper_policies(control_connection_t *conn,
       return -1;
     }
 
-    *answer = router_dump_exit_policy_to_string(me,include_ipv4,include_ipv6);
+    *answer = router_dump_exit_policy_to_string(me, include_ipv4,
+                                                include_ipv6);
   }
   return 0;
 }
@@ -3084,7 +3086,7 @@ policies_free_all(void)
       if (++n > 10)
         break;
       if (policy_write_item(buf, sizeof(buf), (*ent)->policy, 0) >= 0)
-        log_warn(LD_MM,"  %d [%d]: %s", n, (*ent)->policy->refcnt, buf);
+        log_warn(LD_MM, "  %d [%d]: %s", n, (*ent)->policy->refcnt, buf);
     }
   }
   HT_CLEAR(policy_map, &policy_root);

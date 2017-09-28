@@ -320,7 +320,7 @@ rend_add_service(smartlist_t *service_list, rend_service_t *service)
   service->intro_nodes = smartlist_new();
   service->expiring_nodes = smartlist_new();
 
-  log_debug(LD_REND,"Configuring service with directory %s",
+  log_debug(LD_REND, "Configuring service with directory %s",
             rend_service_escaped_dir(service));
   for (i = 0; i < smartlist_len(service->ports); ++i) {
     p = smartlist_get(service->ports, i);
@@ -397,7 +397,8 @@ rend_service_parse_port_config(const char *string, const char *sep,
     err_msg = tor_strdup("Bad syntax in hidden service port configuration.");
     goto err;
   }
-  virtport = (int)tor_parse_long(smartlist_get(sl,0), 10, 1, 65535, NULL,NULL);
+  virtport = (int)tor_parse_long(smartlist_get(sl, 0), 10, 1, 65535, NULL,
+                                 NULL);
   if (!virtport) {
     tor_asprintf(&err_msg, "Missing or invalid port %s in hidden service "
                    "port configuration", escaped(smartlist_get(sl,0)));
@@ -1402,7 +1403,8 @@ rend_service_check_private_dir(const or_options_t *options,
     static int logged_warning = 0;
 
     if (rend_service_poison_new_single_onion_dir(s, options) < 0) {
-      log_warn(LD_GENERAL,"Failed to mark new hidden services as non-anonymous"
+      log_warn(LD_GENERAL,
+               "Failed to mark new hidden services as non-anonymous"
                ".");
       return -1;
     }
@@ -1447,8 +1449,8 @@ rend_service_load_keys(rend_service_t *s)
   /* Create service file */
   fname = rend_service_path(s, hostname_fname);
 
-  tor_snprintf(buf, sizeof(buf),"%s.onion\n", s->service_id);
-  if (write_str_to_file(fname,buf,0)<0) {
+  tor_snprintf(buf, sizeof(buf), "%s.onion\n", s->service_id);
+  if (write_str_to_file(fname, buf, 0)<0) {
     log_warn(LD_CONFIG, "Could not write onion address to hostname file.");
     goto err;
   }
@@ -1456,7 +1458,8 @@ rend_service_load_keys(rend_service_t *s)
   if (s->dir_group_readable) {
     /* Also verify hostname file created with group read. */
     if (chmod(fname, 0640))
-      log_warn(LD_FS,"Unable to make hidden hostname file %s group-readable.",
+      log_warn(LD_FS,
+               "Unable to make hidden hostname file %s group-readable.",
                fname);
   }
 #endif
@@ -1553,16 +1556,16 @@ rend_service_load_auth_keys(rend_service_t *s, const char *hfname)
       /* Create private key for client. */
       crypto_pk_t *prkey = NULL;
       if (!(prkey = crypto_pk_new())) {
-        log_warn(LD_BUG,"Error constructing client key");
+        log_warn(LD_BUG, "Error constructing client key");
         goto err;
       }
       if (crypto_pk_generate_key(prkey)) {
-        log_warn(LD_BUG,"Error generating client key");
+        log_warn(LD_BUG, "Error generating client key");
         crypto_pk_free(prkey);
         goto err;
       }
       if (crypto_pk_check_key(prkey) <= 0) {
-        log_warn(LD_BUG,"Generated client key seems invalid");
+        log_warn(LD_BUG, "Generated client key seems invalid");
         crypto_pk_free(prkey);
         goto err;
       }
@@ -1669,7 +1672,7 @@ static rend_service_t *
 rend_service_get_by_pk_digest(const char* digest)
 {
   SMARTLIST_FOREACH(rend_service_list, rend_service_t*, s,
-                    if (tor_memeq(s->pk_digest,digest,DIGEST_LEN))
+                    if (tor_memeq(s->pk_digest, digest, DIGEST_LEN))
                         return s);
   return NULL;
 }
@@ -1991,7 +1994,7 @@ rend_service_receive_introduction(origin_circuit_t *circuit,
   /* Try DH handshake... */
   dh = crypto_dh_new(DH_TYPE_REND);
   if (!dh || crypto_dh_generate_public(dh)<0) {
-    log_warn(LD_BUG,"Internal error: couldn't build DH state "
+    log_warn(LD_BUG, "Internal error: couldn't build DH state "
              "or generate public key.");
     reason = END_CIRC_REASON_INTERNAL;
     goto err;
@@ -2913,12 +2916,13 @@ rend_service_relaunch_rendezvous(origin_circuit_t *oldcirc)
   tor_assert(oldstate);
 
   if (oldstate->service_pending_final_cpath_ref == NULL) {
-    log_info(LD_REND,"Skipping relaunch of circ that failed on its first hop. "
+    log_info(LD_REND,
+             "Skipping relaunch of circ that failed on its first hop. "
              "Initiator will retry.");
     return;
   }
 
-  log_info(LD_REND,"Reattempting rendezvous circuit to '%s'",
+  log_info(LD_REND, "Reattempting rendezvous circuit to '%s'",
            safe_str(extend_info_describe(oldstate->chosen_exit)));
 
   /* You'd think Single Onion Services would want to retry the rendezvous
@@ -2930,7 +2934,7 @@ rend_service_relaunch_rendezvous(origin_circuit_t *oldcirc)
                             CIRCLAUNCH_NEED_CAPACITY|CIRCLAUNCH_IS_INTERNAL);
 
   if (!newcirc) {
-    log_warn(LD_REND,"Couldn't relaunch rendezvous circuit to '%s'.",
+    log_warn(LD_REND, "Couldn't relaunch rendezvous circuit to '%s'.",
              safe_str(extend_info_describe(oldstate->chosen_exit)));
     return;
   }
@@ -3388,7 +3392,7 @@ rend_service_rendezvous_has_opened(origin_circuit_t *circuit)
   memcpy(buf, rend_cookie, REND_COOKIE_LEN);
   if (crypto_dh_get_public(hop->rend_dh_handshake_state,
                            buf+REND_COOKIE_LEN, DH_KEY_LEN)<0) {
-    log_warn(LD_GENERAL,"Couldn't get DH public key.");
+    log_warn(LD_GENERAL, "Couldn't get DH public key.");
     reason = END_CIRC_REASON_INTERNAL;
     goto err;
   }
@@ -4237,11 +4241,11 @@ rend_service_dump_stats(int severity)
       circ = find_intro_circuit(intro, service->pk_digest);
       if (!circ) {
         tor_log(severity, LD_GENERAL, "  Intro point %d at %s: no circuit",
-            j, safe_name);
+                j, safe_name);
         continue;
       }
       tor_log(severity, LD_GENERAL, "  Intro point %d at %s: circuit is %s",
-          j, safe_name, circuit_state_to_string(circ->base_.state));
+              j, safe_name, circuit_state_to_string(circ->base_.state));
     }
   }
 }
@@ -4262,7 +4266,7 @@ rend_service_set_connection_addr_port(edge_connection_t *conn,
 
   tor_assert(circ->base_.purpose == CIRCUIT_PURPOSE_S_REND_JOINED);
   tor_assert(circ->rend_data);
-  log_debug(LD_REND,"beginning to hunt for addr/port");
+  log_debug(LD_REND, "beginning to hunt for addr/port");
   rend_pk_digest = (char *) rend_data_get_pk_digest(circ->rend_data, NULL);
   base32_encode(serviceid, REND_SERVICE_ID_LEN_BASE32+1,
                 rend_pk_digest, REND_SERVICE_ID_LEN);

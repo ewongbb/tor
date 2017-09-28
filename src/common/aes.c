@@ -303,7 +303,7 @@ aes_set_key(aes_cnt_cipher_t *cipher, const uint8_t *key, int key_bits)
     EVP_EncryptInit(&cipher->key.evp, c, key, NULL);
     cipher->using_evp = 1;
   } else {
-    AES_set_encrypt_key(key, key_bits,&cipher->key.aes);
+    AES_set_encrypt_key(key, key_bits, &cipher->key.aes);
     cipher->using_evp = 0;
   }
 

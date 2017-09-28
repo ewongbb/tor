@@ -678,9 +678,8 @@ networkstatus_vote_find_entry_idx(networkstatus_t *ns,
 /** As router_get_consensus_status_by_descriptor_digest, but does not return
  * a const pointer. */
 MOCK_IMPL(routerstatus_t *,
-router_get_mutable_consensus_status_by_descriptor_digest,(
-                                                 networkstatus_t *consensus,
-                                                 const char *digest))
+router_get_mutable_consensus_status_by_descriptor_digest,
+(networkstatus_t *consensus, const char *digest))
 {
   if (!consensus)
     consensus = networkstatus_get_latest_consensus();
@@ -733,7 +732,7 @@ router_get_descriptor_digests_in_consensus(networkstatus_t *consensus)
 /** Return a smartlist of all router descriptor digests in the current
  * consensus */
 MOCK_IMPL(smartlist_t *,
-router_get_descriptor_digests,(void))
+router_get_descriptor_digests, (void))
 {
   smartlist_t *result = NULL;
 
@@ -748,7 +747,7 @@ router_get_descriptor_digests,(void))
 /** Given the digest of a router descriptor, return its current download
  * status, or NULL if the digest is unrecognized. */
 MOCK_IMPL(download_status_t *,
-router_get_dl_status_by_descriptor_digest,(const char *d))
+router_get_dl_status_by_descriptor_digest, (const char *d))
 {
   routerstatus_t *rs;
   if (!current_ns_consensus)
@@ -1271,7 +1270,7 @@ consensus_is_waiting_for_certs(void)
  * status for this consensus flavor and return a pointer to it.
  */
 MOCK_IMPL(download_status_t *,
-networkstatus_get_dl_status_by_flavor,(consensus_flavor_t flavor))
+networkstatus_get_dl_status_by_flavor, (consensus_flavor_t flavor))
 {
   download_status_t *dl = NULL;
   const int we_are_bootstrapping =
@@ -1288,7 +1287,7 @@ networkstatus_get_dl_status_by_flavor,(consensus_flavor_t flavor))
 /** Look up the bootstrap download status for this consensus flavor
  * and return a pointer to it. */
 MOCK_IMPL(download_status_t *,
-networkstatus_get_dl_status_by_flavor_bootstrap,(consensus_flavor_t flavor))
+networkstatus_get_dl_status_by_flavor_bootstrap, (consensus_flavor_t flavor))
 {
   download_status_t *dl = NULL;
 
@@ -1302,7 +1301,7 @@ networkstatus_get_dl_status_by_flavor_bootstrap,(consensus_flavor_t flavor))
 /** Look up the running (non-bootstrap) download status for this consensus
  * flavor and return a pointer to it. */
 MOCK_IMPL(download_status_t *,
-networkstatus_get_dl_status_by_flavor_running,(consensus_flavor_t flavor))
+networkstatus_get_dl_status_by_flavor_running, (consensus_flavor_t flavor))
 {
   download_status_t *dl = NULL;
 
@@ -1316,7 +1315,7 @@ networkstatus_get_dl_status_by_flavor_running,(consensus_flavor_t flavor))
 /** Return the most recent consensus that we have downloaded, or NULL if we
  * don't have one. */
 MOCK_IMPL(networkstatus_t *,
-networkstatus_get_latest_consensus,(void))
+networkstatus_get_latest_consensus, (void))
 {
   if (we_use_microdescriptors_for_circuits(get_options()))
     return current_md_consensus;
@@ -1327,7 +1326,7 @@ networkstatus_get_latest_consensus,(void))
 /** Return the latest consensus we have whose flavor matches <b>f</b>, or NULL
  * if we don't have one. */
 MOCK_IMPL(networkstatus_t *,
-networkstatus_get_latest_consensus_by_flavor,(consensus_flavor_t f))
+networkstatus_get_latest_consensus_by_flavor, (consensus_flavor_t f))
 {
   if (f == FLAV_NS)
     return current_ns_consensus;
@@ -1342,7 +1341,7 @@ networkstatus_get_latest_consensus_by_flavor,(consensus_flavor_t f))
 /** Return the most recent consensus that we have downloaded, or NULL if it is
  * no longer live. */
 MOCK_IMPL(networkstatus_t *,
-networkstatus_get_live_consensus,(time_t now))
+networkstatus_get_live_consensus, (time_t now))
 {
   networkstatus_t *ns = networkstatus_get_latest_consensus();
   if (ns && networkstatus_is_live(ns, now))
@@ -1412,7 +1411,7 @@ networkstatus_get_reasonably_live_consensus(time_t now, int flavor)
  * the cert downloads. After that, a new consensus will be fetched from a
  * randomly chosen fallback. */
 MOCK_IMPL(int,
-networkstatus_consensus_is_bootstrapping,(time_t now))
+networkstatus_consensus_is_bootstrapping, (time_t now))
 {
   /* If we have a validated, reasonably live consensus, we're not
    * bootstrapping a consensus at all. */
@@ -1448,7 +1447,8 @@ networkstatus_consensus_can_use_multiple_directories(
  * If we have fallbacks and don't want to fetch from the authorities,
  * we can use them. */
 MOCK_IMPL(int,
-networkstatus_consensus_can_use_extra_fallbacks,(const or_options_t *options))
+networkstatus_consensus_can_use_extra_fallbacks,
+(const or_options_t *options))
 {
   /* The list length comparisons are a quick way to check if we have any
    * non-authority fallback directories. If we ever have any authorities that
@@ -1583,7 +1583,8 @@ networkstatus_copy_old_consensus_info(networkstatus_t *new_c,
     if (tor_memeq(rs_old->descriptor_digest, rs_new->descriptor_digest,
                   DIGEST256_LEN)) {
       /* And the same descriptor too! */
-      memcpy(&rs_new->dl_status, &rs_old->dl_status,sizeof(download_status_t));
+      memcpy(&rs_new->dl_status, &rs_old->dl_status,
+             sizeof(download_status_t));
     }
   } SMARTLIST_FOREACH_JOIN_END(rs_old, rs_new);
 }
@@ -2262,7 +2263,7 @@ networkstatus_dump_bridge_status_to_file(time_t now)
                status);
   tor_asprintf(&fname, "%s"PATH_SEPARATOR"networkstatus-bridges",
                options->DataDirectory);
-  write_str_to_file(fname,published_thresholds_and_status,0);
+  write_str_to_file(fname, published_thresholds_and_status, 0);
   tor_free(thresholds);
   tor_free(published_thresholds_and_status);
   tor_free(fname);

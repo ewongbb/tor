@@ -152,7 +152,7 @@ tor_malloc_(size_t size DMALLOC_PARAMS)
 
   if (PREDICT_UNLIKELY(result == NULL)) {
     /* LCOV_EXCL_START */
-    log_err(LD_MM,"Out of memory on malloc(). Dying.");
+    log_err(LD_MM, "Out of memory on malloc(). Dying.");
     /* If these functions die within a worker process, they won't call
      * spawn_exit, but that's ok, since the parent will run out of memory soon
      * anyway. */
@@ -243,7 +243,7 @@ tor_realloc_(void *ptr, size_t size DMALLOC_PARAMS)
 
   if (PREDICT_UNLIKELY(result == NULL)) {
     /* LCOV_EXCL_START */
-    log_err(LD_MM,"Out of memory on realloc(). Dying.");
+    log_err(LD_MM, "Out of memory on realloc(). Dying.");
     exit(1);
     /* LCOV_EXCL_STOP */
   }
@@ -281,7 +281,7 @@ tor_strdup_(const char *s DMALLOC_PARAMS)
 #endif
   if (PREDICT_UNLIKELY(duplicate == NULL)) {
     /* LCOV_EXCL_START */
-    log_err(LD_MM,"Out of memory on strdup(). Dying.");
+    log_err(LD_MM, "Out of memory on strdup(). Dying.");
     exit(1);
     /* LCOV_EXCL_STOP */
   }
@@ -553,7 +553,7 @@ add_laplace_noise(int64_t signal_, double random_, double delta_f,
 {
   int64_t noise;
 
-  /* epsilon MUST be between ]0.0, 1.0] */
+  /* epsilon MUST be between [0.0, 1.0] */
   tor_assert(epsilon > 0.0 && epsilon <= 1.0);
   /* delta_f MUST be greater than 0. */
   tor_assert(delta_f > 0.0);
@@ -652,7 +652,7 @@ hex_str(const char *from, size_t fromlen)
   static char buf[65];
   if (fromlen>(sizeof(buf)-1)/2)
     fromlen = (sizeof(buf)-1)/2;
-  base16_encode(buf,sizeof(buf),from,fromlen);
+  base16_encode(buf, sizeof(buf), from, fromlen);
   return buf;
 }
 
@@ -777,7 +777,7 @@ strcmpend(const char *s1, const char *s2)
 {
   size_t n1 = strlen(s1), n2 = strlen(s2);
   if (n2>n1)
-    return strcmp(s1,s2);
+    return strcmp(s1, s2);
   else
     return strncmp(s1+(n1-n2), s2, n2);
 }
@@ -790,7 +790,7 @@ strcasecmpend(const char *s1, const char *s2)
 {
   size_t n1 = strlen(s1), n2 = strlen(s2);
   if (n2>n1) /* then they can't be the same; figure out which is bigger */
-    return strcasecmp(s1,s2);
+    return strcasecmp(s1, s2);
   else
     return strncasecmp(s1+(n1-n2), s2, n2);
 }
@@ -989,7 +989,9 @@ int
 tor_mem_is_zero(const char *mem, size_t len)
 {
   static const char ZERO[] = {
-    0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
   };
   while (len >= sizeof(ZERO)) {
     /* It's safe to use fast_memcmp here, since the very worst thing an
@@ -1011,7 +1013,7 @@ int
 tor_digest_is_zero(const char *digest)
 {
   static const uint8_t ZERO_DIGEST[] = {
-    0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   };
   return tor_memeq(digest, ZERO_DIGEST, DIGEST_LEN);
 }
@@ -1057,7 +1059,7 @@ string_is_valid_ipv4_address(const char *string)
 {
   struct in_addr addr;
 
-  return (tor_inet_pton(AF_INET,string,&addr) == 1);
+  return (tor_inet_pton(AF_INET, string, &addr) == 1);
 }
 
 /** Return true if <b>string</b> represents a valid IPv6 address in
@@ -1068,7 +1070,7 @@ string_is_valid_ipv6_address(const char *string)
 {
   struct in6_addr addr;
 
-  return (tor_inet_pton(AF_INET6,string,&addr) == 1);
+  return (tor_inet_pton(AF_INET6, string, &addr) == 1);
 }
 
 /** Return true iff <b>string</b> matches a pattern of DNS names
@@ -1085,7 +1087,7 @@ string_is_valid_hostname(const char *string)
 
   components = smartlist_new();
 
-  smartlist_split_string(components,string,".",0,0);
+  smartlist_split_string(components, string, ".", 0, 0);
 
   SMARTLIST_FOREACH_BEGIN(components, char *, c) {
     if ((c[0] == '-') || (*c == '_')) {
@@ -1617,7 +1619,7 @@ tor_timegm(const struct tm *tm, time_t *time_out)
     log_warn(LD_BUG, "Out-of-range argument to tor_timegm");
     return -1;
   }
-  days = 365 * (year-1970) + n_leapdays(1970,(int)year);
+  days = 365 * (year-1970) + n_leapdays(1970, (int)year);
   for (i = 0; i < tm->tm_mon; ++i)
     days += days_per_month[i];
   if (tm->tm_mon > 1 && IS_LEAPYEAR(year))
@@ -2153,7 +2155,7 @@ clean_name_for_stat(char *name)
  */
 
 MOCK_IMPL(int,
-tor_unlink,(const char *pathname))
+tor_unlink, (const char *pathname))
 {
   return unlink(pathname);
 }
@@ -2224,8 +2226,8 @@ file_status(const char *fname)
  * and its primary group.
  */
 MOCK_IMPL(int,
-check_private_dir,(const char *dirname, cpd_check_t check,
-                   const char *effective_user))
+check_private_dir, (const char *dirname, cpd_check_t check,
+                    const char *effective_user))
 {
   int r;
   struct stat st;
@@ -2459,7 +2461,7 @@ check_private_dir,(const char *dirname, cpd_check_t check,
  * with mode 0600.
  */
 MOCK_IMPL(int,
-write_str_to_file,(const char *fname, const char *str, int bin))
+write_str_to_file, (const char *fname, const char *str, int bin))
 {
 #ifdef _WIN32
   if (!bin && strchr(str, '\r')) {
@@ -2729,8 +2731,8 @@ write_bytes_to_file_impl(const char *fname, const char *str, size_t len,
 /** As write_str_to_file, but does not assume a NUL-terminated
  * string. Instead, we write <b>len</b> bytes, starting at <b>str</b>. */
 MOCK_IMPL(int,
-write_bytes_to_file,(const char *fname, const char *str, size_t len,
-                     int bin))
+write_bytes_to_file, (const char *fname, const char *str, size_t len,
+                      int bin))
 {
   return write_bytes_to_file_impl(fname, str, len,
                                   OPEN_FLAGS_REPLACE|(bin?O_BINARY:O_TEXT));
@@ -2830,13 +2832,13 @@ read_file_to_str, (const char *filename, int flags, struct stat *stat_out))
 
   tor_assert(filename);
 
-  fd = tor_open_cloexec(filename,O_RDONLY|(bin?O_BINARY:O_TEXT),0);
+  fd = tor_open_cloexec(filename, O_RDONLY|(bin?O_BINARY:O_TEXT), 0);
   if (fd<0) {
     int severity = LOG_WARN;
     int save_errno = errno;
     if (errno == ENOENT && (flags & RFTS_IGNORE_MISSING))
       severity = LOG_INFO;
-    log_fn(severity, LD_FS,"Could not open \"%s\": %s",filename,
+    log_fn(severity, LD_FS, "Could not open \"%s\": %s", filename,
            strerror(errno));
     errno = save_errno;
     return NULL;
@@ -2845,7 +2847,7 @@ read_file_to_str, (const char *filename, int flags, struct stat *stat_out))
   if (fstat(fd, &statbuf)<0) {
     int save_errno = errno;
     close(fd);
-    log_warn(LD_FS,"Could not fstat \"%s\".",filename);
+    log_warn(LD_FS, "Could not fstat \"%s\".", filename);
     errno = save_errno;
     return NULL;
   }
@@ -2877,10 +2879,10 @@ read_file_to_str, (const char *filename, int flags, struct stat *stat_out))
 
   string = tor_malloc((size_t)(statbuf.st_size+1));
 
-  r = read_all(fd,string,(size_t)statbuf.st_size,0);
+  r = read_all(fd, string, (size_t)statbuf.st_size, 0);
   if (r<0) {
     int save_errno = errno;
-    log_warn(LD_FS,"Error reading from file \"%s\": %s", filename,
+    log_warn(LD_FS, "Error reading from file \"%s\": %s", filename,
              strerror(errno));
     tor_free(string);
     close(fd);
@@ -2905,8 +2907,8 @@ read_file_to_str, (const char *filename, int flags, struct stat *stat_out))
       /* Unless we're using text mode on win32, we'd better have an exact
        * match for size. */
       int save_errno = errno;
-      log_warn(LD_FS,"Could read only %d of %ld bytes of file \"%s\".",
-               (int)r, (long)statbuf.st_size,filename);
+      log_warn(LD_FS, "Could read only %d of %ld bytes of file \"%s\".",
+               (int)r, (long)statbuf.st_size, filename);
       tor_free(string);
       close(fd);
       errno = save_errno;
@@ -3104,11 +3106,11 @@ expand_filename(const char *filename)
       char *username, *slash;
       slash = strchr(filename, '/');
       if (slash)
-        username = tor_strndup(filename+1,slash-filename-1);
+        username = tor_strndup(filename+1, slash-filename-1);
       else
         username = tor_strdup(filename+1);
       if (!(home = get_user_homedir(username))) {
-        log_warn(LD_CONFIG,"Couldn't get homedir for \"%s\"",username);
+        log_warn(LD_CONFIG, "Couldn't get homedir for \"%s\"", username);
         tor_free(username);
         return NULL;
       }
@@ -3121,10 +3123,10 @@ expand_filename(const char *filename)
     }
     tor_assert(home);
     /* Remove trailing slash. */
-    if (strlen(home)>1 && !strcmpend(home,PATH_SEPARATOR)) {
+    if (strlen(home)>1 && !strcmpend(home, PATH_SEPARATOR)) {
       home[strlen(home)-1] = '\0';
     }
-    tor_asprintf(&result,"%s"PATH_SEPARATOR"%s",home,rest);
+    tor_asprintf(&result, "%s"PATH_SEPARATOR"%s", home, rest);
     tor_free(home);
     return result;
   } else {
@@ -3484,7 +3486,7 @@ tor_listdir, (const char *dirname))
   WIN32_FIND_DATA findData;
   tor_asprintf(&pattern, "%s\\*", dirname);
 #ifdef UNICODE
-  mbstowcs(tpattern,pattern,MAX_PATH);
+  mbstowcs(tpattern, pattern, MAX_PATH);
 #else
   strlcpy(tpattern, pattern, MAX_PATH);
 #endif
@@ -3495,10 +3497,10 @@ tor_listdir, (const char *dirname))
   result = smartlist_new();
   while (1) {
 #ifdef UNICODE
-    wcstombs(name,findData.cFileName,MAX_PATH);
+    wcstombs(name, findData.cFileName, MAX_PATH);
     name[sizeof(name)-1] = '\0';
 #else
-    strlcpy(name,findData.cFileName,sizeof(name));
+    strlcpy(name, findData.cFileName, sizeof(name));
 #endif
     if (strcmp(name, ".") &&
         strcmp(name, "..")) {
@@ -3581,14 +3583,15 @@ start_daemon(void)
 
   if (pipe(daemon_filedes)) {
     /* LCOV_EXCL_START */
-    log_err(LD_GENERAL,"pipe failed; exiting. Error was %s", strerror(errno));
+    log_err(LD_GENERAL, "pipe failed; exiting. Error was %s",
+            strerror(errno));
     exit(1);
     /* LCOV_EXCL_STOP */
   }
   pid = fork();
   if (pid < 0) {
     /* LCOV_EXCL_START */
-    log_err(LD_GENERAL,"fork failed. Exiting.");
+    log_err(LD_GENERAL, "fork failed. Exiting.");
     exit(1);
     /* LCOV_EXCL_STOP */
   }
@@ -3646,14 +3649,15 @@ finish_daemon(const char *desired_cwd)
     desired_cwd = "/";
    /* Don't hold the wrong FS mounted */
   if (chdir(desired_cwd) < 0) {
-    log_err(LD_GENERAL,"chdir to \"%s\" failed. Exiting.",desired_cwd);
+    log_err(LD_GENERAL, "chdir to \"%s\" failed. Exiting.",
+            desired_cwd);
     exit(1);
   }
 
   nullfd = tor_open_cloexec("/dev/null", O_RDWR, 0);
   if (nullfd < 0) {
     /* LCOV_EXCL_START */
-    log_err(LD_GENERAL,"/dev/null can't be opened. Exiting.");
+    log_err(LD_GENERAL, "/dev/null can't be opened. Exiting.");
     exit(1);
     /* LCOV_EXCL_STOP */
   }
@@ -3665,7 +3669,7 @@ finish_daemon(const char *desired_cwd)
       dup2(nullfd,1) < 0 ||
       dup2(nullfd,2) < 0) {
     /* LCOV_EXCL_START */
-    log_err(LD_GENERAL,"dup2 failed. Exiting.");
+    log_err(LD_GENERAL, "dup2 failed. Exiting.");
     exit(1);
     /* LCOV_EXCL_STOP */
   }
@@ -3673,7 +3677,7 @@ finish_daemon(const char *desired_cwd)
     close(nullfd);
   /* signal success */
   if (write(daemon_filedes[1], &c, sizeof(char)) != sizeof(char)) {
-    log_err(LD_GENERAL,"write failed. Exiting.");
+    log_err(LD_GENERAL, "write failed. Exiting.");
   }
   close(daemon_filedes[1]);
 }
@@ -4543,8 +4547,8 @@ tor_spawn_background(const char *const filename, const char **argv,
  *  If <b>also_terminate_process</b> is true, also terminate the
  *  process of the process handle. */
 MOCK_IMPL(void,
-tor_process_handle_destroy,(process_handle_t *process_handle,
-                            int also_terminate_process))
+tor_process_handle_destroy, (process_handle_t *process_handle,
+                             int also_terminate_process))
 {
   if (!process_handle)
     return;

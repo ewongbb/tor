@@ -572,12 +572,9 @@ dir_consensus_request_set_additional_headers(directory_request_t *req,
  * or router_pick_trusteddirserver().
  */
 MOCK_IMPL(void,
-directory_get_from_dirserver,(
-                            uint8_t dir_purpose,
-                            uint8_t router_purpose,
-                            const char *resource,
-                            int pds_flags,
-                            download_want_authority_t want_authority))
+directory_get_from_dirserver,
+(uint8_t dir_purpose, uint8_t router_purpose, const char *resource,
+int pds_flags, download_want_authority_t want_authority))
 {
   const routerstatus_t *rs = NULL;
   const or_options_t *options = get_options();
@@ -835,7 +832,7 @@ static int
 directory_conn_is_self_reachability_test(dir_connection_t *conn)
 {
   if (conn->requested_resource &&
-      !strcmpstart(conn->requested_resource,"authority")) {
+      !strcmpstart(conn->requested_resource, "authority")) {
     const routerinfo_t *me = router_get_my_routerinfo();
     if (me &&
         router_digest_is_me(conn->identity_digest) &&
@@ -939,7 +936,8 @@ connection_dir_bridge_routerdesc_failed(dir_connection_t *conn)
 
   /* Requests for bridge descriptors are in the form 'fp/', so ignore
      anything else. */
-  if (!conn->requested_resource || strcmpstart(conn->requested_resource,"fp/"))
+  if (!conn->requested_resource || strcmpstart(conn->requested_resource,
+                                               "fp/"))
     return;
 
   which = smartlist_new();
@@ -1407,7 +1405,7 @@ directory_request_set_dir_from_routerstatus(directory_request_t *req)
  * After this function is called, you can free <b>request</b>.
  */
 MOCK_IMPL(void,
-directory_initiate_request,(directory_request_t *request))
+directory_initiate_request, (directory_request_t *request))
 {
   tor_assert(request);
   if (request->routerstatus) {
@@ -1591,13 +1589,13 @@ directory_initiate_request,(directory_request_t *request))
                               SESSION_GROUP_DIRCONN, iso_flags,
                               use_begindir, !anonymized_connection);
     if (!linked_conn) {
-      log_warn(LD_NET,"Making tunnel to dirserver failed.");
+      log_warn(LD_NET, "Making tunnel to dirserver failed.");
       connection_mark_for_close(TO_CONN(conn));
       return;
     }
 
     if (connection_add(TO_CONN(conn)) < 0) {
-      log_warn(LD_NET,"Unable to add connection for link to dirserver.");
+      log_warn(LD_NET, "Unable to add connection for link to dirserver.");
       connection_mark_for_close(TO_CONN(conn));
       return;
     }
@@ -1771,7 +1769,8 @@ directory_send_command(dir_connection_t *conn,
     char *base64_authenticator=NULL;
     const char *authenticator = get_options()->HTTPProxyAuthenticator;
 
-    tor_snprintf(proxystring, sizeof(proxystring),"http://%s", hoststring);
+    tor_snprintf(proxystring, sizeof(proxystring), "http://%s",
+                 hoststring);
     if (authenticator) {
       base64_authenticator = alloc_http_authenticator(authenticator);
       if (!base64_authenticator)
@@ -1779,8 +1778,8 @@ directory_send_command(dir_connection_t *conn,
     }
     if (base64_authenticator) {
       smartlist_add_asprintf(headers,
-                   "Proxy-Authorization: Basic %s\r\n",
-                   base64_authenticator);
+                            "Proxy-Authorization: Basic %s\r\n",
+                            base64_authenticator);
       tor_free(base64_authenticator);
     }
   } else {
@@ -1920,7 +1919,7 @@ directory_send_command(dir_connection_t *conn,
 
   if (!strcmp(httpcommand, "POST") || payload) {
     smartlist_add_asprintf(headers, "Content-Length: %lu\r\n",
-                 payload ? (unsigned long)payload_len : 0);
+                           payload ? (unsigned long)payload_len : 0);
   }
 
   {
@@ -2004,14 +2003,14 @@ parse_http_command(const char *headers, char **command_out, char **url_out)
   if (!*s) return -1;
 
   /* tolerate the http[s] proxy style of putting the hostname in the url */
-  if (s-start >= 4 && !strcmpstart(start,"http")) {
+  if (s-start >= 4 && !strcmpstart(start, "http")) {
     tmp = start + 4;
     if (*tmp == 's')
       tmp++;
-    if (s-tmp >= 3 && !strcmpstart(tmp,"://")) {
+    if (s-tmp >= 3 && !strcmpstart(tmp, "://")) {
       tmp = strchr(tmp+3, '/');
       if (tmp && tmp < s) {
-        log_debug(LD_DIR,"Skipping over 'http[s]://hostname/' string");
+        log_debug(LD_DIR, "Skipping over 'http[s]://hostname/' string");
         start = tmp;
       }
     }
@@ -2047,7 +2046,7 @@ http_get_header(const char *headers, const char *which)
     if (!strcasecmpstart(cp, which)) {
       char *eos;
       cp += strlen(which);
-      if ((eos = strchr(cp,'\r')))
+      if ((eos = strchr(cp, '\r')))
         return tor_strndup(cp, eos-cp);
       else
         return tor_strdup(cp);
@@ -2072,8 +2071,8 @@ http_set_address_origin(const char *headers, connection_t *conn)
     fwd = http_get_header(headers, "X-Forwarded-For: ");
   if (fwd) {
     tor_addr_t toraddr;
-    if (tor_addr_parse(&toraddr,fwd) == -1 ||
-        tor_addr_is_internal(&toraddr,0)) {
+    if (tor_addr_parse(&toraddr, fwd) == -1 ||
+        tor_addr_is_internal(&toraddr, 0)) {
       log_debug(LD_DIR, "Ignoring local/internal IP %s", escaped(fwd));
       tor_free(fwd);
       return;
@@ -2116,7 +2115,7 @@ parse_http_response(const char *headers, int *code, time_t *date,
   if (tor_sscanf(headers, "HTTP/1.%u %u", &n1, &n2) < 2 ||
       (n1 != 0 && n1 != 1) ||
       (n2 < 100 || n2 >= 600)) {
-    log_warn(LD_HTTP,"Failed to parse header %s",escaped(headers));
+    log_warn(LD_HTTP, "Failed to parse header %s", escaped(headers));
     return -1;
   }
   *code = n2;
@@ -2185,11 +2184,11 @@ body_is_plausible(const char *body, size_t len, int purpose)
   if (len < 32)
     return 0;
   if (purpose == DIR_PURPOSE_FETCH_MICRODESC) {
-    return (!strcmpstart(body,"onion-key"));
+    return (!strcmpstart(body, "onion-key"));
   }
 
-  if (!strcmpstart(body,"router") ||
-      !strcmpstart(body,"network-status"))
+  if (!strcmpstart(body, "router") ||
+      !strcmpstart(body, "network-status"))
     return 1;
   for (i=0;i<32;++i) {
     if (!TOR_ISPRINT(body[i]) && !TOR_ISSPACE(body[i]))
@@ -2413,9 +2412,10 @@ connection_dir_client_reached_eof(dir_connection_t *conn)
   received_bytes = connection_get_inbuf_len(TO_CONN(conn));
 
   switch (connection_fetch_from_buf_http(TO_CONN(conn),
-                              &headers, MAX_HEADERS_SIZE,
-                              &body, &body_len, MAX_DIR_DL_SIZE,
-                              allow_partial)) {
+                                         &headers, MAX_HEADERS_SIZE,
+                                         &body, &body_len,
+                                         MAX_DIR_DL_SIZE,
+                                         allow_partial)) {
     case -1: /* overflow */
       log_warn(LD_PROTOCOL,
                "'fetch' response too large (server '%s:%d'). Closing.",
@@ -2430,7 +2430,7 @@ connection_dir_client_reached_eof(dir_connection_t *conn)
 
   if (parse_http_response(headers, &status_code, &date_header,
                           &compression, &reason) < 0) {
-    log_warn(LD_HTTP,"Unparseable headers (server '%s:%d'). Closing.",
+    log_warn(LD_HTTP, "Unparseable headers (server '%s:%d'). Closing.",
              conn->base_.address, conn->base_.port);
 
     rv = -1;
@@ -2498,7 +2498,7 @@ connection_dir_client_reached_eof(dir_connection_t *conn)
     routerstatus_t *rs;
     dir_server_t *ds;
     const char *id_digest = conn->identity_digest;
-    log_info(LD_DIR,"Received http status code %d (%s) from server "
+    log_info(LD_DIR, "Received http status code %d (%s) from server "
              "'%s:%d'. I'll try again soon.",
              status_code, escaped(reason), conn->base_.address,
              conn->base_.port);
@@ -2626,7 +2626,8 @@ handle_response_fetch_consensus(dir_connection_t *conn,
     }
     if (!consensus_body) {
       log_warn(LD_DIR, "Received a consensus diff, but we can't find "
-               "any %s-flavored consensus in our current cache.",flavname);
+               "any %s-flavored consensus in our current cache.",
+               flavname);
       networkstatus_consensus_download_failed(0, flavname);
       // XXXX if this happens too much, see below
       return -1;
@@ -2649,7 +2650,8 @@ handle_response_fetch_consensus(dir_connection_t *conn,
     consensus = new_consensus;
     sourcename = "generated based on a diff";
   } else {
-    log_info(LD_DIR,"Received consensus directory (body size %d) from server "
+    log_info(LD_DIR,
+             "Received consensus directory (body size %d) from server "
              "'%s:%d'", (int)body_len, conn->base_.address, conn->base_.port);
     consensus = body;
     sourcename = "downloaded";
@@ -2707,7 +2709,7 @@ handle_response_fetch_certificate(dir_connection_t *conn,
     connection_dir_download_cert_failed(conn, status_code);
     return -1;
   }
-  log_info(LD_DIR,"Received authority certificates (body size %d) from "
+  log_info(LD_DIR, "Received authority certificates (body size %d) from "
            "server '%s:%d'",
            (int)body_len, conn->base_.address, conn->base_.port);
 
@@ -2760,7 +2762,7 @@ handle_response_fetch_status_vote(dir_connection_t *conn,
 
   const char *msg;
   int st;
-  log_info(LD_DIR,"Got votes (body size %d) from server %s:%d",
+  log_info(LD_DIR, "Got votes (body size %d) from server %s:%d",
            (int)body_len, conn->base_.address, conn->base_.port);
   if (status_code != 200) {
     log_warn(LD_DIR,
@@ -2795,7 +2797,8 @@ handle_response_fetch_detached_signatures(dir_connection_t *conn,
   const size_t body_len = args->body_len;
 
   const char *msg = NULL;
-  log_info(LD_DIR,"Got detached signatures (body size %d) from server %s:%d",
+  log_info(LD_DIR,
+           "Got detached signatures (body size %d) from server %s:%d",
            (int)body_len, conn->base_.address, conn->base_.port);
   if (status_code != 200) {
     log_warn(LD_DIR,
@@ -2832,13 +2835,13 @@ handle_response_fetch_desc(dir_connection_t *conn,
   smartlist_t *which = NULL;
   int n_asked_for = 0;
   int descriptor_digests = conn->requested_resource &&
-    !strcmpstart(conn->requested_resource,"d/");
-  log_info(LD_DIR,"Received %s (body size %d) from server '%s:%d'",
+    !strcmpstart(conn->requested_resource, "d/");
+  log_info(LD_DIR, "Received %s (body size %d) from server '%s:%d'",
            was_ei ? "extra server info" : "server info",
            (int)body_len, conn->base_.address, conn->base_.port);
   if (conn->requested_resource &&
-      (!strcmpstart(conn->requested_resource,"d/") ||
-       !strcmpstart(conn->requested_resource,"fp/"))) {
+      (!strcmpstart(conn->requested_resource, "d/") ||
+       !strcmpstart(conn->requested_resource, "fp/"))) {
     which = smartlist_new();
     dir_split_resource_into_fingerprints(conn->requested_resource +
                                          (descriptor_digests ? 2 : 3),
@@ -2927,7 +2930,7 @@ handle_response_fetch_microdesc(dir_connection_t *conn,
   const size_t body_len = args->body_len;
 
   smartlist_t *which = NULL;
-  log_info(LD_DIR,"Received answer to microdescriptor request (status %d, "
+  log_info(LD_DIR, "Received answer to microdescriptor request (status %d, "
            "body size %d) from server '%s:%d'",
            status_code, (int)body_len, conn->base_.address,
            conn->base_.port);
@@ -3004,7 +3007,7 @@ handle_response_upload_dir(dir_connection_t *conn,
       }
       tor_free(rejected_hdr);
     }
-    log_info(LD_GENERAL,"eof (status 200) after uploading server "
+    log_info(LD_GENERAL, "eof (status 200) after uploading server "
              "descriptor: finished.");
     control_event_server_status(
                    LOG_NOTICE, "ACCEPTED_SERVER_DESCRIPTOR DIRAUTH=%s:%d",
@@ -3016,7 +3019,7 @@ handle_response_upload_dir(dir_connection_t *conn,
   }
     break;
   case 400:
-    log_warn(LD_GENERAL,"http status 400 (%s) response from "
+    log_warn(LD_GENERAL, "http status 400 (%s) response from "
              "dirserver '%s:%d'. Please correct.",
              escaped(reason), conn->base_.address, conn->base_.port);
     control_event_server_status(LOG_WARN,
@@ -3052,12 +3055,12 @@ handle_response_upload_vote(dir_connection_t *conn,
 
   switch (status_code) {
   case 200: {
-    log_notice(LD_DIR,"Uploaded a vote to dirserver %s:%d",
+    log_notice(LD_DIR, "Uploaded a vote to dirserver %s:%d",
                conn->base_.address, conn->base_.port);
   }
     break;
   case 400:
-    log_warn(LD_DIR,"http status 400 (%s) response after uploading "
+    log_warn(LD_DIR, "http status 400 (%s) response after uploading "
              "vote to dirserver '%s:%d'. Please correct.",
              escaped(reason), conn->base_.address, conn->base_.port);
     break;
@@ -3088,12 +3091,12 @@ handle_response_upload_signatures(dir_connection_t *conn,
 
   switch (status_code) {
   case 200: {
-    log_notice(LD_DIR,"Uploaded signature(s) to dirserver %s:%d",
+    log_notice(LD_DIR, "Uploaded signature(s) to dirserver %s:%d",
                conn->base_.address, conn->base_.port);
   }
     break;
   case 400:
-    log_warn(LD_DIR,"http status 400 (%s) response after uploading "
+    log_warn(LD_DIR, "http status 400 (%s) response after uploading "
              "signatures to dirserver '%s:%d'. Please correct.",
              escaped(reason), conn->base_.address, conn->base_.port);
     break;
@@ -3126,7 +3129,7 @@ handle_response_fetch_hsdesc_v3(dir_connection_t *conn,
 
   tor_assert(conn->hs_ident);
 
-  log_info(LD_REND,"Received v3 hsdesc (body size %d, status %d (%s))",
+  log_info(LD_REND, "Received v3 hsdesc (body size %d, status %d (%s))",
            (int)body_len, status_code, escaped(reason));
 
   switch (status_code) {
@@ -3191,7 +3194,7 @@ handle_response_fetch_renddesc_v2(dir_connection_t *conn,
                                 NULL))
 
   tor_assert(conn->rend_data);
-  log_info(LD_REND,"Received rendezvous descriptor (body size %d, status %d "
+  log_info(LD_REND, "Received rendezvous descriptor (body size %d, status %d "
            "(%s))",
            (int)body_len, status_code, escaped(reason));
   switch (status_code) {
@@ -3202,7 +3205,7 @@ handle_response_fetch_renddesc_v2(dir_connection_t *conn,
       if (rend_cache_store_v2_desc_as_client(body,
                                              conn->requested_resource,
                                              conn->rend_data, &entry) < 0) {
-        log_warn(LD_REND,"Fetching v2 rendezvous descriptor failed. "
+        log_warn(LD_REND, "Fetching v2 rendezvous descriptor failed. "
                  "Retrying at another directory.");
         /* We'll retry when connection_about_to_close_connection()
          * cleans this dir conn up. */
@@ -3233,7 +3236,7 @@ handle_response_fetch_renddesc_v2(dir_connection_t *conn,
   case 404:
     /* Not there. We'll retry when
      * connection_about_to_close_connection() cleans this conn up. */
-    log_info(LD_REND,"Fetching v2 rendezvous descriptor failed: "
+    log_info(LD_REND, "Fetching v2 rendezvous descriptor failed: "
              "Retrying at another directory.");
     SEND_HS_DESC_FAILED_EVENT("NOT_FOUND");
     SEND_HS_DESC_FAILED_CONTENT();
@@ -3279,7 +3282,7 @@ handle_response_upload_renddesc_v2(dir_connection_t *conn,
                                 rend_data_get_address(conn->rend_data), \
                                 reason))
 
-  log_info(LD_REND,"Uploaded rendezvous descriptor (status %d "
+  log_info(LD_REND, "Uploaded rendezvous descriptor (status %d "
            "(%s))",
            status_code, escaped(reason));
   /* Without the rend data, we'll have a problem identifying what has been
@@ -3295,13 +3298,13 @@ handle_response_upload_renddesc_v2(dir_connection_t *conn,
     rend_service_desc_has_uploaded(conn->rend_data);
     break;
   case 400:
-    log_warn(LD_REND,"http status 400 (%s) response from dirserver "
+    log_warn(LD_REND, "http status 400 (%s) response from dirserver "
              "'%s:%d'. Malformed rendezvous descriptor?",
              escaped(reason), conn->base_.address, conn->base_.port);
     SEND_HS_DESC_UPLOAD_FAILED_EVENT("UPLOAD_REJECTED");
     break;
   default:
-    log_warn(LD_REND,"http status %d (%s) response unexpected (server "
+    log_warn(LD_REND, "http status %d (%s) response unexpected (server "
              "'%s:%d').",
              status_code, escaped(reason), conn->base_.address,
              conn->base_.port);
@@ -3364,7 +3367,7 @@ connection_dir_reached_eof(dir_connection_t *conn)
 {
   int retval;
   if (conn->base_.state != DIR_CONN_STATE_CLIENT_READING) {
-    log_info(LD_HTTP,"conn reached eof, not reading. [state=%d] Closing.",
+    log_info(LD_HTTP, "conn reached eof, not reading. [state=%d] Closing.",
              conn->base_.state);
     connection_close_immediate(TO_CONN(conn)); /* error: give up on flushing */
     connection_mark_for_close(TO_CONN(conn));
@@ -3425,7 +3428,7 @@ connection_dir_process_inbuf(dir_connection_t *conn)
   }
 
   if (!conn->base_.inbuf_reached_eof)
-    log_debug(LD_HTTP,"Got data, not eof. Leaving on inbuf.");
+    log_debug(LD_HTTP, "Got data, not eof. Leaving on inbuf.");
   return 0;
 }
 
@@ -3477,7 +3480,7 @@ connection_dir_about_to_close(dir_connection_t *dir_conn)
  */
 static void
 write_short_http_response(dir_connection_t *conn, int status,
-                       const char *reason_phrase)
+                          const char *reason_phrase)
 {
   char *buf = NULL;
   char *datestring = NULL;
@@ -3496,7 +3499,8 @@ write_short_http_response(dir_connection_t *conn, int status,
   tor_asprintf(&buf, "HTTP/1.0 %d %s\r\n%s\r\n",
                status, reason_phrase, datestring?datestring:"");
 
-  log_debug(LD_DIRSERV,"Wrote status 'HTTP/1.0 %d %s'", status, reason_phrase);
+  log_debug(LD_DIRSERV, "Wrote status 'HTTP/1.0 %d %s'", status,
+            reason_phrase);
   connection_buf_add(buf, strlen(buf), TO_CONN(conn));
 
   tor_free(datestring);
@@ -3831,8 +3835,8 @@ static const url_table_ent_t url_table[] = {
  * Return 0 if we handled this successfully, or -1 if we need to close
  * the connection. */
 MOCK_IMPL(STATIC int,
-directory_handle_command_get,(dir_connection_t *conn, const char *headers,
-                              const char *req_body, size_t req_body_len))
+directory_handle_command_get, (dir_connection_t *conn, const char *headers,
+                               const char *req_body, size_t req_body_len))
 {
   char *url, *url_mem, *header;
   time_t if_modified_since = 0;
@@ -3844,7 +3848,7 @@ directory_handle_command_get,(dir_connection_t *conn, const char *headers,
   (void)req_body;
   (void)req_body_len;
 
-  log_debug(LD_DIRSERV,"Received GET command.");
+  log_debug(LD_DIRSERV, "Received GET command.");
 
   conn->base_.state = DIR_CONN_STATE_SERVER_WRITING;
 
@@ -3865,7 +3869,7 @@ directory_handle_command_get,(dir_connection_t *conn, const char *headers,
      * act as if no If-Modified-Since header had been given. */
     tor_free(header);
   }
-  log_debug(LD_DIRSERV,"rewritten url as '%s'.", escaped(url));
+  log_debug(LD_DIRSERV, "rewritten url as '%s'.", escaped(url));
 
   url_mem = url;
   url_len = strlen(url);
@@ -4565,8 +4569,8 @@ handle_get_status_vote(dir_connection_t *conn, const get_handler_args_t *args)
       goto vote_done;
     }
     write_http_response_header(conn, body_len ? body_len : -1,
-                 compress_method,
-                 lifetime);
+                               compress_method,
+                               lifetime);
 
     if (smartlist_len(items)) {
       if (compress_method != NO_METHOD) {
@@ -4577,7 +4581,7 @@ handle_get_status_vote(dir_connection_t *conn, const get_handler_args_t *args)
         connection_buf_add_compress("", 0, conn, 1);
       } else {
         SMARTLIST_FOREACH(items, const char *, c,
-                         connection_buf_add(c, strlen(c), TO_CONN(conn)));
+                          connection_buf_add(c, strlen(c), TO_CONN(conn)));
       }
     } else {
       SMARTLIST_FOREACH(dir_items, cached_dir_t *, d,
@@ -4660,13 +4664,13 @@ handle_get_descriptor(dir_connection_t *conn, const get_handler_args_t *args)
     find_best_compression_method(args->compression_supported, 1);
   const or_options_t *options = get_options();
   int clear_spool = 1;
-  if (!strcmpstart(url,"/tor/server/") ||
+  if (!strcmpstart(url, "/tor/server/") ||
       (!options->BridgeAuthoritativeDir &&
-       !options->BridgeRelay && !strcmpstart(url,"/tor/extra/"))) {
+       !options->BridgeRelay && !strcmpstart(url, "/tor/extra/"))) {
     int res;
     const char *msg = NULL;
     int cache_lifetime = 0;
-    int is_extra = !strcmpstart(url,"/tor/extra/");
+    int is_extra = !strcmpstart(url, "/tor/extra/");
     url += is_extra ? strlen("/tor/extra/") : strlen("/tor/server/");
     dir_spool_source_t source;
     time_t publish_cutoff = 0;
@@ -5069,13 +5073,13 @@ handle_post_hs_descriptor(const char *url, const char *body)
  * response into conn-\>outbuf.  If the request is unrecognized, send a
  * 400.  Always return 0. */
 MOCK_IMPL(STATIC int,
-directory_handle_command_post,(dir_connection_t *conn, const char *headers,
-                               const char *body, size_t body_len))
+directory_handle_command_post, (dir_connection_t *conn, const char *headers,
+                                const char *body, size_t body_len))
 {
   char *url = NULL;
   const or_options_t *options = get_options();
 
-  log_debug(LD_DIRSERV,"Received POST command.");
+  log_debug(LD_DIRSERV, "Received POST command.");
 
   conn->base_.state = DIR_CONN_STATE_SERVER_WRITING;
 
@@ -5090,16 +5094,16 @@ directory_handle_command_post,(dir_connection_t *conn, const char *headers,
     write_short_http_response(conn, 400, "Bad request");
     return 0;
   }
-  log_debug(LD_DIRSERV,"rewritten url as '%s'.", escaped(url));
+  log_debug(LD_DIRSERV, "rewritten url as '%s'.", escaped(url));
 
   /* Handle v2 rendezvous service publish request. */
   if (connection_dir_is_encrypted(conn) &&
-      !strcmpstart(url,"/tor/rendezvous2/publish")) {
+      !strcmpstart(url, "/tor/rendezvous2/publish")) {
     if (rend_cache_store_v2_desc_as_dir(body) < 0) {
       log_warn(LD_REND, "Rejected v2 rend descriptor (body size %d) from %s.",
                (int)body_len, conn->base_.address);
       write_short_http_response(conn, 400,
-                             "Invalid v2 service descriptor rejected");
+                                "Invalid v2 service descriptor rejected");
     } else {
       write_short_http_response(conn, 200, "Service descriptor (v2) stored");
       log_info(LD_REND, "Handled v2 rendezvous descriptor post: accepted");
@@ -5131,7 +5135,7 @@ directory_handle_command_post,(dir_connection_t *conn, const char *headers,
   }
 
   if (authdir_mode(options) &&
-      !strcmp(url,"/tor/")) { /* server descriptor post */
+      !strcmp(url, "/tor/")) { /* server descriptor post */
     const char *msg = "[None]";
     uint8_t purpose = authdir_mode_bridge(options) ?
                       ROUTER_PURPOSE_BRIDGE : ROUTER_PURPOSE_GENERAL;
@@ -5155,7 +5159,7 @@ directory_handle_command_post,(dir_connection_t *conn, const char *headers,
   }
 
   if (authdir_mode_v3(options) &&
-      !strcmp(url,"/tor/post/vote")) { /* v3 networkstatus vote */
+      !strcmp(url, "/tor/post/vote")) { /* v3 networkstatus vote */
     const char *msg = "OK";
     int status;
     if (dirvote_add_vote(body, &msg, &status)) {
@@ -5170,7 +5174,7 @@ directory_handle_command_post,(dir_connection_t *conn, const char *headers,
   }
 
   if (authdir_mode_v3(options) &&
-      !strcmp(url,"/tor/post/consensus-signature")) { /* sigs on consensus. */
+      !strcmp(url, "/tor/post/consensus-signature")) { /* sigs on consensus. */
     const char *msg = NULL;
     if (dirvote_add_signatures(body, conn->base_.address, &msg)>=0) {
       write_short_http_response(conn, 200, msg?msg:"Signatures stored");
@@ -5215,7 +5219,7 @@ directory_handle_command(dir_connection_t *conn)
                safe_str(conn->base_.address));
       return -1;
     case 0:
-      log_debug(LD_DIRSERV,"command not all here yet.");
+      log_debug(LD_DIRSERV, "command not all here yet.");
       return 0;
     /* case 1, fall through */
   }
@@ -5223,11 +5227,11 @@ directory_handle_command(dir_connection_t *conn)
   http_set_address_origin(headers, TO_CONN(conn));
   // we should escape headers here as well,
   // but we can't call escaped() twice, as it uses the same buffer
-  //log_debug(LD_DIRSERV,"headers %s, body %s.", headers, escaped(body));
+  //log_debug(LD_DIRSERV, "headers %s, body %s.", headers, escaped(body));
 
-  if (!strncasecmp(headers,"GET",3))
+  if (!strncasecmp(headers, "GET", 3))
     r = directory_handle_command_get(conn, headers, body, body_len);
-  else if (!strncasecmp(headers,"POST",4))
+  else if (!strncasecmp(headers, "POST", 4))
     r = directory_handle_command_post(conn, headers, body, body_len);
   else {
     log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
@@ -5263,7 +5267,7 @@ connection_dir_finished_flushing(dir_connection_t *conn)
   switch (conn->base_.state) {
     case DIR_CONN_STATE_CONNECTING:
     case DIR_CONN_STATE_CLIENT_SENDING:
-      log_debug(LD_DIR,"client finished sending command.");
+      log_debug(LD_DIR, "client finished sending command.");
       conn->base_.state = DIR_CONN_STATE_CLIENT_READING;
       return 0;
     case DIR_CONN_STATE_SERVER_WRITING:
@@ -5276,7 +5280,7 @@ connection_dir_finished_flushing(dir_connection_t *conn)
       }
       return 0;
     default:
-      log_warn(LD_BUG,"called in unexpected state %d.",
+      log_warn(LD_BUG, "called in unexpected state %d.",
                conn->base_.state);
       tor_fragile_assert();
       return -1;
@@ -5323,8 +5327,8 @@ connection_dir_finished_connecting(dir_connection_t *conn)
   tor_assert(conn->base_.type == CONN_TYPE_DIR);
   tor_assert(conn->base_.state == DIR_CONN_STATE_CONNECTING);
 
-  log_debug(LD_HTTP,"Dir connection to router %s:%u established.",
-            conn->base_.address,conn->base_.port);
+  log_debug(LD_HTTP, "Dir connection to router %s:%u established.",
+            conn->base_.address, conn->base_.port);
 
   /* start flushing conn */
   conn->base_.state = DIR_CONN_STATE_CLIENT_SENDING;
@@ -5815,7 +5819,8 @@ dir_microdesc_download_failed(smartlist_t *failed,
   if (! consensus)
     return;
   SMARTLIST_FOREACH_BEGIN(failed, const char *, d) {
-    rs = router_get_mutable_consensus_status_by_descriptor_digest(consensus,d);
+    rs = router_get_mutable_consensus_status_by_descriptor_digest(consensus,
+                                                                  d);
     if (!rs)
       continue;
     dls = &rs->dl_status;
@@ -5857,7 +5862,7 @@ dir_split_resource_into_fingerprint_pairs(const char *res,
 
   smartlist_split_string(pairs_tmp, res, "+", 0, 0);
   if (smartlist_len(pairs_tmp)) {
-    char *last = smartlist_get(pairs_tmp,smartlist_len(pairs_tmp)-1);
+    char *last = smartlist_get(pairs_tmp, smartlist_len(pairs_tmp)-1);
     size_t last_len = strlen(last);
     if (last_len > 2 && !strcmp(last+last_len-2, ".z")) {
       last[last_len-2] = '\0';
@@ -5866,15 +5871,16 @@ dir_split_resource_into_fingerprint_pairs(const char *res,
   SMARTLIST_FOREACH_BEGIN(pairs_tmp, char *, cp) {
     if (strlen(cp) != HEX_DIGEST_LEN*2+1) {
       log_info(LD_DIR,
-             "Skipping digest pair %s with non-standard length.", escaped(cp));
+               "Skipping digest pair %s with non-standard length.",
+               escaped(cp));
     } else if (cp[HEX_DIGEST_LEN] != '-') {
       log_info(LD_DIR,
-             "Skipping digest pair %s with missing dash.", escaped(cp));
+               "Skipping digest pair %s with missing dash.", escaped(cp));
     } else {
       fp_pair_t pair;
       if (base16_decode(pair.first, DIGEST_LEN,
                         cp, HEX_DIGEST_LEN) != DIGEST_LEN ||
-          base16_decode(pair.second,DIGEST_LEN,
+          base16_decode(pair.second, DIGEST_LEN,
                         cp+HEX_DIGEST_LEN+1, HEX_DIGEST_LEN) != DIGEST_LEN) {
         log_info(LD_DIR, "Skipping non-decodable digest pair %s", escaped(cp));
       } else {
@@ -5931,7 +5937,7 @@ dir_split_resource_into_fingerprints(const char *resource,
   if (compressed_out)
     *compressed_out = 0;
   if (smartlist_len(fp_tmp)) {
-    char *last = smartlist_get(fp_tmp,smartlist_len(fp_tmp)-1);
+    char *last = smartlist_get(fp_tmp, smartlist_len(fp_tmp)-1);
     size_t last_len = strlen(last);
     if (last_len > 2 && !strcmp(last+last_len-2, ".z")) {
       last[last_len-2] = '\0';

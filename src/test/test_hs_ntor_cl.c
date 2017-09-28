@@ -23,21 +23,21 @@
 
 #define N_ARGS(n) STMT_BEGIN {                                  \
     if (argc < (n)) {                                           \
-      fprintf(stderr, "%s needs %d arguments.\n",argv[1],n);    \
+      fprintf(stderr, "%s needs %d arguments.\n", argv[1], n);  \
       return 1;                                                 \
     }                                                           \
   } STMT_END
 #define BASE16(idx, var, n) STMT_BEGIN {                                \
     const char *s = argv[(idx)];                                        \
-    if (base16_decode((char*)var, n, s, strlen(s)) < (int)n ) {              \
-      fprintf(stderr, "couldn't decode argument %d (%s)\n",idx,s);      \
+    if (base16_decode((char*)var, n, s, strlen(s)) < (int)n ) {         \
+      fprintf(stderr, "couldn't decode argument %d (%s)\n", idx, s);    \
       return 1;                                                         \
     }                                                                   \
   } STMT_END
 #define INT(idx, var) STMT_BEGIN {                                      \
     var = atoi(argv[(idx)]);                                            \
     if (var <= 0) {                                                     \
-      fprintf(stderr, "bad integer argument %d (%s)\n",idx,argv[(idx)]); \
+      fprintf(stderr, "bad integer argument %d (%s)\n", idx, argv[(idx)]); \
     }                                                                   \
   } STMT_END
 

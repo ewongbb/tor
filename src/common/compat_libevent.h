@@ -17,7 +17,7 @@ void suppress_libevent_log_msg(const char *msg);
 #define tor_evsignal_new  evsignal_new
 #define tor_evdns_add_server_port(sock, tcp, cb, data) \
   evdns_add_server_port_with_base(tor_libevent_get_base(), \
-  (sock),(tcp),(cb),(data));
+  (sock), (tcp), (cb), (data));
 
 void tor_event_free(struct event *ev);
 

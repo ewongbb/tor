@@ -65,14 +65,14 @@ static config_abbrev_t state_abbrevs_[] = {
 static config_var_t state_vars_[] = {
   /* Remember to document these in state-contents.txt ! */
 
-  V(AccountingBytesReadInInterval,    MEMUNIT,  NULL),
-  V(AccountingBytesWrittenInInterval, MEMUNIT,  NULL),
-  V(AccountingExpectedUsage,          MEMUNIT,  NULL),
-  V(AccountingIntervalStart,          ISOTIME,  NULL),
-  V(AccountingSecondsActive,          INTERVAL, NULL),
-  V(AccountingSecondsToReachSoftLimit,INTERVAL, NULL),
-  V(AccountingSoftLimitHitAt,         ISOTIME,  NULL),
-  V(AccountingBytesAtSoftLimit,       MEMUNIT,  NULL),
+  V(AccountingBytesReadInInterval,     MEMUNIT,  NULL),
+  V(AccountingBytesWrittenInInterval,  MEMUNIT,  NULL),
+  V(AccountingExpectedUsage,           MEMUNIT,  NULL),
+  V(AccountingIntervalStart,           ISOTIME,  NULL),
+  V(AccountingSecondsActive,           INTERVAL, NULL),
+  V(AccountingSecondsToReachSoftLimit, INTERVAL, NULL),
+  V(AccountingSoftLimitHitAt,          ISOTIME,  NULL),
+  V(AccountingBytesAtSoftLimit,        MEMUNIT,  NULL),
 
   VAR("EntryGuard",              LINELIST_S,  EntryGuards,             NULL),
   VAR("EntryGuardDownSince",     LINELIST_S,  EntryGuards,             NULL),
@@ -269,17 +269,18 @@ or_state_set(or_state_t *new_state)
   config_free(&state_format, global_state);
   global_state = new_state;
   if (entry_guards_parse_state(global_state, 1, &err)<0) {
-    log_warn(LD_GENERAL,"%s",err);
+    log_warn(LD_GENERAL, "%s", err);
     tor_free(err);
     ret = -1;
   }
   if (rep_hist_load_state(global_state, &err)<0) {
-    log_warn(LD_GENERAL,"Unparseable bandwidth history state: %s",err);
+    log_warn(LD_GENERAL,
+             "Unparseable bandwidth history state: %s", err);
     tor_free(err);
     ret = -1;
   }
   if (circuit_build_times_parse_state(
-      get_circuit_build_times_mutable(),global_state) < 0) {
+      get_circuit_build_times_mutable(), global_state) < 0) {
     ret = -1;
   }
   return ret;
@@ -361,7 +362,8 @@ or_state_load(void)
     case FN_ERROR:
     case FN_DIR:
     default:
-      log_warn(LD_GENERAL,"State file \"%s\" is not a file? Failing.", fname);
+      log_warn(LD_GENERAL,
+               "State file \"%s\" is not a file? Failing.", fname);
       goto done;
   }
   new_state = or_state_new();

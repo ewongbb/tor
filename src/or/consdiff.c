@@ -101,8 +101,8 @@ smartlist_add_linecpy(smartlist_t *lst, memarea_t *area, const char *s)
 /* This is a separate, mockable function so that we can override it when
  * fuzzing. */
 MOCK_IMPL(STATIC int,
-consensus_compute_digest,(const char *cons,
-                          consensus_digest_t *digest_out))
+consensus_compute_digest, (const char *cons,
+                           consensus_digest_t *digest_out))
 {
   int r = crypto_digest256((char*)digest_out->sha3_256,
                            cons, strlen(cons), DIGEST_SHA3_256);
@@ -114,8 +114,8 @@ consensus_compute_digest,(const char *cons,
 /* This is a separate, mockable function so that we can override it when
  * fuzzing. */
 MOCK_IMPL(STATIC int,
-consensus_compute_digest_as_signed,(const char *cons,
-                                    consensus_digest_t *digest_out))
+consensus_compute_digest_as_signed, (const char *cons,
+                                     consensus_digest_t *digest_out))
 {
   return router_get_networkstatus_v3_sha3_as_signed(digest_out->sha3_256,
                                                     cons);
@@ -125,8 +125,8 @@ consensus_compute_digest_as_signed,(const char *cons,
 /* This is a separate, mockable function so that we can override it when
  * fuzzing. */
 MOCK_IMPL(STATIC int,
-consensus_digest_eq,(const uint8_t *d1,
-                     const uint8_t *d2))
+consensus_digest_eq, (const uint8_t *d1,
+                      const uint8_t *d2))
 {
   return fast_memeq(d1, d2, DIGEST256_LEN);
 }

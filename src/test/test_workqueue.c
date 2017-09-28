@@ -172,7 +172,7 @@ handle_reply(void *arg)
 #ifdef TRACK_RESPONSES
   rsa_work_t *rw = arg; /* Naughty cast, but only looking at serial. */
   tor_assert(! bitarray_is_set(received, rw->serial));
-  bitarray_set(received,rw->serial);
+  bitarray_set(received, rw->serial);
 #endif
 
   tor_free(arg);

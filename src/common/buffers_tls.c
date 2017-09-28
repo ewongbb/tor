@@ -126,8 +126,9 @@ flush_chunk_tls(tor_tls_t *tls, buf_t *buf, chunk_t *chunk,
   else
     *buf_flushlen = 0;
   buf_drain(buf, r);
-  log_debug(LD_NET,"flushed %d bytes, %d ready to flush, %d remain.",
-            r,(int)*buf_flushlen,(int)buf->datalen);
+  log_debug(LD_NET,
+            "flushed %d bytes, %d ready to flush, %d remain.",
+            r, (int)*buf_flushlen, (int)buf->datalen);
   return r;
 }
 

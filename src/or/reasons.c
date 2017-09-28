@@ -82,7 +82,7 @@ stream_end_reason_to_string(int reason)
     case END_STREAM_REASON_NOTDIRECTORY:   return "not a directory";
     default:
       log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
-             "Reason for ending (%d) not recognized.",reason);
+             "Reason for ending (%d) not recognized.", reason);
       return "unknown";
   }
 }

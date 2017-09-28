@@ -37,7 +37,7 @@
 #define test_memeq_hex(expr1, hex) test_mem_op_hex(expr1, OP_EQ, hex)
 
 #define tt_double_op(a,op,b)                                            \
-  tt_assert_test_type(a,b,#a" "#op" "#b,double,(val1_ op val2_),"%g",   \
+  tt_assert_test_type(a, b, #a" "#op" "#b, double, (val1_ op val2_), "%g",   \
                       TT_EXIT_TEST_FUNCTION)
 
 /* Declare "double equal" in a sneaky way, so compiler won't complain about
@@ -57,18 +57,18 @@
 #define I64_PRINTF_TYPE long long
 #endif
 
-#define tt_size_op(a,op,b)                                              \
-  tt_assert_test_fmt_type(a,b,#a" "#op" "#b,size_t,(val1_ op val2_),    \
+#define tt_size_op(a, op, b)                                              \
+  tt_assert_test_fmt_type(a, b, #a" "#op" "#b, size_t, (val1_ op val2_),    \
     U64_PRINTF_TYPE, U64_FORMAT,                                        \
     {print_ = (U64_PRINTF_TYPE) value_;}, {}, TT_EXIT_TEST_FUNCTION)
 
-#define tt_u64_op(a,op,b)                                              \
-  tt_assert_test_fmt_type(a,b,#a" "#op" "#b,uint64_t,(val1_ op val2_), \
+#define tt_u64_op(a, op, b)                                              \
+  tt_assert_test_fmt_type(a, b, #a" "#op" "#b, uint64_t, (val1_ op val2_), \
     U64_PRINTF_TYPE, U64_FORMAT,                                       \
     {print_ = (U64_PRINTF_TYPE) value_;}, {}, TT_EXIT_TEST_FUNCTION)
 
-#define tt_i64_op(a,op,b)                                              \
-  tt_assert_test_fmt_type(a,b,#a" "#op" "#b,int64_t,(val1_ op val2_), \
+#define tt_i64_op(a, op, b)                                              \
+  tt_assert_test_fmt_type(a, b, #a" "#op" "#b, int64_t, (val1_ op val2_), \
     I64_PRINTF_TYPE, I64_FORMAT,                                       \
     {print_ = (I64_PRINTF_TYPE) value_;}, {}, TT_EXIT_TEST_FUNCTION)
 

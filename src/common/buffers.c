@@ -96,7 +96,7 @@
     uint8_t *a = (uint8_t*) &(chunk)->mem[(chunk)->memlen];             \
     DBG_S(uint8_t *b = &((uint8_t*)(chunk))[(alloclen)-SENTINEL_LEN]);  \
     DBG_S(tor_assert(a == b));                                          \
-    memset(a,0,SENTINEL_LEN);                                           \
+    memset(a, 0, SENTINEL_LEN);                                         \
   } while (0)
 #endif
 
@@ -524,20 +524,20 @@ read_to_chunk(buf_t *buf, chunk_t *chunk, tor_socket_t fd, size_t at_most,
     if (!ERRNO_IS_EAGAIN(e)) { /* it's a real error */
 #ifdef _WIN32
       if (e == WSAENOBUFS)
-        log_warn(LD_NET,"recv() failed: WSAENOBUFS. Not enough ram?");
+        log_warn(LD_NET, "recv() failed: WSAENOBUFS. Not enough ram?");
 #endif
       *socket_error = e;
       return -1;
     }
     return 0; /* would block. */
   } else if (read_result == 0) {
-    log_debug(LD_NET,"Encountered eof on fd %d", (int)fd);
+    log_debug(LD_NET, "Encountered eof on fd %d", (int)fd);
     *reached_eof = 1;
     return 0;
   } else { /* actually got bytes. */
     buf->datalen += read_result;
     chunk->datalen += read_result;
-    log_debug(LD_NET,"Read %ld bytes. %d on inbuf.", (long)read_result,
+    log_debug(LD_NET, "Read %ld bytes. %d on inbuf.", (long)read_result,
               (int)buf->datalen);
     tor_assert(read_result < INT_MAX);
     return (int)read_result;
@@ -617,11 +617,11 @@ flush_chunk(tor_socket_t s, buf_t *buf, chunk_t *chunk, size_t sz,
     if (!ERRNO_IS_EAGAIN(e)) { /* it's a real error */
 #ifdef _WIN32
       if (e == WSAENOBUFS)
-        log_warn(LD_NET,"write() failed: WSAENOBUFS. Not enough ram?");
+        log_warn(LD_NET, "write() failed: WSAENOBUFS. Not enough ram?");
 #endif
       return -1;
     }
-    log_debug(LD_NET,"write() would block, returning.");
+    log_debug(LD_NET, "write() would block, returning.");
     return 0;
   } else {
     *buf_flushlen -= write_result;

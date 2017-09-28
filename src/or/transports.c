@@ -876,7 +876,7 @@ handle_proxy_line(const char *line, managed_proxy_t *mp)
     if (mp->conf_state != PT_PROTO_LAUNCHED)
       goto err;
 
-    if (parse_version(line,mp) < 0)
+    if (parse_version(line, mp) < 0)
       goto err;
 
     tor_assert(mp->conf_protocol != 0);
@@ -952,7 +952,8 @@ handle_proxy_line(const char *line, managed_proxy_t *mp)
                "Could not launch managed proxy executable at '%s' ('%s').",
                mp->argv[0], strerror(saved_errno));
     } else { /* failed to parse error message */
-      log_warn(LD_GENERAL,"Could not launch managed proxy executable at '%s'.",
+      log_warn(LD_GENERAL,
+               "Could not launch managed proxy executable at '%s'.",
                mp->argv[0]);
     }
 
@@ -1054,9 +1055,9 @@ parse_smethod_line(const char *line, managed_proxy_t *mp)
   /* Example of legit SMETHOD line:
      SMETHOD obfs2 0.0.0.0:25612 ARGS:secret=supersekrit,key=superkey */
 
-  tor_assert(!strcmp(smartlist_get(items,0),PROTO_SMETHOD));
+  tor_assert(!strcmp(smartlist_get(items, 0), PROTO_SMETHOD));
 
-  method_name = smartlist_get(items,1);
+  method_name = smartlist_get(items, 1);
   if (!string_is_C_identifier(method_name)) {
     log_warn(LD_CONFIG, "Transport name is not a C identifier (%s).",
              method_name);
@@ -1146,7 +1147,7 @@ parse_cmethod_line(const char *line, managed_proxy_t *mp)
     goto err;
   }
 
-  tor_assert(!strcmp(smartlist_get(items,0),PROTO_CMETHOD));
+  tor_assert(!strcmp(smartlist_get(items, 0), PROTO_CMETHOD));
 
   method_name = smartlist_get(items,1);
   if (!string_is_C_identifier(method_name)) {
@@ -1155,11 +1156,11 @@ parse_cmethod_line(const char *line, managed_proxy_t *mp)
     goto err;
   }
 
-  socks_ver_str = smartlist_get(items,2);
+  socks_ver_str = smartlist_get(items, 2);
 
-  if (!strcmp(socks_ver_str,"socks4")) {
+  if (!strcmp(socks_ver_str, "socks4")) {
     socks_ver = PROXY_SOCKS4;
-  } else if (!strcmp(socks_ver_str,"socks5")) {
+  } else if (!strcmp(socks_ver_str, "socks5")) {
     socks_ver = PROXY_SOCKS5;
   } else {
     log_warn(LD_CONFIG, "Client managed proxy sent us a proxy protocol "

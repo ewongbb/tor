@@ -21,12 +21,12 @@ void scheduler_init(void);
 MOCK_DECL(void, scheduler_run, (void));
 
 /* Mark channels as having cells or wanting/not wanting writes */
-MOCK_DECL(void,scheduler_channel_doesnt_want_writes,(channel_t *chan));
-MOCK_DECL(void,scheduler_channel_has_waiting_cells,(channel_t *chan));
+MOCK_DECL(void, scheduler_channel_doesnt_want_writes, (channel_t *chan));
+MOCK_DECL(void, scheduler_channel_has_waiting_cells, (channel_t *chan));
 void scheduler_channel_wants_writes(channel_t *chan);
 
 /* Notify the scheduler of a channel being closed */
-MOCK_DECL(void,scheduler_release_channel,(channel_t *chan));
+MOCK_DECL(void, scheduler_release_channel, (channel_t *chan));
 
 /* Notify scheduler of queue size adjustments */
 void scheduler_adjust_queue_size(channel_t *chan, int dir, uint64_t adj);

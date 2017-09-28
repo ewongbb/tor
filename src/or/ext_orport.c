@@ -594,7 +594,8 @@ connection_ext_or_process_inbuf(or_connection_t *or_conn)
                                              command->body, command->len) < 0)
         goto err;
     } else {
-      log_notice(LD_NET,"Got Extended ORPort command we don't regognize (%u).",
+      log_notice(LD_NET,
+                 "Got Extended ORPort command we don't regognize (%u).",
                  command->cmd);
     }
 

@@ -925,7 +925,8 @@ encode_superencrypted_data(const hs_descriptor_t *desc,
   }
 
   /* Now create middle descriptor layer given the inner layer */
-  layer1_str = get_outer_encrypted_layer_plaintext(desc,layer2_b64_ciphertext);
+  layer1_str = get_outer_encrypted_layer_plaintext(desc,
+                                                   layer2_b64_ciphertext);
   if (!layer1_str) {
     goto err;
   }
@@ -2318,9 +2319,9 @@ static int
  * Return 0 on success and encoded_out is a valid pointer. On error, -1 is
  * returned and encoded_out is set to NULL. */
 MOCK_IMPL(int,
-hs_desc_encode_descriptor,(const hs_descriptor_t *desc,
-                           const ed25519_keypair_t *signing_kp,
-                           char **encoded_out))
+hs_desc_encode_descriptor, (const hs_descriptor_t *desc,
+                            const ed25519_keypair_t *signing_kp,
+                            char **encoded_out))
 {
   int ret = -1;
   uint32_t version;

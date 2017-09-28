@@ -224,7 +224,7 @@ test_keypin_journal(void *arg)
 
   contents = read_file_to_str(fname, RFTS_BIN, NULL);
   tt_assert(contents);
-  tt_str_op(contents,OP_EQ,
+  tt_str_op(contents, OP_EQ,
     "\n"
     "@opened-at 2008-08-02 20:30:00\n"
     "a2luZy1vZi10aGUtaGVycmluZ3M Z29vZC1mb3Itbm90aGluZyBhdHRvcm5leS1hdC1sYXc\n"

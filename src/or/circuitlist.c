@@ -344,7 +344,7 @@ channel_mark_circid_usable(channel_t *chan, circid_t id)
 void
 channel_note_destroy_pending(channel_t *chan, circid_t id)
 {
-  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id,chan);
+  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id, chan);
   if (circ) {
     if (circ->n_chan == chan && circ->n_circ_id == id) {
       circ->n_delete_pending = 1;
@@ -362,9 +362,9 @@ channel_note_destroy_pending(channel_t *chan, circid_t id)
 /** Called to indicate that a DESTROY is no longer pending on <b>chan</b> with
  * circuit ID <b>id</b> -- typically, because it has been sent. */
 MOCK_IMPL(void,
-channel_note_destroy_not_pending,(channel_t *chan, circid_t id))
+channel_note_destroy_not_pending, (channel_t *chan, circid_t id))
 {
-  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id,chan);
+  circuit_t *circ = circuit_get_by_circid_channel_even_if_marked(id, chan);
   if (circ) {
     if (circ->n_chan == chan && circ->n_circ_id == id) {
       circ->n_delete_pending = 0;
@@ -505,7 +505,7 @@ circuit_count_pending_on_channel(channel_t *chan)
   circuit_get_all_pending_on_channel(sl, chan);
   cnt = smartlist_len(sl);
   smartlist_free(sl);
-  log_debug(LD_CIRC,"or_conn to %s at %s, %d pending circs",
+  log_debug(LD_CIRC, "or_conn to %s at %s, %d pending circs",
             chan->nickname ? chan->nickname : "NULL",
             channel_get_canonical_remote_descr(chan),
             cnt);
@@ -581,7 +581,7 @@ circuit_close_all_marked(void)
 
 /** Return a pointer to the global list of circuits. */
 MOCK_IMPL(smartlist_t *,
-circuit_get_global_list,(void))
+circuit_get_global_list, (void))
 {
   if (NULL == global_circuitlist)
     global_circuitlist = smartlist_new();
