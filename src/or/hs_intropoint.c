@@ -144,7 +144,7 @@ verify_establish_intro_cell(const trn_cell_establish_intro_t *cell,
 
 /* Send an INTRO_ESTABLISHED cell to <b>circ</b>. */
 MOCK_IMPL(int,
-hs_intro_send_intro_established_cell,(or_circuit_t *circ))
+hs_intro_send_intro_established_cell, (or_circuit_t *circ))
 {
   int ret;
   uint8_t *encoded_cell = NULL;
