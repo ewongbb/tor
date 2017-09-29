@@ -322,7 +322,7 @@ format_networkstatus_vote(crypto_pk_t *private_signing_key,
     networkstatus_t *v;
     if (!(v = networkstatus_parse_vote_from_string(status, NULL,
                                                    v3_ns->type))) {
-      log_err(LD_BUG,"Generated a networkstatus %s we couldn't parse: "
+      log_err(LD_BUG, "Generated a networkstatus %s we couldn't parse: "
               "<<%s>>",
               v3_ns->type == NS_TYPE_VOTE ? "vote" : "opinion", status);
       goto err;
@@ -818,7 +818,7 @@ dirvote_compute_params(smartlist_t *votes, int method, int total_authorities)
         int32_t median = median_int32(vals, i);
         char *out_string = tor_malloc(64+cur_param_len);
         memcpy(out_string, param, cur_param_len);
-        tor_snprintf(out_string+cur_param_len,64, "%ld", (long)median);
+        tor_snprintf(out_string+cur_param_len, 64, "%ld", (long)median);
         smartlist_add(output, out_string);
       }
 
@@ -1877,7 +1877,7 @@ networkstatus_compute_consensus(smartlist_t *votes,
       /* Copy bits of that into rs_out. */
       memset(&rs_out, 0, sizeof(rs_out));
       tor_assert(fast_memeq(current_rsa_id,
-                            rs->status.identity_digest,DIGEST_LEN));
+                            rs->status.identity_digest, DIGEST_LEN));
       memcpy(rs_out.identity_digest, current_rsa_id, DIGEST_LEN);
       memcpy(rs_out.descriptor_digest, rs->status.descriptor_digest,
              DIGEST_LEN);
@@ -2857,7 +2857,7 @@ get_voting_schedule(const or_options_t *options, time_t now, int severity)
     vote_delay = dist_delay = interval / 4;
 
   start = new_voting_schedule->interval_starts =
-    dirvote_get_start_of_next_interval(now,interval,
+    dirvote_get_start_of_next_interval(now, interval,
                                       options->TestingV3AuthVotingStartOffset);
   end = dirvote_get_start_of_next_interval(start+1, interval,
                                       options->TestingV3AuthVotingStartOffset);
@@ -2873,7 +2873,7 @@ get_voting_schedule(const or_options_t *options, time_t now, int severity)
   {
     char tbuf[ISO_TIME_LEN+1];
     format_iso_time(tbuf, new_voting_schedule->interval_starts);
-    tor_log(severity, LD_DIR,"Choosing expected valid-after time as %s: "
+    tor_log(severity, LD_DIR, "Choosing expected valid-after time as %s: "
             "consensus_set=%d, interval=%d",
             tbuf, consensus?1:0, interval);
   }
@@ -3549,7 +3549,7 @@ dirvote_add_signatures_to_pending_consensus(
   }
   r = networkstatus_add_detached_signatures(pc->consensus, sigs,
                                             source, severity, msg_out);
-  log_info(LD_DIR,"Added %d signatures to consensus.", r);
+  log_info(LD_DIR, "Added %d signatures to consensus.", r);
 
   if (r >= 1) {
     char *new_signatures =
@@ -3673,7 +3673,7 @@ dirvote_add_signatures(const char *detached_signatures_body,
     if (!pending_consensus_signature_list)
       pending_consensus_signature_list = smartlist_new();
     smartlist_add_strdup(pending_consensus_signature_list,
-                  detached_signatures_body);
+                         detached_signatures_body);
     *msg = "Signature queued";
     return 0;
   }
@@ -3694,7 +3694,8 @@ dirvote_publish_consensus(void)
     tor_assert(name);
     if (!pending->consensus ||
       networkstatus_check_consensus_signature(pending->consensus, 1)<0) {
-      log_warn(LD_DIR, "Not enough info to publish pending %s consensus",name);
+      log_warn(LD_DIR, "Not enough info to publish pending %s consensus",
+               name);
       continue;
     }
 
