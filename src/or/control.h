@@ -99,9 +99,8 @@ void enable_control_logging(void);
 void monitor_owning_controller_process(const char *process_spec);
 
 int control_event_bootstrap(bootstrap_status_t status, int progress);
-MOCK_DECL(void, control_event_bootstrap_prob_or,(const char *warn,
-                                                 int reason,
-                                                 or_connection_t *or_conn));
+MOCK_DECL(void, control_event_bootstrap_prob_or,
+          (const char *warn, int reason, or_connection_t *or_conn));
 void control_event_bootstrap_problem(const char *warn, const char *reason,
                                      const connection_t *conn, int dowarn);
 
@@ -110,7 +109,8 @@ void control_event_transport_launched(const char *mode,
                                       const char *transport_name,
                                       tor_addr_t *addr, uint16_t port);
 const char *rend_auth_type_to_string(rend_auth_type_t auth_type);
-MOCK_DECL(const char *, node_describe_longname_by_id,(const char *id_digest));
+MOCK_DECL(const char *, node_describe_longname_by_id,
+          (const char *id_digest));
 void control_event_hs_descriptor_requested(const rend_data_t *rend_query,
                                            const char *desc_id_base32,
                                            const char *hs_dir);
@@ -219,10 +219,10 @@ STATIC size_t read_escaped_data(const char *data, size_t len, char **out);
 
 #ifdef TOR_UNIT_TESTS
 MOCK_DECL(STATIC void,
-          send_control_event_string,(uint16_t event, const char *msg));
+          send_control_event_string, (uint16_t event, const char *msg));
 
 MOCK_DECL(STATIC void,
-          queue_control_event_string,(uint16_t event, char *msg));
+          queue_control_event_string, (uint16_t event, char *msg));
 
 void control_testing_set_global_event_mask(uint64_t mask);
 #endif
