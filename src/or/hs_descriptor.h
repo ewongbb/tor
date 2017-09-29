@@ -218,9 +218,9 @@ hs_desc_link_specifier_t *hs_desc_link_specifier_new(
 void hs_descriptor_clear_intro_points(hs_descriptor_t *desc);
 
 MOCK_DECL(int,
-          hs_desc_encode_descriptor,(const hs_descriptor_t *desc,
-                                     const ed25519_keypair_t *signing_kp,
-                                     char **encoded_out));
+          hs_desc_encode_descriptor, (const hs_descriptor_t *desc,
+                                      const ed25519_keypair_t *signing_kp,
+                                      char **encoded_out));
 
 int hs_desc_decode_descriptor(const char *encoded,
                               const uint8_t *subcredential,
