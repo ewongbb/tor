@@ -69,7 +69,7 @@ typedef struct config_var_t {
 /** Type of a callback to validate whether a given configuration is
  * well-formed and consistent. See options_trial_assign() for documentation
  * of arguments. */
-typedef int (*validate_fn_t)(void*,void*,void*,int,char**);
+typedef int (*validate_fn_t)(void*, void*, void*, int, char**);
 
 /** Information on the keys, value types, key-to-struct-member mappings,
  * variable descriptions, validation functions, and abbreviations for a
@@ -95,7 +95,7 @@ typedef struct config_format_t {
 #define CONFIG_CHECK(fmt, cfg) STMT_BEGIN                               \
     tor_assert(fmt && cfg);                                             \
     tor_assert((fmt)->magic ==                                          \
-               *(uint32_t*)STRUCT_VAR_P(cfg,fmt->magic_offset));        \
+               *(uint32_t*)STRUCT_VAR_P(cfg, fmt->magic_offset));        \
   STMT_END
 
 #define CAL_USE_DEFAULTS      (1u<<0)
