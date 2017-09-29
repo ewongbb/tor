@@ -112,7 +112,7 @@ static token_rule_t routerdesc_token_table[] = {
   T01("ntor-onion-key-crosscert", K_NTOR_ONION_KEY_CROSSCERT,
                                                     EQ(1),   NEED_OBJ ),
 
-  T01("allow-single-hop-exits",K_ALLOW_SINGLE_HOP_EXITS,    NO_ARGS, NO_OBJ ),
+  T01("allow-single-hop-exits", K_ALLOW_SINGLE_HOP_EXITS,   NO_ARGS, NO_OBJ ),
 
   T01("family",              K_FAMILY,              ARGS,    NO_OBJ ),
   T01("caches-extra-info",   K_CACHES_EXTRA_INFO,   NO_ARGS, NO_OBJ ),
@@ -121,7 +121,7 @@ static token_rule_t routerdesc_token_table[] = {
   T0N("opt",                 K_OPT,             CONCAT_ARGS, OBJ_OK ),
   T1( "bandwidth",           K_BANDWIDTH,           GE(3),   NO_OBJ ),
   A01("@purpose",            A_PURPOSE,             GE(1),   NO_OBJ ),
-  T01("tunnelled-dir-server",K_DIR_TUNNELLED,       NO_ARGS, NO_OBJ ),
+  T01("tunnelled-dir-server", K_DIR_TUNNELLED,      NO_ARGS, NO_OBJ ),
 
   END_OF_TABLE
 };
@@ -186,7 +186,7 @@ static token_rule_t rtrstatus_token_table[] = {
   T1("dir-key-certificate-version", K_DIR_KEY_CERTIFICATE_VERSION,           \
                                                      GE(1),       NO_OBJ ),  \
   T1("dir-identity-key", K_DIR_IDENTITY_KEY,         NO_ARGS,     NEED_KEY ),\
-  T1("dir-key-published",K_DIR_KEY_PUBLISHED,        CONCAT_ARGS, NO_OBJ),   \
+  T1("dir-key-published", K_DIR_KEY_PUBLISHED,       CONCAT_ARGS, NO_OBJ),   \
   T1("dir-key-expires",  K_DIR_KEY_EXPIRES,          CONCAT_ARGS, NO_OBJ),   \
   T1("dir-signing-key",  K_DIR_SIGNING_KEY,          NO_ARGS,     NEED_KEY ),\
   T1("dir-key-crosscert", K_DIR_KEY_CROSSCERT,       NO_ARGS,     NEED_OBJ ),\
@@ -249,9 +249,9 @@ static token_rule_t networkstatus_token_table[] = {
   T01("params",                K_PARAMS,           ARGS,        NO_OBJ ),
   T( "fingerprint",            K_FINGERPRINT,      CONCAT_ARGS, NO_OBJ ),
   T01("signing-ed25519",       K_SIGNING_CERT_ED,  NO_ARGS ,    NEED_OBJ ),
-  T01("shared-rand-participate",K_SR_FLAG,         NO_ARGS,     NO_OBJ ),
+  T01("shared-rand-participate", K_SR_FLAG,        NO_ARGS,     NO_OBJ ),
   T0N("shared-rand-commit",    K_COMMIT,           GE(3),       NO_OBJ ),
-  T01("shared-rand-previous-value", K_PREVIOUS_SRV,EQ(2),       NO_OBJ ),
+  T01("shared-rand-previous-value", K_PREVIOUS_SRV, EQ(2),       NO_OBJ ),
   T01("shared-rand-current-value",  K_CURRENT_SRV, EQ(2),       NO_OBJ ),
   T0N("package",               K_PACKAGE,          CONCAT_ARGS, NO_OBJ ),
   T01("recommended-client-protocols", K_RECOMMENDED_CLIENT_PROTOCOLS,
@@ -298,7 +298,7 @@ static token_rule_t networkstatus_consensus_token_table[] = {
   T01("client-versions",     K_CLIENT_VERSIONS, CONCAT_ARGS, NO_OBJ ),
   T01("server-versions",     K_SERVER_VERSIONS, CONCAT_ARGS, NO_OBJ ),
   T01("consensus-method",    K_CONSENSUS_METHOD,    EQ(1),   NO_OBJ),
-  T01("params",                K_PARAMS,           ARGS,        NO_OBJ ),
+  T01("params",              K_PARAMS,          ARGS,        NO_OBJ ),
 
   T01("shared-rand-previous-value", K_PREVIOUS_SRV, EQ(2),   NO_OBJ ),
   T01("shared-rand-current-value",  K_CURRENT_SRV,  EQ(2),   NO_OBJ ),
@@ -325,11 +325,11 @@ static token_rule_t networkstatus_vote_footer_token_table[] = {
 
 /** List of tokens recognized in detached networkstatus signature documents. */
 static token_rule_t networkstatus_detached_signature_token_table[] = {
-  T1_START("consensus-digest", K_CONSENSUS_DIGEST, GE(1),       NO_OBJ ),
-  T("additional-digest",       K_ADDITIONAL_DIGEST,GE(3),       NO_OBJ ),
-  T1("valid-after",            K_VALID_AFTER,      CONCAT_ARGS, NO_OBJ ),
-  T1("fresh-until",            K_FRESH_UNTIL,      CONCAT_ARGS, NO_OBJ ),
-  T1("valid-until",            K_VALID_UNTIL,      CONCAT_ARGS, NO_OBJ ),
+  T1_START("consensus-digest", K_CONSENSUS_DIGEST,   GE(1),       NO_OBJ ),
+  T("additional-digest",       K_ADDITIONAL_DIGEST,  GE(3),       NO_OBJ ),
+  T1("valid-after",            K_VALID_AFTER,        CONCAT_ARGS, NO_OBJ ),
+  T1("fresh-until",            K_FRESH_UNTIL,        CONCAT_ARGS, NO_OBJ ),
+  T1("valid-until",            K_VALID_UNTIL,        CONCAT_ARGS, NO_OBJ ),
   T("additional-signature",  K_ADDITIONAL_SIGNATURE, GE(4),   NEED_OBJ ),
   T1N("directory-signature", K_DIRECTORY_SIGNATURE,  GE(2),   NEED_OBJ ),
   END_OF_TABLE
@@ -351,7 +351,8 @@ static token_rule_t microdesc_token_table[] = {
 #undef T
 
 /* static function prototypes */
-static int router_add_exit_policy(routerinfo_t *router,directory_token_t *tok);
+static int router_add_exit_policy(routerinfo_t *router,
+                                  directory_token_t *tok);
 static addr_policy_t *router_parse_addr_policy(directory_token_t *tok,
                                                unsigned fmt_flags);
 static addr_policy_t *router_parse_addr_policy_private(directory_token_t *tok);
@@ -382,9 +383,9 @@ static int check_signature_token(const char *digest,
 #undef DEBUG_AREA_ALLOC
 
 #ifdef DEBUG_AREA_ALLOC
-#define DUMP_AREA(a,name) STMT_BEGIN                              \
+#define DUMP_AREA(a, name) STMT_BEGIN                             \
   size_t alloc=0, used=0;                                         \
-  memarea_get_stats((a),&alloc,&used);                            \
+  memarea_get_stats((a), &alloc, &used);                          \
   log_debug(LD_MM, "Area for %s has %lu allocated; using %lu.",   \
             name, (unsigned long)alloc, (unsigned long)used);     \
   STMT_END
@@ -865,7 +866,7 @@ dump_desc_populate_fifo_from_directory(const char *dirname)
  * than one descriptor to disk per minute. If there is already such a
  * file in the data directory, overwrite it. */
 MOCK_IMPL(STATIC void,
-dump_desc,(const char *desc, const char *type))
+dump_desc, (const char *desc, const char *type))
 {
   tor_assert(desc);
   tor_assert(type);
@@ -974,8 +975,8 @@ int
 router_get_dir_hash(const char *s, char *digest)
 {
   return router_get_hash_impl(s, strlen(s), digest,
-                              "signed-directory","\ndirectory-signature",'\n',
-                              DIGEST_SHA1);
+                              "signed-directory", "\ndirectory-signature",
+                              '\n', DIGEST_SHA1);
 }
 
 /** Set <b>digest</b> to the SHA-1 digest of the hash of the first router in
@@ -985,7 +986,7 @@ int
 router_get_router_hash(const char *s, size_t s_len, char *digest)
 {
   return router_get_hash_impl(s, s_len, digest,
-                              "router ","\nrouter-signature", '\n',
+                              "router ", "\nrouter-signature", '\n',
                               DIGEST_SHA1);
 }
 
@@ -1029,7 +1030,7 @@ router_get_networkstatus_v3_sha3_as_signed(uint8_t *digest_out,
 int
 router_get_networkstatus_v3_hashes(const char *s, common_digests_t *digests)
 {
-  return router_get_hashes_impl(s,strlen(s),digests,
+  return router_get_hashes_impl(s, strlen(s), digests,
                                 "network-status-version",
                                 "\ndirectory-signature",
                                 ' ');
@@ -1068,7 +1069,7 @@ router_get_dirobj_signature(const char *digest,
   siglen = crypto_pk_private_sign(private_key, signature, keysize,
                                   digest, digest_len);
   if (siglen < 0) {
-    log_warn(LD_BUG,"Couldn't sign digest.");
+    log_warn(LD_BUG, "Couldn't sign digest.");
     goto err;
   }
 
@@ -1082,7 +1083,7 @@ router_get_dirobj_signature(const char *digest,
   i = strlen(buf);
   if (base64_encode(buf+i, buf_len-i, signature, siglen,
                     BASE64_ENCODE_MULTILINE) < 0) {
-    log_warn(LD_BUG,"couldn't base64-encode signature");
+    log_warn(LD_BUG, "couldn't base64-encode signature");
     goto err;
   }
 
@@ -1093,7 +1094,7 @@ router_get_dirobj_signature(const char *digest,
   return buf;
 
  truncated:
-  log_warn(LD_BUG,"tried to exceed string length.");
+  log_warn(LD_BUG, "tried to exceed string length.");
  err:
   tor_free(signature);
   tor_free(buf);
@@ -1152,11 +1153,11 @@ tor_version_is_obsolete(const char *myversion, const char *versionlist)
   version_status_t ret = VS_UNRECOMMENDED;
   smartlist_t *version_sl;
 
-  log_debug(LD_CONFIG,"Checking whether version '%s' is in '%s'",
+  log_debug(LD_CONFIG, "Checking whether version '%s' is in '%s'",
             myversion, versionlist);
 
   if (tor_version_parse(myversion, &mine)) {
-    log_err(LD_BUG,"I couldn't parse my own version (%s)", myversion);
+    log_err(LD_BUG, "I couldn't parse my own version (%s)", myversion);
     tor_assert(0);
   }
   version_sl = smartlist_new();
@@ -1521,8 +1522,8 @@ router_parse_entry_from_string(const char *s, const char *end,
   area = memarea_new();
   tokens = smartlist_new();
   if (prepend_annotations) {
-    if (tokenize_string(area,prepend_annotations,NULL,tokens,
-                        routerdesc_token_table,TS_NOCHECK)) {
+    if (tokenize_string(area, prepend_annotations, NULL, tokens,
+                        routerdesc_token_table, TS_NOCHECK)) {
       log_warn(LD_DIR, "Error tokenizing router descriptor (annotations).");
       goto err;
     }
@@ -1541,8 +1542,8 @@ router_parse_entry_from_string(const char *s, const char *end,
 
   if (start_of_annotations != s) { /* We have annotations */
     if (allow_annotations) {
-      if (tokenize_string(area,start_of_annotations,s,tokens,
-                          routerdesc_token_table,TS_NOCHECK)) {
+      if (tokenize_string(area, start_of_annotations, s, tokens,
+                          routerdesc_token_table, TS_NOCHECK)) {
         log_warn(LD_DIR, "Error tokenizing router descriptor (annotations).");
         goto err;
       }
@@ -1564,7 +1565,7 @@ router_parse_entry_from_string(const char *s, const char *end,
     if (prepend_annotations)
       flags |= TS_ANNOTATIONS_OK|TS_NO_NEW_ANNOTATIONS;
 
-    if (tokenize_string(area,s,end,tokens,routerdesc_token_table, flags)) {
+    if (tokenize_string(area, s, end, tokens, routerdesc_token_table, flags)) {
       log_warn(LD_DIR, "Error tokenizing router descriptor.");
       goto err;
     }
@@ -1609,32 +1610,32 @@ router_parse_entry_from_string(const char *s, const char *end,
 
   router->nickname = tor_strdup(tok->args[0]);
   if (!is_legal_nickname(router->nickname)) {
-    log_warn(LD_DIR,"Router nickname is invalid");
+    log_warn(LD_DIR, "Router nickname is invalid");
     goto err;
   }
   if (!tor_inet_aton(tok->args[1], &in)) {
-    log_warn(LD_DIR,"Router address is not an IP address.");
+    log_warn(LD_DIR, "Router address is not an IP address.");
     goto err;
   }
   router->addr = ntohl(in.s_addr);
 
   router->or_port =
-    (uint16_t) tor_parse_long(tok->args[2],10,0,65535,&ok,NULL);
+    (uint16_t) tor_parse_long(tok->args[2], 10, 0, 65535, &ok, NULL);
   if (!ok) {
-    log_warn(LD_DIR,"Invalid OR port %s", escaped(tok->args[2]));
+    log_warn(LD_DIR, "Invalid OR port %s", escaped(tok->args[2]));
     goto err;
   }
   router->dir_port =
-    (uint16_t) tor_parse_long(tok->args[4],10,0,65535,&ok,NULL);
+    (uint16_t) tor_parse_long(tok->args[4], 10, 0, 65535, &ok, NULL);
   if (!ok) {
-    log_warn(LD_DIR,"Invalid dir port %s", escaped(tok->args[4]));
+    log_warn(LD_DIR, "Invalid dir port %s", escaped(tok->args[4]));
     goto err;
   }
 
   tok = find_by_keyword(tokens, K_BANDWIDTH);
   tor_assert(tok->n_args >= 3);
   router->bandwidthrate = (int)
-    tor_parse_long(tok->args[0],10,1,INT_MAX,&ok,NULL);
+    tor_parse_long(tok->args[0], 10, 1, INT_MAX, &ok, NULL);
 
   if (!ok) {
     log_warn(LD_DIR, "bandwidthrate %s unreadable or 0. Failing.",
@@ -1642,13 +1643,13 @@ router_parse_entry_from_string(const char *s, const char *end,
     goto err;
   }
   router->bandwidthburst =
-    (int) tor_parse_long(tok->args[1],10,0,INT_MAX,&ok,NULL);
+    (int) tor_parse_long(tok->args[1], 10, 0, INT_MAX, &ok, NULL);
   if (!ok) {
     log_warn(LD_DIR, "Invalid bandwidthburst %s", escaped(tok->args[1]));
     goto err;
   }
   router->bandwidthcapacity = (int)
-    tor_parse_long(tok->args[2],10,0,INT_MAX,&ok,NULL);
+    tor_parse_long(tok->args[2], 10, 0, INT_MAX, &ok, NULL);
   if (!ok) {
     log_warn(LD_DIR, "Invalid bandwidthcapacity %s", escaped(tok->args[1]));
     goto err;
@@ -1665,7 +1666,8 @@ router_parse_entry_from_string(const char *s, const char *end,
 
   if ((tok = find_opt_by_keyword(tokens, K_UPTIME))) {
     tor_assert(tok->n_args >= 1);
-    router->uptime = tor_parse_long(tok->args[0],10,0,LONG_MAX,&ok,NULL);
+    router->uptime = tor_parse_long(tok->args[0], 10, 0, LONG_MAX, &ok,
+                                    NULL);
     if (!ok) {
       log_warn(LD_DIR, "Invalid uptime %s", escaped(tok->args[0]));
       goto err;
@@ -1675,7 +1677,7 @@ router_parse_entry_from_string(const char *s, const char *end,
   if ((tok = find_opt_by_keyword(tokens, K_HIBERNATING))) {
     tor_assert(tok->n_args >= 1);
     router->is_hibernating
-      = (tor_parse_long(tok->args[0],10,0,LONG_MAX,NULL,NULL) != 0);
+      = (tor_parse_long(tok->args[0], 10, 0, LONG_MAX, NULL, NULL) != 0);
   }
 
   tok = find_by_keyword(tokens, K_PUBLISHED);
@@ -1888,7 +1890,7 @@ router_parse_entry_from_string(const char *s, const char *end,
                escaped(tok->args[0]));
       goto err;
     }
-    if (tor_memneq(d,router->cache_info.identity_digest, DIGEST_LEN)) {
+    if (tor_memneq(d, router->cache_info.identity_digest, DIGEST_LEN)) {
       log_warn(LD_DIR, "Fingerprint '%s' does not match identity digest.",
                tok->args[0]);
       goto err;
@@ -1927,8 +1929,8 @@ router_parse_entry_from_string(const char *s, const char *end,
     goto err;
   }
   SMARTLIST_FOREACH(exit_policy_tokens, directory_token_t *, t,
-                    if (router_add_exit_policy(router,t)<0) {
-                      log_warn(LD_DIR,"Error in exit policy");
+                    if (router_add_exit_policy(router, t)<0) {
+                      log_warn(LD_DIR, "Error in exit policy");
                       goto err;
                     });
   policy_expand_private(&router->exit_policy);
@@ -1970,7 +1972,7 @@ router_parse_entry_from_string(const char *s, const char *end,
     if (strlen(tok->args[0]) == HEX_DIGEST_LEN) {
       if (base16_decode(router->cache_info.extra_info_digest, DIGEST_LEN,
                         tok->args[0], HEX_DIGEST_LEN) != DIGEST_LEN) {
-          log_warn(LD_DIR,"Invalid extra info digest");
+          log_warn(LD_DIR, "Invalid extra info digest");
       }
     } else {
       log_warn(LD_DIR, "Invalid extra info digest %s", escaped(tok->args[0]));
@@ -2003,7 +2005,7 @@ router_parse_entry_from_string(const char *s, const char *end,
 #endif
 
   if (!router->or_port) {
-    log_warn(LD_DIR,"or_port unreadable or 0. Failing.");
+    log_warn(LD_DIR, "or_port unreadable or 0. Failing.");
     goto err;
   }
 
@@ -2083,7 +2085,7 @@ extrainfo_parse_entry_from_string(const char *s, const char *end,
   }
   tokens = smartlist_new();
   area = memarea_new();
-  if (tokenize_string(area,s,end,tokens,extrainfo_token_table,0)) {
+  if (tokenize_string(area, s, end, tokens, extrainfo_token_table, 0)) {
     log_warn(LD_DIR, "Error tokenizing extra-info document.");
     goto err;
   }
@@ -2096,35 +2098,37 @@ extrainfo_parse_entry_from_string(const char *s, const char *end,
   /* XXXX Accept this in position 1 too, and ed identity in position 0. */
   tok = smartlist_get(tokens,0);
   if (tok->tp != K_EXTRA_INFO) {
-    log_warn(LD_DIR,"Entry does not start with \"extra-info\"");
+    log_warn(LD_DIR, "Entry does not start with \"extra-info\"");
     goto err;
   }
 
   extrainfo = tor_malloc_zero(sizeof(extrainfo_t));
   extrainfo->cache_info.is_extrainfo = 1;
   if (cache_copy)
-    extrainfo->cache_info.signed_descriptor_body = tor_memdup_nulterm(s,end-s);
+    extrainfo->cache_info.signed_descriptor_body = tor_memdup_nulterm(s,
+                                                                      end-s);
   extrainfo->cache_info.signed_descriptor_len = end-s;
   memcpy(extrainfo->cache_info.signed_descriptor_digest, digest, DIGEST_LEN);
   crypto_digest256((char*)extrainfo->digest256, s, end-s, DIGEST_SHA256);
 
   tor_assert(tok->n_args >= 2);
   if (!is_legal_nickname(tok->args[0])) {
-    log_warn(LD_DIR,"Bad nickname %s on \"extra-info\"",escaped(tok->args[0]));
+    log_warn(LD_DIR, "Bad nickname %s on \"extra-info\"",
+             escaped(tok->args[0]));
     goto err;
   }
   strlcpy(extrainfo->nickname, tok->args[0], sizeof(extrainfo->nickname));
   if (strlen(tok->args[1]) != HEX_DIGEST_LEN ||
       base16_decode(extrainfo->cache_info.identity_digest, DIGEST_LEN,
                     tok->args[1], HEX_DIGEST_LEN) != DIGEST_LEN) {
-    log_warn(LD_DIR,"Invalid fingerprint %s on \"extra-info\"",
+    log_warn(LD_DIR, "Invalid fingerprint %s on \"extra-info\"",
              escaped(tok->args[1]));
     goto err;
   }
 
   tok = find_by_keyword(tokens, K_PUBLISHED);
   if (parse_iso_time(tok->args[0], &extrainfo->cache_info.published_on)) {
-    log_warn(LD_DIR,"Invalid published time %s on \"extra-info\"",
+    log_warn(LD_DIR, "Invalid published time %s on \"extra-info\"",
              escaped(tok->args[0]));
     goto err;
   }
@@ -2567,7 +2571,7 @@ routerstatus_parse_entry_from_string(memarea_t *area,
 
   eos = find_start_of_next_routerstatus(*s);
 
-  if (tokenize_string(area,*s, eos, tokens, rtrstatus_token_table,0)) {
+  if (tokenize_string(area, *s, eos, tokens, rtrstatus_token_table, 0)) {
     log_warn(LD_DIR, "Error tokenizing router status");
     goto err;
   }
@@ -2631,9 +2635,9 @@ routerstatus_parse_entry_from_string(memarea_t *area,
   rs->addr = ntohl(in.s_addr);
 
   rs->or_port = (uint16_t) tor_parse_long(tok->args[6+offset],
-                                         10,0,65535,NULL,NULL);
+                                         10, 0, 65535, NULL, NULL);
   rs->dir_port = (uint16_t) tor_parse_long(tok->args[7+offset],
-                                           10,0,65535,NULL,NULL);
+                                           10, 0, 65535, NULL, NULL);
 
   {
     smartlist_t *a_lines = find_all_by_keyword(tokens, K_A);
@@ -2984,7 +2988,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
   if (3*E >= T && 3*G >= T) {
     // Case 1: Neither are scarce
     casename = "Case 1";
-    if (fabs(Etotal-Mtotal) > 0.01*MAX(Etotal,Mtotal)) {
+    if (fabs(Etotal-Mtotal) > 0.01*MAX(Etotal, Mtotal)) {
       log_warn(LD_DIR,
                "Bw Weight Failure for %s: Etotal %f != Mtotal %f. "
                "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -2996,7 +3000,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
                Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
       valid = 0;
     }
-    if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal,Gtotal)) {
+    if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal, Gtotal)) {
       log_warn(LD_DIR,
                "Bw Weight Failure for %s: Etotal %f != Gtotal %f. "
                "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3008,7 +3012,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
                Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
       valid = 0;
     }
-    if (fabs(Gtotal-Mtotal) > 0.01*MAX(Gtotal,Mtotal)) {
+    if (fabs(Gtotal-Mtotal) > 0.01*MAX(Gtotal, Mtotal)) {
       log_warn(LD_DIR,
                "Bw Weight Failure for %s: Mtotal %f != Gtotal %f. "
                "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3042,54 +3046,54 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
       // Rtotal < Stotal
       if (Rtotal > Stotal) {
         log_warn(LD_DIR,
-                   "Bw Weight Failure for %s: Rtotal %f > Stotal %f. "
-                   "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
-                   " T="I64_FORMAT". "
-                   "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
-                   casename, Rtotal, Stotal,
-                   I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
-                   I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
-                   Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
+                 "Bw Weight Failure for %s: Rtotal %f > Stotal %f. "
+                 "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
+                 " T="I64_FORMAT". "
+                 "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
+                 casename, Rtotal, Stotal,
+                 I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
+                 I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
+                 Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
       // Rtotal < T/3
       if (3*Rtotal > T) {
         log_warn(LD_DIR,
-                   "Bw Weight Failure for %s: 3*Rtotal %f > T "
-                   I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT
-                   " D="I64_FORMAT" T="I64_FORMAT". "
-                   "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
-                   casename, Rtotal*3, I64_PRINTF_ARG(T),
-                   I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
-                   I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
-                   Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
+                 "Bw Weight Failure for %s: 3*Rtotal %f > T "
+                 I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT
+                 " D="I64_FORMAT" T="I64_FORMAT". "
+                 "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
+                 casename, Rtotal*3, I64_PRINTF_ARG(T),
+                 I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
+                 I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
+                 Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
       // Stotal < T/3
       if (3*Stotal > T) {
         log_warn(LD_DIR,
-                   "Bw Weight Failure for %s: 3*Stotal %f > T "
-                   I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT
-                   " D="I64_FORMAT" T="I64_FORMAT". "
-                   "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
-                   casename, Stotal*3, I64_PRINTF_ARG(T),
-                   I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
-                   I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
-                   Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
+                 "Bw Weight Failure for %s: 3*Stotal %f > T "
+                 I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT
+                 " D="I64_FORMAT" T="I64_FORMAT". "
+                 "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
+                 casename, Stotal*3, I64_PRINTF_ARG(T),
+                 I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
+                 I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
+                 Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
       // Mtotal > T/3
       if (3*Mtotal < T) {
         log_warn(LD_DIR,
-                   "Bw Weight Failure for %s: 3*Mtotal %f < T "
-                   I64_FORMAT". "
-                   "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
-                   " T="I64_FORMAT". "
-                   "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
-                   casename, Mtotal*3, I64_PRINTF_ARG(T),
-                   I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
-                   I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
-                   Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
+                 "Bw Weight Failure for %s: 3*Mtotal %f < T "
+                 I64_FORMAT". "
+                 "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
+                 " T="I64_FORMAT". "
+                 "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
+                 casename, Mtotal*3, I64_PRINTF_ARG(T),
+                 I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
+                 I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
+                 Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
     } else { // Subcase b: R+D > S
@@ -3098,7 +3102,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
       /* Check the rare-M redirect case. */
       if (D != 0 && 3*M < T) {
         casename = "Case 2b (balanced)";
-        if (fabs(Etotal-Mtotal) > 0.01*MAX(Etotal,Mtotal)) {
+        if (fabs(Etotal-Mtotal) > 0.01*MAX(Etotal, Mtotal)) {
           log_warn(LD_DIR,
                    "Bw Weight Failure for %s: Etotal %f != Mtotal %f. "
                    "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3110,7 +3114,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
                    Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
           valid = 0;
         }
-        if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal,Gtotal)) {
+        if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal, Gtotal)) {
           log_warn(LD_DIR,
                    "Bw Weight Failure for %s: Etotal %f != Gtotal %f. "
                    "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3122,7 +3126,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
                    Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
           valid = 0;
         }
-        if (fabs(Gtotal-Mtotal) > 0.01*MAX(Gtotal,Mtotal)) {
+        if (fabs(Gtotal-Mtotal) > 0.01*MAX(Gtotal, Mtotal)) {
           log_warn(LD_DIR,
                    "Bw Weight Failure for %s: Mtotal %f != Gtotal %f. "
                    "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3135,7 +3139,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
           valid = 0;
         }
       } else {
-        if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal,Gtotal)) {
+        if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal, Gtotal)) {
           log_warn(LD_DIR,
                    "Bw Weight Failure for %s: Etotal %f != Gtotal %f. "
                    "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3167,18 +3171,18 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
       // Stotal < T/3
       if (3*Stotal > T) {
         log_warn(LD_DIR,
-                   "Bw Weight Failure for %s: 3*Stotal %f > T "
-                   I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT
-                   " D="I64_FORMAT" T="I64_FORMAT". "
-                   "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
-                   casename, Stotal*3, I64_PRINTF_ARG(T),
-                   I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
-                   I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
-                   Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
+                 "Bw Weight Failure for %s: 3*Stotal %f > T "
+                 I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT
+                 " D="I64_FORMAT" T="I64_FORMAT". "
+                 "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
+                 casename, Stotal*3, I64_PRINTF_ARG(T),
+                 I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
+                 I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
+                 Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
       if (NS >= M) {
-        if (fabs(NStotal-Mtotal) > 0.01*MAX(NStotal,Mtotal)) {
+        if (fabs(NStotal-Mtotal) > 0.01*MAX(NStotal, Mtotal)) {
           log_warn(LD_DIR,
                    "Bw Weight Failure for %s: NStotal %f != Mtotal %f. "
                    "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3194,20 +3198,20 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
         // if NS < M, NStotal > T/3 because only one of G or E is scarce
         if (3*NStotal < T) {
           log_warn(LD_DIR,
-                     "Bw Weight Failure for %s: 3*NStotal %f < T "
-                     I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT
-                     " E="I64_FORMAT" D="I64_FORMAT" T="I64_FORMAT". "
-                     "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
-                     casename, NStotal*3, I64_PRINTF_ARG(T),
-                     I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
-                     I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
-                     Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
+                   "Bw Weight Failure for %s: 3*NStotal %f < T "
+                   I64_FORMAT". G="I64_FORMAT" M="I64_FORMAT
+                   " E="I64_FORMAT" D="I64_FORMAT" T="I64_FORMAT". "
+                   "Wgg=%f Wgd=%f Wmg=%f Wme=%f Wmd=%f Wee=%f Wed=%f",
+                   casename, NStotal*3, I64_PRINTF_ARG(T),
+                   I64_PRINTF_ARG(G), I64_PRINTF_ARG(M), I64_PRINTF_ARG(E),
+                   I64_PRINTF_ARG(D), I64_PRINTF_ARG(T),
+                   Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
           valid = 0;
         }
       }
     } else { // Subcase b: S+D >= T/3
       casename = "Case 3b";
-      if (fabs(Etotal-Mtotal) > 0.01*MAX(Etotal,Mtotal)) {
+      if (fabs(Etotal-Mtotal) > 0.01*MAX(Etotal, Mtotal)) {
         log_warn(LD_DIR,
                  "Bw Weight Failure for %s: Etotal %f != Mtotal %f. "
                  "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3219,7 +3223,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
                  Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
-      if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal,Gtotal)) {
+      if (fabs(Etotal-Gtotal) > 0.01*MAX(Etotal, Gtotal)) {
         log_warn(LD_DIR,
                  "Bw Weight Failure for %s: Etotal %f != Gtotal %f. "
                  "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3231,7 +3235,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
                  Wgg, Wgd, Wmg, Wme, Wmd, Wee, Wed);
         valid = 0;
       }
-      if (fabs(Gtotal-Mtotal) > 0.01*MAX(Gtotal,Mtotal)) {
+      if (fabs(Gtotal-Mtotal) > 0.01*MAX(Gtotal, Mtotal)) {
         log_warn(LD_DIR,
                  "Bw Weight Failure for %s: Mtotal %f != Gtotal %f. "
                  "G="I64_FORMAT" M="I64_FORMAT" E="I64_FORMAT" D="I64_FORMAT
@@ -3662,7 +3666,8 @@ networkstatus_parse_vote_from_string(const char *s, const char **eos_out,
       if (ns->type != NS_TYPE_CONSENSUS &&
           tor_memneq(ns->cert->cache_info.identity_digest,
                  voter->identity_digest, DIGEST_LEN)) {
-        log_warn(LD_DIR,"Mismatch between identities in certificate and vote");
+        log_warn(LD_DIR,
+                 "Mismatch between identities in certificate and vote");
         goto err;
       }
       if (ns->type != NS_TYPE_CONSENSUS) {
@@ -4271,8 +4276,8 @@ networkstatus_parse_detached_signatures(const char *s, const char *eos)
  * of AF_INET and AF_INET6 items.
  */
 MOCK_IMPL(addr_policy_t *,
-router_parse_addr_policy_item_from_string,(const char *s, int assume_action,
-                                           int *malformed_list))
+router_parse_addr_policy_item_from_string, (const char *s, int assume_action,
+                                            int *malformed_list))
 {
   directory_token_t *tok = NULL;
   const char *cp, *eos;
@@ -4412,7 +4417,7 @@ router_parse_addr_policy(directory_token_t *tok, unsigned fmt_flags)
     return NULL;
   arg = tok->args[0];
 
-  if (!strcmpstart(arg,"private"))
+  if (!strcmpstart(arg, "private"))
     return router_parse_addr_policy_private(tok);
 
   memset(&newe, 0, sizeof(newe));
@@ -4431,7 +4436,7 @@ router_parse_addr_policy(directory_token_t *tok, unsigned fmt_flags)
 
   if (tor_addr_parse_mask_ports(arg, fmt_flags, &newe.addr, &newe.maskbits,
                                 &newe.prt_min, &newe.prt_max) < 0) {
-    log_warn(LD_DIR,"Couldn't parse line %s. Dropping", escaped(arg));
+    log_warn(LD_DIR, "Couldn't parse line %s. Dropping", escaped(arg));
     return NULL;
   }
 
@@ -4505,7 +4510,7 @@ find_all_exitpolicy(smartlist_t *s)
   SMARTLIST_FOREACH(s, directory_token_t *, t,
       if (t->tp == K_ACCEPT || t->tp == K_ACCEPT6 ||
           t->tp == K_REJECT || t->tp == K_REJECT6)
-        smartlist_add(out,t));
+        smartlist_add(out, t));
   return out;
 }
 
@@ -4526,12 +4531,12 @@ router_get_hash_impl_helper(const char *s, size_t s_len,
   const char *start, *end;
   start = tor_memstr(s, s_len, start_str);
   if (!start) {
-    log_fn(log_severity,LD_DIR,
-           "couldn't find start of hashed material \"%s\"",start_str);
+    log_fn(log_severity, LD_DIR,
+           "couldn't find start of hashed material \"%s\"", start_str);
     return -1;
   }
   if (start != s && *(start-1) != '\n') {
-    log_fn(log_severity,LD_DIR,
+    log_fn(log_severity, LD_DIR,
              "first occurrence of \"%s\" is not at the start of a line",
              start_str);
     return -1;
@@ -4539,14 +4544,13 @@ router_get_hash_impl_helper(const char *s, size_t s_len,
   end = tor_memstr(start+strlen(start_str),
                    s_len - (start-s) - strlen(start_str), end_str);
   if (!end) {
-    log_fn(log_severity,LD_DIR,
-           "couldn't find end of hashed material \"%s\"",end_str);
+    log_fn(log_severity, LD_DIR,
+           "couldn't find end of hashed material \"%s\"", end_str);
     return -1;
   }
   end = memchr(end+strlen(end_str), end_c, s_len - (end-s) - strlen(end_str));
   if (!end) {
-    log_fn(log_severity,LD_DIR,
-           "couldn't find EOL");
+    log_fn(log_severity, LD_DIR, "couldn't find EOL");
     return -1;
   }
   ++end;
@@ -4570,8 +4574,8 @@ router_get_hash_impl(const char *s, size_t s_len, char *digest,
                      digest_algorithm_t alg)
 {
   const char *start=NULL, *end=NULL;
-  if (router_get_hash_impl_helper(s,s_len,start_str,end_str,end_c,LOG_WARN,
-                                  &start,&end)<0)
+  if (router_get_hash_impl_helper(s, s_len, start_str, end_str, end_c,
+                                  LOG_WARN, &start, &end)<0)
     return -1;
 
   return router_compute_hash_final(digest, start, end-start, alg);
@@ -4581,18 +4585,18 @@ router_get_hash_impl(const char *s, size_t s_len, char *digest,
  * <b>start</b>, using <b>alg</b>. Store the result in <b>digest</b>, which
  * must be long enough to hold it. */
 MOCK_IMPL(STATIC int,
-router_compute_hash_final,(char *digest,
-                           const char *start, size_t len,
-                           digest_algorithm_t alg))
+router_compute_hash_final, (char *digest,
+                            const char *start, size_t len,
+                            digest_algorithm_t alg))
 {
   if (alg == DIGEST_SHA1) {
     if (crypto_digest(digest, start, len) < 0) {
-      log_warn(LD_BUG,"couldn't compute digest");
+      log_warn(LD_BUG, "couldn't compute digest");
       return -1;
     }
   } else {
     if (crypto_digest256(digest, start, len, alg) < 0) {
-      log_warn(LD_BUG,"couldn't compute digest");
+      log_warn(LD_BUG, "couldn't compute digest");
       return -1;
     }
   }
@@ -4607,12 +4611,12 @@ router_get_hashes_impl(const char *s, size_t s_len, common_digests_t *digests,
                        const char *end_str, char end_c)
 {
   const char *start=NULL, *end=NULL;
-  if (router_get_hash_impl_helper(s,s_len,start_str,end_str,end_c,LOG_WARN,
-                                  &start,&end)<0)
+  if (router_get_hash_impl_helper(s, s_len, start_str, end_str, end_c,
+                                  LOG_WARN, &start, &end)<0)
     return -1;
 
   if (crypto_common_digests(digests, start, end-start)) {
-    log_warn(LD_BUG,"couldn't compute digests");
+    log_warn(LD_BUG, "couldn't compute digests");
     return -1;
   }
 
