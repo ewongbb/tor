@@ -57,7 +57,7 @@ uint8_t *make_tap_onion_key_crosscert(const crypto_pk_t *onion_key,
                                   const crypto_pk_t *rsa_id_key,
                                   int *len_out);
 
-MOCK_DECL(int, check_tap_onion_key_crosscert,(const uint8_t *crosscert,
+MOCK_DECL(int, check_tap_onion_key_crosscert, (const uint8_t *crosscert,
                                   int crosscert_len,
                                   const crypto_pk_t *onion_pkey,
                                   const ed25519_public_key_t *master_id_pkey,
