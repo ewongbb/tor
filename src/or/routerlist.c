@@ -4474,7 +4474,7 @@ router_load_extrainfo_from_string(const char *s, const char *eos,
         if (sd) {
           log_info(LD_GENERAL, "Marking extrainfo with descriptor %s as "
                    "unparseable, and therefore undownloadable",
-                   hex_str((char*)d,DIGEST_LEN));
+                   hex_str((char*)d, DIGEST_LEN));
           download_status_mark_impossible(&sd->ei_dl_status);
         }
       }
@@ -4873,9 +4873,9 @@ list_pending_fpsk_downloads(fp_pair_map_t *result)
  * otherwise, download from an appropriate random directory server.
  */
 MOCK_IMPL(STATIC void,
-initiate_descriptor_downloads,(const routerstatus_t *source,
-                               int purpose, smartlist_t *digests,
-                               int lo, int hi, int pds_flags))
+initiate_descriptor_downloads, (const routerstatus_t *source,
+                                int purpose, smartlist_t *digests,
+                                int lo, int hi, int pds_flags))
 {
   char *resource, *cp;
   int digest_len, enc_digest_len;
