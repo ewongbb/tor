@@ -163,7 +163,8 @@ keypin_check_and_add_impl(const uint8_t *rsa_id_digest,
   ent = HT_FIND(rsamap, &the_rsa_map, &search);
   if (ent) {
     tor_assert(fast_memeq(ent->rsa_id, rsa_id_digest, sizeof(ent->rsa_id)));
-    if (tor_memeq(ent->ed25519_key, ed25519_id_key,sizeof(ent->ed25519_key))) {
+    if (tor_memeq(ent->ed25519_key, ed25519_id_key,
+        sizeof(ent->ed25519_key))) {
       return KEYPIN_FOUND; /* Match on both keys. Great. */
     } else {
       if (!replace)
@@ -487,8 +488,8 @@ keypin_clear(void)
   }
   bad_entries += HT_SIZE(&the_ed_map);
 
-  HT_CLEAR(edmap,&the_ed_map);
-  HT_CLEAR(rsamap,&the_rsa_map);
+  HT_CLEAR(edmap, &the_ed_map);
+  HT_CLEAR(rsamap, &the_rsa_map);
 
   if (bad_entries) {
     log_warn(LD_BUG, "Found %d discrepencies in the keypin database.",
