@@ -87,8 +87,8 @@ MOCK_DECL(STATIC int,
           consensus_compute_digest, (const char *cons,
                                      consensus_digest_t *digest_out));
 MOCK_DECL(STATIC int,
-          consensus_compute_digest_as_signed, (const char *cons,
-                                               consensus_digest_t *digest_out));
+          consensus_compute_digest_as_signed,
+          (const char *cons, consensus_digest_t *digest_out));
 MOCK_DECL(STATIC int,
           consensus_digest_eq, (const uint8_t *d1,
                                 const uint8_t *d2));
