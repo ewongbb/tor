@@ -196,7 +196,8 @@ get_introduce1_key_material(const uint8_t *secret_input,
   crypto_xof_free(xof);
 
   { /* Get the keys */
-    memcpy(&hs_ntor_intro_cell_keys_out->enc_key, keystream,CIPHER256_KEY_LEN);
+    memcpy(&hs_ntor_intro_cell_keys_out->enc_key, keystream,
+           CIPHER256_KEY_LEN);
     memcpy(&hs_ntor_intro_cell_keys_out->mac_key,
            keystream+CIPHER256_KEY_LEN, DIGEST256_LEN);
   }
