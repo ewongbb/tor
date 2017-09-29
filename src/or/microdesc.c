@@ -484,7 +484,7 @@ microdesc_cache_clean(microdesc_cache_t *cache, time_t cutoff, int force)
             if (ns) {
               /* This should be impossible, but let's see! */
               rs_present = " RS not present in networkstatus.";
-              SMARTLIST_FOREACH(ns->routerstatus_list, routerstatus_t *,rs, {
+              SMARTLIST_FOREACH(ns->routerstatus_list, routerstatus_t *, rs, {
                 if (rs == node->rs) {
                   rs_present = " RS okay in networkstatus.";
                 }
@@ -507,7 +507,7 @@ microdesc_cache_clean(microdesc_cache_t *cache, time_t cutoff, int force)
 
   if (dropped) {
     log_info(LD_DIR, "Removed %d/%d microdescriptors as old.",
-             dropped,dropped+kept);
+             dropped, dropped+kept);
     cache->bytes_dropped += bytes_dropped;
   }
 }
@@ -934,7 +934,7 @@ we_fetch_router_descriptors(const or_options_t *options)
 
 /** Return the consensus flavor we actually want to use to build circuits. */
 MOCK_IMPL(int,
-usable_consensus_flavor,(void))
+usable_consensus_flavor, (void))
 {
   if (we_use_microdescriptors_for_circuits(get_options())) {
     return FLAV_MICRODESC;
