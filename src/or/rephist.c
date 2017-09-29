@@ -1635,7 +1635,7 @@ rep_hist_update_bwhist_state_section(or_state_t *state,
   *s_maxima = smartlist_new();
   /* Set i to first position in circular array */
   i = (b->num_maxes_set <= b->next_max_idx) ? 0 : b->next_max_idx;
-  for (j=0; j < b->num_maxes_set; ++j, ++i) {
+  for (j=0; j < b->num_maxes_set; ++j,++i) {
     if (i >= NUM_TOTALS)
       i = 0;
     smartlist_add_asprintf(*s_values, U64_FORMAT,
@@ -1712,8 +1712,7 @@ rep_hist_load_bwhist_state_section(bw_array_t *b,
         }
         if (!ok) {
           retval = -1;
-          log_notice(LD_HIST, "Could not parse value '%s' into a number.'",
-                     cp);
+          log_notice(LD_HIST, "Could not parse value '%s' into a number.'",cp);
         }
         if (maxstr && !ok_m) {
           retval = -1;
