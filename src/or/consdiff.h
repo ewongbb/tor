@@ -84,14 +84,14 @@ STATIC int lines_eq(const cdline_t *a, const cdline_t *b);
 STATIC int line_str_eq(const cdline_t *a, const char *b);
 
 MOCK_DECL(STATIC int,
-          consensus_compute_digest,(const char *cons,
-                                    consensus_digest_t *digest_out));
+          consensus_compute_digest, (const char *cons,
+                                     consensus_digest_t *digest_out));
 MOCK_DECL(STATIC int,
-          consensus_compute_digest_as_signed,(const char *cons,
-                                              consensus_digest_t *digest_out));
+          consensus_compute_digest_as_signed, (const char *cons,
+                                               consensus_digest_t *digest_out));
 MOCK_DECL(STATIC int,
-          consensus_digest_eq,(const uint8_t *d1,
-                               const uint8_t *d2));
+          consensus_digest_eq, (const uint8_t *d1,
+                                const uint8_t *d2));
 #endif
 
 #endif
