@@ -3152,8 +3152,9 @@ options_validate(or_options_t *old_options, or_options_t *options,
 
   if (options->ExcludeExitNodes || options->ExcludeNodes) {
     options->ExcludeExitNodesUnion_ = routerset_new();
-    routerset_union(options->ExcludeExitNodesUnion_,options->ExcludeExitNodes);
-    routerset_union(options->ExcludeExitNodesUnion_,options->ExcludeNodes);
+    routerset_union(options->ExcludeExitNodesUnion_,
+                    options->ExcludeExitNodes);
+    routerset_union(options->ExcludeExitNodesUnion_, options->ExcludeNodes);
   }
 
   if (options->SchedulerLowWaterMark__ == 0 ||
@@ -3301,7 +3302,7 @@ options_validate(or_options_t *old_options, or_options_t *options,
         if (p<0) continue;
         smartlist_add_asprintf(instead, "*:%d", p);
       });
-      new_line->value = smartlist_join_strings(instead,",",0,NULL);
+      new_line->value = smartlist_join_strings(instead, ",", 0, NULL);
       /* These have been deprecated since 0.1.1.5-alpha-cvs */
       log_notice(LD_CONFIG,
           "Converting FascistFirewall and FirewallPorts "
@@ -4091,8 +4092,8 @@ options_validate(or_options_t *old_options, or_options_t *options,
   STMT_BEGIN                                                            \
     if (!options->TestingTorNetwork &&                                  \
         !options->UsingTestNetworkDefaults_ &&                          \
-        !config_is_same(&options_format,options,                        \
-                        default_options,#arg)) {                        \
+        !config_is_same(&options_format, options,                       \
+                        default_options, #arg)) {                       \
       REJECT(#arg " may only be changed in testing Tor "                \
              "networks!");                                              \
     } STMT_END
@@ -4433,7 +4434,7 @@ options_transition_allowed(const or_options_t *old,
     return -1;
   }
 
-  if (strcmp(old->DataDirectory,new_val->DataDirectory)!=0) {
+  if (strcmp(old->DataDirectory, new_val->DataDirectory)!=0) {
     tor_asprintf(msg,
                "While Tor is running, changing DataDirectory "
                "(\"%s\"->\"%s\") is not allowed.",
@@ -4578,9 +4579,9 @@ options_transition_affects_descriptor(const or_options_t *old_options,
   /* XXX We can be smarter here. If your DirPort isn't being
    * published and you just turned it off, no need to republish. Etc. */
   if (!opt_streq(old_options->DataDirectory, new_options->DataDirectory) ||
-      !opt_streq(old_options->Nickname,new_options->Nickname) ||
-      !opt_streq(old_options->Address,new_options->Address) ||
-      !config_lines_eq(old_options->ExitPolicy,new_options->ExitPolicy) ||
+      !opt_streq(old_options->Nickname, new_options->Nickname) ||
+      !opt_streq(old_options->Address, new_options->Address) ||
+      !config_lines_eq(old_options->ExitPolicy, new_options->ExitPolicy) ||
       old_options->ExitRelay != new_options->ExitRelay ||
       old_options->ExitPolicyRejectPrivate !=
         new_options->ExitPolicyRejectPrivate ||
@@ -4637,7 +4638,7 @@ get_windows_conf_root(void)
 #define APPDATA_PATH CSIDL_APPDATA
 #endif
   if (!SUCCEEDED(SHGetSpecialFolderLocation(NULL, APPDATA_PATH, &idl))) {
-    getcwd(path,MAX_PATH);
+    getcwd(path, MAX_PATH);
     is_set = 1;
     log_warn(LD_CONFIG,
              "I couldn't find your application data folder: are you "
@@ -4648,10 +4649,10 @@ get_windows_conf_root(void)
   /* Convert the path from an "ID List" (whatever that is!) to a path. */
   result = SHGetPathFromIDList(idl, tpath);
 #ifdef UNICODE
-  wcstombs(path,tpath,sizeof(path));
+  wcstombs(path, tpath, sizeof(path));
   path[sizeof(path)-1] = '\0';
 #else
-  strlcpy(path,tpath,sizeof(path));
+  strlcpy(path, tpath, sizeof(path));
 #endif
 
   /* Now we need to free the memory that the path-idl was stored in.  In
@@ -4664,7 +4665,7 @@ get_windows_conf_root(void)
   if (!SUCCEEDED(result)) {
     return NULL;
   }
-  strlcat(path,"\\tor",MAX_PATH);
+  strlcat(path, "\\tor", MAX_PATH);
   is_set = 1;
   return path;
 }
@@ -4815,7 +4816,7 @@ find_torrc_filename(config_line_t *cmd_arg,
       }
 
       *using_default_fname = 0;
-    } else if (ignore_opt && !strcmp(p_index->key,ignore_opt)) {
+    } else if (ignore_opt && !strcmp(p_index->key, ignore_opt)) {
       *ignore_missing_torrc = 1;
     }
   }
@@ -4859,7 +4860,7 @@ load_torrc_from_stdin(void)
 {
    size_t sz_out;
 
-   return read_file_to_str_until_eof(STDIN_FILENO,SIZE_MAX,&sz_out);
+   return read_file_to_str_until_eof(STDIN_FILENO, SIZE_MAX, &sz_out);
 }
 
 /** Load a configuration file from disk, setting torrc_fname or
@@ -4892,7 +4893,7 @@ load_torrc_from_disk(config_line_t *cmd_arg, int defaults_file)
   file_status_t st = fname ? file_status(fname) : FN_EMPTY;
   if (fname == NULL ||
       !(st == FN_FILE || st == FN_EMPTY) ||
-      !(cf = read_file_to_str(fname,0,NULL))) {
+      !(cf = read_file_to_str(fname, 0, NULL))) {
     if (using_default_torrc == 1 || ignore_missing_torrc) {
       if (!defaults_file)
         log_notice(LD_CONFIG, "Configuration file \"%s\" not present, "
@@ -4960,7 +4961,7 @@ options_init_from_torrc(int argc, char **argv)
   }
 
   if (config_line_find(cmdline_only_options, "--version")) {
-    printf("Tor version %s.\n",get_version());
+    printf("Tor version %s.\n", get_version());
     exit(0);
   }
 
@@ -4994,12 +4995,12 @@ options_init_from_torrc(int argc, char **argv)
 
   command = CMD_RUN_TOR;
   for (p_index = cmdline_only_options; p_index; p_index = p_index->next) {
-    if (!strcmp(p_index->key,"--keygen")) {
+    if (!strcmp(p_index->key, "--keygen")) {
       command = CMD_KEYGEN;
     } else if (!strcmp(p_index->key, "--key-expiration")) {
       command = CMD_KEY_EXPIRATION;
       command_arg = p_index->value;
-    } else if (!strcmp(p_index->key,"--list-fingerprint")) {
+    } else if (!strcmp(p_index->key, "--list-fingerprint")) {
       command = CMD_LIST_FINGERPRINT;
     } else if (!strcmp(p_index->key, "--hash-password")) {
       command = CMD_HASH_PASSWORD;
@@ -5106,7 +5107,7 @@ options_init_from_torrc(int argc, char **argv)
   tor_free(cf);
   tor_free(cf_defaults);
   if (errmsg) {
-    log_warn(LD_CONFIG,"%s", errmsg);
+    log_warn(LD_CONFIG, "%s", errmsg);
     tor_free(errmsg);
   }
   return retval < 0 ? -1 : 0;
@@ -5312,7 +5313,7 @@ config_register_addressmaps(const or_options_t *options)
     smartlist_split_string(elts, opt->value, NULL,
                            SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, 2);
     if (smartlist_len(elts) < 2) {
-      log_warn(LD_CONFIG,"MapAddress '%s' has too few arguments. Ignoring.",
+      log_warn(LD_CONFIG, "MapAddress '%s' has too few arguments. Ignoring.",
                opt->value);
       goto cleanup;
     }
@@ -5321,19 +5322,20 @@ config_register_addressmaps(const or_options_t *options)
     to = smartlist_get(elts,1);
 
     if (to[0] == '.' || from[0] == '.') {
-      log_warn(LD_CONFIG,"MapAddress '%s' is ambiguous - address starts with a"
-              "'.'. Ignoring.",opt->value);
+      log_warn(LD_CONFIG,
+               "MapAddress '%s' is ambiguous - address starts with a"
+               "'.'. Ignoring.", opt->value);
       goto cleanup;
     }
 
     if (addressmap_register_auto(from, to, 0, ADDRMAPSRC_TORRC, &msg) < 0) {
-      log_warn(LD_CONFIG,"MapAddress '%s' failed: %s. Ignoring.", opt->value,
+      log_warn(LD_CONFIG, "MapAddress '%s' failed: %s. Ignoring.", opt->value,
                msg);
       goto cleanup;
     }
 
     if (smartlist_len(elts) > 2)
-      log_warn(LD_CONFIG,"Ignoring extra arguments to MapAddress.");
+      log_warn(LD_CONFIG, "Ignoring extra arguments to MapAddress.");
 
   cleanup:
     SMARTLIST_FOREACH(elts, char*, cp, tor_free(cp));
@@ -5360,11 +5362,11 @@ addressmap_register_auto(const char *from, const char *to,
     return -1;
   }
   /* Detect asterisks in expressions of type: '*.example.com' */
-  if (!strncmp(from,"*.",2)) {
+  if (!strncmp(from, "*.", 2)) {
     from += 2;
     from_wildcard = 1;
   }
-  if (!strncmp(to,"*.",2)) {
+  if (!strncmp(to, "*.", 2)) {
     to += 2;
     to_wildcard = 1;
   }
@@ -5910,7 +5912,8 @@ parse_transport_line(const or_options_t *options,
  *  The returned string is allocated on the heap and it's the
  *  responsibility of the caller to free it. */
 static char *
-get_bindaddr_from_transport_listen_line(const char *line,const char *transport)
+get_bindaddr_from_transport_listen_line(const char *line,
+                                        const char *transport)
 {
   smartlist_t *items = NULL;
   const char *parsed_transport = NULL;
@@ -5923,7 +5926,8 @@ get_bindaddr_from_transport_listen_line(const char *line,const char *transport)
                          SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, -1);
 
   if (smartlist_len(items) < 2) {
-    log_warn(LD_CONFIG,"Too few arguments on ServerTransportListenAddr line.");
+    log_warn(LD_CONFIG,
+             "Too few arguments on ServerTransportListenAddr line.");
     goto err;
   }
 
@@ -5963,7 +5967,8 @@ get_bindaddr_from_transport_listen_line(const char *line,const char *transport)
  *  The returned smartlist and its strings are allocated on the heap
  *  and it's the responsibility of the caller to free it. */
 smartlist_t *
-get_options_from_transport_options_line(const char *line,const char *transport)
+get_options_from_transport_options_line(const char *line,
+                                        const char *transport)
 {
   smartlist_t *items = smartlist_new();
   smartlist_t *options = smartlist_new();
@@ -5973,7 +5978,7 @@ get_options_from_transport_options_line(const char *line,const char *transport)
                          SPLIT_SKIP_SPACE|SPLIT_IGNORE_BLANK, -1);
 
   if (smartlist_len(items) < 2) {
-    log_warn(LD_CONFIG,"Too few arguments on ServerTransportOptions line.");
+    log_warn(LD_CONFIG, "Too few arguments on ServerTransportOptions line.");
     goto err;
   }
 
@@ -6110,7 +6115,8 @@ parse_dir_authority_line(const char *line, dirinfo_type_t required_type,
       const char *wstring = flag + strlen("weight=");
       weight = tor_parse_double(wstring, 0, (double)UINT64_MAX, &ok, NULL);
       if (!ok) {
-        log_warn(LD_CONFIG, "Invalid weight '%s' on DirAuthority line.",flag);
+        log_warn(LD_CONFIG, "Invalid weight '%s' on DirAuthority line.",
+                 flag);
         weight=1.0;
       }
     } else if (!strcasecmpstart(flag, "v3ident=")) {
@@ -6156,7 +6162,7 @@ parse_dir_authority_line(const char *line, dirinfo_type_t required_type,
     goto err;
   }
   if (!dir_port) {
-    log_warn(LD_CONFIG, "Missing port in DirAuthority address '%s'",addrport);
+    log_warn(LD_CONFIG, "Missing port in DirAuthority address '%s'", addrport);
     goto err;
   }
 
@@ -7286,8 +7292,7 @@ check_server_ports(const smartlist_t *ports,
 
 /** Return a list of port_cfg_t for client ports parsed from the
  * options. */
-MOCK_IMPL(const smartlist_t *,
-get_configured_ports,(void))
+MOCK_IMPL(const smartlist_t *, get_configured_ports, (void))
 {
   if (!configured_ports)
     configured_ports = smartlist_new();
@@ -7467,7 +7472,7 @@ normalize_data_directory(or_options_t *options)
   if (options->DataDirectory)
     return 0; /* all set */
   p = tor_malloc(MAX_PATH);
-  strlcpy(p,get_windows_conf_root(),MAX_PATH);
+  strlcpy(p, get_windows_conf_root(), MAX_PATH);
   options->DataDirectory = p;
   return 0;
 #else
@@ -7475,13 +7480,13 @@ normalize_data_directory(or_options_t *options)
   if (!d)
     d = "~/.tor";
 
- if (strncmp(d,"~/",2) == 0) {
+ if (strncmp(d, "~/", 2) == 0) {
    char *fn = expand_filename(d);
    if (!fn) {
-     log_warn(LD_CONFIG,"Failed to expand filename \"%s\".", d);
+     log_warn(LD_CONFIG, "Failed to expand filename \"%s\".", d);
      return -1;
    }
-   if (!options->DataDirectory && !strcmp(fn,"/.tor")) {
+   if (!options->DataDirectory && !strcmp(fn, "/.tor")) {
      /* If our homedir is /, we probably don't want to use it. */
      /* Default to LOCALSTATEDIR/tor which is probably closer to what we
       * want. */
@@ -7666,9 +7671,9 @@ init_libevent(const or_options_t *options)
  * Note: Consider using the get_datadir_fname* macros in or.h.
  */
 MOCK_IMPL(char *,
-options_get_datadir_fname2_suffix,(const or_options_t *options,
-                                   const char *sub1, const char *sub2,
-                                   const char *suffix))
+options_get_datadir_fname2_suffix, (const or_options_t *options,
+                                    const char *sub1, const char *sub2,
+                                    const char *suffix))
 {
   char *fname = NULL;
   size_t len;
@@ -7842,7 +7847,7 @@ getinfo_helper_config(control_connection_t *conn,
       }
       if (!type)
         continue;
-      smartlist_add_asprintf(sl, "%s %s\n",var->name,type);
+      smartlist_add_asprintf(sl, "%s %s\n", var->name, type);
     }
     *answer = smartlist_join_strings(sl, "", 0, NULL);
     SMARTLIST_FOREACH(sl, char *, c, tor_free(c));
@@ -7868,7 +7873,7 @@ getinfo_helper_config(control_connection_t *conn,
           ++fallback_lines_seen;
         }
         char *val = esc_for_log(var->initvalue);
-        smartlist_add_asprintf(sl, "%s %s\n",var->name,val);
+        smartlist_add_asprintf(sl, "%s %s\n", var->name, val);
         tor_free(val);
       }
     }
@@ -8095,14 +8100,14 @@ init_cookie_authentication(const char *fname, const char *header,
   memcpy(cookie_file_str, header, strlen(header));
   memcpy(cookie_file_str+strlen(header), *cookie_out, cookie_len);
   if (write_bytes_to_file(fname, cookie_file_str, cookie_file_str_len, 1)) {
-    log_warn(LD_FS,"Error writing auth cookie to %s.", escaped(fname));
+    log_warn(LD_FS, "Error writing auth cookie to %s.", escaped(fname));
     goto done;
   }
 
 #ifndef _WIN32
   if (group_readable) {
     if (chmod(fname, 0640)) {
-      log_warn(LD_FS,"Unable to make %s group-readable.", escaped(fname));
+      log_warn(LD_FS, "Unable to make %s group-readable.", escaped(fname));
     }
   }
 #else
