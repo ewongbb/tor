@@ -303,12 +303,13 @@ get_next_token(memarea_t *area,
       if (table[i].concat_args) {
         /* The keyword takes the line as a single argument */
         tok->args = ALLOC(sizeof(char*));
-        tok->args[0] = STRNDUP(*s,eol-*s); /* Grab everything on line */
+        tok->args[0] = STRNDUP(*s, eol-*s); /* Grab everything on line */
         tok->n_args = 1;
       } else {
         /* This keyword takes multiple arguments. */
         if (get_token_arguments(area, tok, *s, eol)<0) {
-          tor_snprintf(ebuf, sizeof(ebuf),"Far too many arguments to %s", kwd);
+          tor_snprintf(ebuf, sizeof(ebuf), "Far too many arguments to %s",
+                       kwd);
           RET_ERR(ebuf);
         }
         *s = eol;
@@ -344,7 +345,7 @@ get_next_token(memarea_t *area,
     goto check_object;
 
   obstart = *s; /* Set obstart to start of object spec */
-  if (*s+16 >= eol || memchr(*s+11,'\0',eol-*s-16) || /* no short lines, */
+  if (*s+16 >= eol || memchr(*s+11, '\0', eol-*s-16) || /* no short lines, */
       strcmp_len(eol-5, "-----", 5) ||           /* nuls or invalid endings */
       (eol-*s) > MAX_UNPARSED_OBJECT_SIZE) {     /* name too long */
     RET_ERR("Malformed object: bad begin line");
