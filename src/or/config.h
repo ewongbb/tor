@@ -73,8 +73,8 @@ MOCK_DECL(char *,
   get_datadir_fname2_suffix((sub1), (sub2), NULL)
 /** Return a newly allocated string containing datadir/sub1/sub2 relative to
  * opts.  See get_datadir_fname2_suffix.  */
-#define options_get_datadir_fname2(opts,sub1,sub2)                      \
-  options_get_datadir_fname2_suffix((opts),(sub1), (sub2), NULL)
+#define options_get_datadir_fname2(opts, sub1, sub2)                      \
+  options_get_datadir_fname2_suffix((opts), (sub1), (sub2), NULL)
 /** Return a newly allocated string containing datadir/sub1suffix.  See
  * get_datadir_fname2_suffix. */
 #define get_datadir_fname_suffix(sub1, suffix) \
@@ -88,7 +88,7 @@ int write_to_data_subdir(const char* subdir, const char* fname,
 
 int get_num_cpus(const or_options_t *options);
 
-MOCK_DECL(const smartlist_t *,get_configured_ports,(void));
+MOCK_DECL(const smartlist_t *, get_configured_ports, (void));
 int get_first_advertised_port_by_type_af(int listener_type,
                                          int address_family);
 #define get_primary_or_port() \
