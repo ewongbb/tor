@@ -395,7 +395,7 @@ clear_pending_onions(void)
   int i;
   for (i=0; i<=MAX_ONION_HANDSHAKE_TYPE; i++) {
     for (victim = TOR_TAILQ_FIRST(&ol_list[i]); victim; victim = next) {
-      next = TOR_TAILQ_NEXT(victim,next);
+      next = TOR_TAILQ_NEXT(victim, next);
       onion_queue_entry_remove(victim);
     }
     tor_assert(TOR_TAILQ_EMPTY(&ol_list[i]));
