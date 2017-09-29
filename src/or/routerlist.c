@@ -4833,7 +4833,7 @@ list_pending_microdesc_downloads(digest256map_t *result)
 }
 
 /** For every certificate we are currently downloading by (identity digest,
- * signing key digest) pair, set result[fp_pair] to (void *1).
+ * signing key digest) pair, set result[fp_pair] to (void *)1.
  */
 static void
 list_pending_fpsk_downloads(fp_pair_map_t *result)
