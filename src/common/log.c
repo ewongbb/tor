@@ -336,7 +336,7 @@ format_msg(char *buf, size_t buf_len,
     n += 5;
   }
 
-  r = tor_vsnprintf(buf+n,buf_len-n,format,ap);
+  r = tor_vsnprintf(buf+n, buf_len-n, format, ap);
   if (r < 0) {
     /* The message was too long; overwrite the end of the buffer with
      * "[...truncated]" */
@@ -453,7 +453,9 @@ logfile_deliver(logfile_t *lf, const char *buf, size_t msg_len,
     if (domain & LD_NOCB) {
       if (!*callbacks_deferred && pending_cb_messages) {
         smartlist_add(pending_cb_messages,
-            pending_log_message_new(severity,domain,NULL,msg_after_prefix));
+                      pending_log_message_new(severity, domain,
+                                              NULL,
+                                              msg_after_prefix));
         *callbacks_deferred = 1;
       }
     } else {
@@ -473,8 +475,8 @@ logfile_deliver(logfile_t *lf, const char *buf, size_t msg_len,
  * message.  The actual message is derived as from tor_snprintf(format,ap).
  */
 MOCK_IMPL(STATIC void,
-logv,(int severity, log_domain_mask_t domain, const char *funcname,
-     const char *suffix, const char *format, va_list ap))
+logv, (int severity, log_domain_mask_t domain, const char *funcname,
+       const char *suffix, const char *format, va_list ap))
 {
   char buf[10240];
   size_t msg_len = 0;
@@ -500,11 +502,12 @@ logv,(int severity, log_domain_mask_t domain, const char *funcname,
       pending_startup_messages_len < MAX_STARTUP_MSG_LEN) {
     end_of_prefix =
       format_msg(buf, sizeof(buf), domain, severity, funcname, suffix,
-      format, ap, &msg_len);
+                 format, ap, &msg_len);
     formatted = 1;
 
     smartlist_add(pending_startup_messages,
-      pending_log_message_new(severity,domain,buf,end_of_prefix));
+                  pending_log_message_new(severity, domain,
+                                          buf, end_of_prefix));
     pending_startup_messages_len += msg_len;
   }
 
@@ -520,7 +523,7 @@ logv,(int severity, log_domain_mask_t domain, const char *funcname,
     }
 
     logfile_deliver(lf, buf, msg_len, end_of_prefix, domain, severity,
-      &callbacks_deferred);
+                    &callbacks_deferred);
   }
   UNLOCK_LOGS();
 }
@@ -535,7 +538,7 @@ tor_log(int severity, log_domain_mask_t domain, const char *format, ...)
   va_list ap;
   if (severity > log_global_min_severity_)
     return;
-  va_start(ap,format);
+  va_start(ap, format);
 #ifdef TOR_UNIT_TESTS
   if (domain & LD_NO_MOCK)
     logv__real(severity, domain, NULL, NULL, format, ap);
@@ -698,7 +701,7 @@ log_fn_(int severity, log_domain_mask_t domain, const char *fn,
   va_list ap;
   if (severity > log_global_min_severity_)
     return;
-  va_start(ap,format);
+  va_start(ap, format);
   logv(severity, domain, fn, NULL, format, ap);
   va_end(ap);
 }
