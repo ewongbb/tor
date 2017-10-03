@@ -808,7 +808,7 @@ pathbias_send_usable_probe(circuit_t *circ)
   ocirc->pathbias_probe_nonce &= 0x00ffffff;
   probe_nonce = tor_dup_ip(ocirc->pathbias_probe_nonce);
 
-  tor_snprintf(payload,RELAY_PAYLOAD_SIZE, "%s:25", probe_nonce);
+  tor_snprintf(payload, RELAY_PAYLOAD_SIZE, "%s:25", probe_nonce);
   payload_len = (int)strlen(payload)+1;
 
   // XXX: need this? Can we assume ipv4 will always be supported?
