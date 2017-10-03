@@ -301,7 +301,8 @@ typedef struct ratelim_t {
 char *rate_limit_log(ratelim_t *lim, time_t now);
 
 /* File helpers */
-ssize_t write_all(tor_socket_t fd, const char *buf, size_t count,int isSocket);
+ssize_t write_all(tor_socket_t fd, const char *buf, size_t count,
+                  int isSocket);
 ssize_t read_all(tor_socket_t fd, char *buf, size_t count, int isSocket);
 
 /** Status of an I/O stream. */
@@ -316,7 +317,7 @@ const char *stream_status_to_string(enum stream_status stream_status);
 
 enum stream_status get_string_from_pipe(int fd, char *buf, size_t count);
 
-MOCK_DECL(int,tor_unlink,(const char *pathname));
+MOCK_DECL(int, tor_unlink, (const char *pathname));
 
 /** Return values from file_status(); see that function's documentation
  * for details. */
@@ -349,10 +350,10 @@ FILE *fdopen_file(open_file_t *file_data);
 int finish_writing_to_file(open_file_t *file_data);
 int abort_writing_to_file(open_file_t *file_data);
 MOCK_DECL(int,
-write_str_to_file,(const char *fname, const char *str, int bin));
+write_str_to_file, (const char *fname, const char *str, int bin));
 MOCK_DECL(int,
-write_bytes_to_file,(const char *fname, const char *str, size_t len,
-                     int bin));
+write_bytes_to_file, (const char *fname, const char *str, size_t len,
+                      int bin));
 /** An ad-hoc type to hold a string of characters and a count; used by
  * write_chunks_to_file. */
 typedef struct sized_chunk_t {
@@ -496,20 +497,20 @@ int tor_process_get_stdout_pipe(process_handle_t *process_handle);
 
 #ifdef _WIN32
 MOCK_DECL(struct smartlist_t *,
-tor_get_lines_from_handle,(HANDLE *handle,
-                           enum stream_status *stream_status));
+tor_get_lines_from_handle, (HANDLE *handle,
+                            enum stream_status *stream_status));
 #else
 MOCK_DECL(struct smartlist_t *,
-tor_get_lines_from_handle,(int fd,
-                           enum stream_status *stream_status));
+tor_get_lines_from_handle, (int fd,
+                            enum stream_status *stream_status));
 #endif
 
 int
 tor_terminate_process(process_handle_t *process_handle);
 
 MOCK_DECL(void,
-tor_process_handle_destroy,(process_handle_t *process_handle,
-                            int also_terminate_process));
+tor_process_handle_destroy, (process_handle_t *process_handle,
+                             int also_terminate_process));
 
 /* ===== Insecure rng */
 typedef struct tor_weak_rng_t {
