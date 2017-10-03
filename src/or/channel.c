@@ -4679,9 +4679,9 @@ channel_num_circuits(channel_t *chan)
  * connection_or_set_circid_type()
  */
 MOCK_IMPL(void,
-channel_set_circid_type,(channel_t *chan,
-                         crypto_pk_t *identity_rcvd,
-                         int consider_identity))
+channel_set_circid_type, (channel_t *chan,
+                          crypto_pk_t *identity_rcvd,
+                          int consider_identity))
 {
   int started_here;
   crypto_pk_t *our_identity;
