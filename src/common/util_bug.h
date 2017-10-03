@@ -107,7 +107,7 @@ extern int bug_macro_deadcode_dummy__;
 #define tor_assert_nonfatal_once(cond) tor_assert((cond))
 #define BUG(cond)                                                       \
   (PREDICT_UNLIKELY(cond) ?                                             \
-   (tor_assertion_failed_(SHORT_FILE__,__LINE__,__func__,"!("#cond")"), \
+   (tor_assertion_failed_(SHORT_FILE__, __LINE__, __func__, "!("#cond")"), \
     abort(), 1)                                                         \
    : 0)
 #elif defined(TOR_UNIT_TESTS) && defined(DISABLE_ASSERTS_IN_UNIT_TESTS)
@@ -141,8 +141,8 @@ extern int bug_macro_deadcode_dummy__;
   STMT_END
 #define BUG(cond)                                                       \
   (PREDICT_UNLIKELY(cond) ?                                             \
-   (tor_bug_occurred_(SHORT_FILE__,__LINE__,__func__,"!("#cond")",0), 1) \
-   : 0)
+   (tor_bug_occurred_(SHORT_FILE__, __LINE__, __func__, "!("#cond")",   \
+                      0), 1) : 0)
 #endif
 
 #ifdef __GNUC__
