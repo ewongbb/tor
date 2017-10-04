@@ -96,16 +96,33 @@ you can use `git describe --contains <sha1 of commit>`.
 If at all possible, try to create this file in the same commit where you are
 making the change.  Please give it a distinctive name that no other branch will
 use for the lifetime of your change. To verify the format of the changes file,
-you can use `make check-changes`.
+you can use `make check-changes`.  This is run automatically as part of
+`make check` -- if it fails, we must fix it before we release.  These
+checks are implemented in `scripts/maint/lintChanges.py`.
+
+Changes file style guide:
+  * Changes files begin with "  o Header (subheading):".  The header
+    should usually be "Minor/Major bugfixes/features". The subheading is a
+    particular area within Tor.  See the ChangeLog for examples.
+
+  * Make everything terse.
+
+  * Write from the user's point of view: describe the user-visible changes
+    right away.
+
+  * Mention configuration options by name.  If they're rare or unusual,
+    remind people what they're for.
+
+  * Describe changes in the present tense and in the imperative: not past.
+
+  * Every bugfix should have a sentence of the form "Fixes bug 1234; bugfix
+    on 0.1.2.3-alpha", describing what bug was fixed and where it came from.
+
+  * "Relays", not "servers", "nodes", or "Tor relays".
 
 When we go to make a release, we will concatenate all the entries
 in changes to make a draft changelog, and clear the directory. We'll
 then edit the draft changelog into a nice readable format.
-
-To make sure that stuff is in the right format, we use
-scripts/maint/lintChanges.py to check the changes files for
-(superficial) validity.  You can run this script on your own changes
-files!
 
 What needs a changes file?
 

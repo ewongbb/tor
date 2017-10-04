@@ -310,7 +310,7 @@ learned_router_identity(const tor_addr_t *addr, uint16_t port,
     memcpy(&bridge->ed25519_identity, ed_id, sizeof(*ed_id));
     learned = 1;
   }
-#endif
+#endif /* 0 */
   if (learned) {
     char *transport_info = NULL;
     const char *transport_name =
@@ -456,8 +456,8 @@ bridge_add_from_config(bridge_line_t *bridge_line)
   b->fetch_status.schedule = DL_SCHED_BRIDGE;
   b->fetch_status.backoff = DL_SCHED_RANDOM_EXPONENTIAL;
   b->fetch_status.increment_on = DL_SCHED_INCREMENT_ATTEMPT;
-  /* This will fail if UseBridges is not set -- and it does. */
-  // download_status_reset(&b->fetch_status);
+  /* We can't reset the bridge's download status here, because UseBridges
+   * might be 0 now, and it might be changed to 1 much later. */
   b->socks_args = bridge_line->socks_args;
   if (!bridge_list)
     bridge_list = smartlist_new();
@@ -626,6 +626,7 @@ fetch_bridge_descriptors(const or_options_t *options, time_t now)
 
   SMARTLIST_FOREACH_BEGIN(bridge_list, bridge_info_t *, bridge)
     {
+      /* This resets the download status on first use */
       if (!download_status_is_ready(&bridge->fetch_status, now,
                                     IMPOSSIBLE_TO_DOWNLOAD))
         continue; /* don't bother, no need to retry yet */
@@ -836,7 +837,9 @@ learned_bridge_descriptor(routerinfo_t *ri, int from_cache)
 MOCK_IMPL(int,
 any_bridge_descriptors_known, (void))
 {
-  tor_assert(get_options()->UseBridges);
+  if (BUG(!get_options()->UseBridges)) {
+    return 0;
+  }
 
   if (!bridge_list)
     return 0;

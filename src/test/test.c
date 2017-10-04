@@ -20,7 +20,7 @@
 #include <direct.h>
 #else
 #include <dirent.h>
-#endif
+#endif /* defined(_WIN32) */
 
 /* These macros pull in declarations for some functions and structures that
  * are typically file-private. */
@@ -1217,6 +1217,8 @@ struct testgroup_t testgroups[] = {
   { "options/", options_tests },
   { "policy/" , policy_tests },
   { "procmon/", procmon_tests },
+  { "proto/http/", proto_http_tests },
+  { "proto/misc/", proto_misc_tests },
   { "protover/", protover_tests },
   { "pt/", pt_tests },
   { "relay/" , relay_tests },

@@ -697,7 +697,6 @@ rend_config_service(const config_line_t *line_,
        * of authorized clients. */
       smartlist_t *type_names_split, *clients;
       const char *authname;
-      int num_clients;
       if (service->auth_type != REND_NO_AUTH) {
         log_warn(LD_CONFIG, "Got multiple HiddenServiceAuthorizeClient "
                  "lines for a single service.");
@@ -741,14 +740,15 @@ rend_config_service(const config_line_t *line_,
       SMARTLIST_FOREACH(type_names_split, char *, cp, tor_free(cp));
       smartlist_free(type_names_split);
       /* Remove duplicate client names. */
-      num_clients = smartlist_len(clients);
-      smartlist_sort_strings(clients);
-      smartlist_uniq_strings(clients);
-      if (smartlist_len(clients) < num_clients) {
-        log_info(LD_CONFIG, "HiddenServiceAuthorizeClient contains %d "
-                            "duplicate client name(s); removing.",
-                 num_clients - smartlist_len(clients));
-        num_clients = smartlist_len(clients);
+      {
+        int num_clients = smartlist_len(clients);
+        smartlist_sort_strings(clients);
+        smartlist_uniq_strings(clients);
+        if (smartlist_len(clients) < num_clients) {
+          log_info(LD_CONFIG, "HiddenServiceAuthorizeClient contains %d "
+                   "duplicate client name(s); removing.",
+                   num_clients - smartlist_len(clients));
+        }
       }
       SMARTLIST_FOREACH_BEGIN(clients, const char *, client_name)
       {
@@ -1462,7 +1462,7 @@ rend_service_load_keys(rend_service_t *s)
                "Unable to make hidden hostname file %s group-readable.",
                fname);
   }
-#endif
+#endif /* !defined(_WIN32) */
 
   /* If client authorization is configured, load or generate keys. */
   if (s->auth_type != REND_NO_AUTH) {
@@ -3282,6 +3282,8 @@ rend_service_intro_established(origin_circuit_t *circuit,
              (unsigned)circuit->base_.n_circ_id);
     goto err;
   }
+  base32_encode(serviceid, REND_SERVICE_ID_LEN_BASE32 + 1,
+                rend_pk_digest, REND_SERVICE_ID_LEN);
   /* We've just successfully established a intro circuit to one of our
    * introduction point, account for it. */
   intro = find_intro_point(circuit);
@@ -3298,8 +3300,6 @@ rend_service_intro_established(origin_circuit_t *circuit,
   service->desc_is_dirty = time(NULL);
   circuit_change_purpose(TO_CIRCUIT(circuit), CIRCUIT_PURPOSE_S_INTRO);
 
-  base32_encode(serviceid, REND_SERVICE_ID_LEN_BASE32 + 1,
-                rend_pk_digest, REND_SERVICE_ID_LEN);
   log_info(LD_REND,
            "Received INTRO_ESTABLISHED cell on circuit %u for service %s",
            (unsigned)circuit->base_.n_circ_id, serviceid);
@@ -3402,7 +3402,7 @@ rend_service_rendezvous_has_opened(origin_circuit_t *circuit)
   /* Send the cell */
   if (relay_send_command_from_edge(0, TO_CIRCUIT(circuit),
                                    RELAY_COMMAND_RENDEZVOUS1,
-                                   buf, REND_COOKIE_LEN+DH_KEY_LEN+DIGEST_LEN,
+                                   buf, HS_LEGACY_RENDEZVOUS_CELL_SIZE,
                                    circuit->cpath->prev)<0) {
     log_warn(LD_GENERAL, "Couldn't send RENDEZVOUS1 cell.");
     goto done;
@@ -4374,5 +4374,5 @@ set_rend_rend_service_staging_list(smartlist_t *new_list)
   rend_service_staging_list = new_list;
 }
 
-#endif /* TOR_UNIT_TESTS */
+#endif /* defined(TOR_UNIT_TESTS) */
 

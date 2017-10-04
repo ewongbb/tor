@@ -60,7 +60,7 @@ static circuit_build_times_t circ_times;
 static int unit_tests = 0;
 #else
 #define unit_tests 0
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 /** Return a pointer to the data structure describing our current circuit
  * build time history and computations. */
@@ -148,7 +148,7 @@ circuit_build_times_disabled_(const or_options_t *options,
                "Consensus=%d, Config=%d, AuthDir=%d, StateFile=%d",
                consensus_disabled, config_disabled, dirauth_disabled,
                state_disabled);
-#endif
+#endif /* 0 */
       return 1;
     } else {
 #if 0
@@ -157,7 +157,7 @@ circuit_build_times_disabled_(const or_options_t *options,
                 "Consensus=%d, Config=%d, AuthDir=%d, StateFile=%d",
                 consensus_disabled, config_disabled, dirauth_disabled,
                 state_disabled);
-#endif
+#endif /* 0 */
       return 0;
     }
   }
@@ -608,7 +608,7 @@ circuit_build_times_rewind_history(circuit_build_times_t *cbt, int n)
           "Rewound history by %d places. Current index: %d. "
           "Total: %d", n, cbt->build_times_idx, cbt->total_build_times);
 }
-#endif
+#endif /* 0 */
 
 /**
  * Add a new build time value <b>time</b> to the set of build times. Time
@@ -676,7 +676,7 @@ circuit_build_times_min(circuit_build_times_t *cbt)
   }
   return min_build_time;
 }
-#endif
+#endif /* 0 */
 
 /**
  * Calculate and return a histogram for the set of build times.
@@ -910,7 +910,7 @@ circuit_build_times_parse_state(circuit_build_times_t *cbt,
   int tot_values = 0;
   uint32_t loaded_cnt = 0, N = 0;
   config_line_t *line;
-  unsigned int i;
+  int i;
   build_time_t *loaded_times;
   int err = 0;
   circuit_build_times_init(cbt);
@@ -960,8 +960,8 @@ circuit_build_times_parse_state(circuit_build_times_t *cbt,
         break;
       }
 
-      if (loaded_cnt+count+state->CircuitBuildAbandonedCount
-            > state->TotalBuildTimes) {
+      if (loaded_cnt+count+ (unsigned)state->CircuitBuildAbandonedCount
+          > (unsigned) state->TotalBuildTimes) {
         log_warn(LD_CIRC,
                  "Too many build times in state file. "
                  "Stopping short before %d",
@@ -986,7 +986,7 @@ circuit_build_times_parse_state(circuit_build_times_t *cbt,
     loaded_times[loaded_cnt++] = CBT_BUILD_ABANDONED;
   }
 
-  if (loaded_cnt != state->TotalBuildTimes) {
+  if (loaded_cnt != (unsigned)state->TotalBuildTimes) {
     log_warn(LD_CIRC,
             "Corrupt state file? Build times count mismatch. "
             "Read %d times, but file says %d", loaded_cnt,
@@ -1165,7 +1165,7 @@ circuit_build_times_cdf(circuit_build_times_t *cbt, double x)
   tor_assert(0 <= ret && ret <= 1.0);
   return ret;
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 #ifdef TOR_UNIT_TESTS
 /**
@@ -1200,7 +1200,7 @@ circuit_build_times_generate_sample(circuit_build_times_t *cbt,
   tor_assert(ret > 0);
   return ret;
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 #ifdef TOR_UNIT_TESTS
 /**
@@ -1223,7 +1223,7 @@ circuit_build_times_initial_alpha(circuit_build_times_t *cbt,
     (tor_mathlog(cbt->Xm)-tor_mathlog(timeout_ms));
   tor_assert(cbt->alpha > 0);
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 /**
  * Returns true if we need circuits to be built
@@ -1682,7 +1682,7 @@ circuitbuild_running_unit_tests(void)
 {
   unit_tests = 1;
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 void
 circuit_build_times_update_last_circ(circuit_build_times_t *cbt)

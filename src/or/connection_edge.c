@@ -115,7 +115,7 @@
 #define TRANS_NETFILTER
 #define TRANS_NETFILTER_IPV6
 #endif
-#endif
+#endif /* defined(HAVE_LINUX_NETFILTER_IPV6_IP6_TABLES_H) */
 
 #if defined(HAVE_NET_IF_H) && defined(HAVE_NET_PFVAR_H)
 #include <net/if.h>
@@ -661,7 +661,7 @@ connection_ap_about_to_close(entry_connection_t *entry_conn)
     connection_ap_warn_and_unmark_if_pending_circ(entry_conn,
                                                   "about_to_close");
   }
-#endif
+#endif /* 1 */
 
   control_event_stream_bandwidth(edge_conn);
   control_event_stream_status(entry_conn, STREAM_EVENT_CLOSED,
@@ -871,9 +871,9 @@ connection_ap_rescan_and_attach_pending(void)
     entry_conn->marked_pending_circ_line = 0;   \
     entry_conn->marked_pending_circ_file = 0;   \
   } while (0)
-#else
+#else /* !(defined(DEBUGGING_17659)) */
 #define UNMARK() do { } while (0)
-#endif
+#endif /* defined(DEBUGGING_17659) */
 
 /** Tell any AP streams that are listed as waiting for a new circuit to try
  * again.  If there is an available circuit for a stream, attach it. Otherwise,
@@ -979,7 +979,7 @@ connection_ap_mark_as_pending_circuit_(entry_connection_t *entry_conn,
     log_warn(LD_BUG, "(Previously called from %s:%d.)\n",
              f2 ? f2 : "<NULL>",
              entry_conn->marked_pending_circ_line);
-#endif
+#endif /* defined(DEBUGGING_17659) */
     log_backtrace(LOG_WARN, LD_BUG, "To debug, this may help");
     return;
   }
@@ -1237,10 +1237,9 @@ connection_ap_handshake_rewrite(entry_connection_t *conn,
   /* Check for whether this is a .exit address.  By default, those are
    * disallowed when they're coming straight from the client, but you're
    * allowed to have them in MapAddress commands and so forth. */
-  if (!strcmpend(socks->address, ".exit") && !options->AllowDotExit) {
+  if (!strcmpend(socks->address, ".exit")) {
     log_warn(LD_APP, "The  \".exit\" notation is disabled in Tor due to "
-             "security risks. Set AllowDotExit in your torrc to enable "
-             "it (at your own risk).");
+             "security risks.");
     control_event_client_status(LOG_WARN, "SOCKS_BAD_HOSTNAME HOSTNAME=%s",
                                 escaped(socks->address));
     out->end_reason = END_STREAM_REASON_TORPROTOCOL;
@@ -1576,6 +1575,7 @@ connection_ap_handle_onion(entry_connection_t *conn,
          * connection. */
         goto end;
       case HS_CLIENT_FETCH_LAUNCHED:
+      case HS_CLIENT_FETCH_PENDING:
       case HS_CLIENT_FETCH_HAVE_DESC:
         return 0;
       case HS_CLIENT_FETCH_ERROR:
@@ -1673,23 +1673,23 @@ connection_ap_handshake_rewrite_and_attach(entry_connection_t *conn,
     const node_t *node = NULL;
 
     /* If this .exit was added by an AUTOMAP, then it came straight from
-     * a user.  Make sure that options->AllowDotExit permits that! */
-    if (exit_source == ADDRMAPSRC_AUTOMAP && !options->AllowDotExit) {
-      /* Whoops; this one is stale.  It must have gotten added earlier,
-       * when AllowDotExit was on. */
-      log_warn(LD_APP, "Stale automapped address for '%s.exit', with "
-               "AllowDotExit disabled. Refusing.",
+     * a user.  That's not safe. */
+    if (exit_source == ADDRMAPSRC_AUTOMAP) {
+      /* Whoops; this one is stale.  It must have gotten added earlier?
+       * (Probably this is not possible, since AllowDotExit no longer
+       * exists.) */
+      log_warn(LD_APP, "Stale automapped address for '%s.exit'. Refusing.",
                safe_str_client(socks->address));
       control_event_client_status(LOG_WARN, "SOCKS_BAD_HOSTNAME HOSTNAME=%s",
                                   escaped(socks->address));
       connection_mark_unattached_ap(conn, END_STREAM_REASON_TORPROTOCOL);
+      tor_assert_nonfatal_unreached();
       return -1;
     }
 
     /* Double-check to make sure there are no .exits coming from
      * impossible/weird sources. */
-    if (exit_source == ADDRMAPSRC_DNS ||
-        (exit_source == ADDRMAPSRC_NONE && !options->AllowDotExit)) {
+    if (exit_source == ADDRMAPSRC_DNS || exit_source == ADDRMAPSRC_NONE) {
       /* It shouldn't be possible to get a .exit address from any of these
        * sources. */
       log_warn(LD_BUG, "Address '%s.exit', with impossible source for the "
@@ -1791,7 +1791,7 @@ connection_ap_handshake_rewrite_and_attach(entry_connection_t *conn,
       connection_mark_unattached_ap(conn, END_STREAM_REASON_ENTRYPOLICY);
       return -1;
     }
-#endif
+#endif /* defined(ENABLE_TOR2WEB_MODE) */
 
     /* socks->address is a non-onion hostname or IP address.
      * If we can't do any non-onion requests, refuse the connection.
@@ -2068,7 +2068,7 @@ get_pf_socket(void)
 #else
   /* works on NetBSD and FreeBSD */
   pf = tor_open_cloexec("/dev/pf", O_RDWR, 0);
-#endif
+#endif /* defined(OpenBSD) */
 
   if (pf < 0) {
     log_warn(LD_NET, "open(\"/dev/pf\") failed: %s", strerror(errno));
@@ -2078,9 +2078,10 @@ get_pf_socket(void)
   pf_socket = pf;
   return pf_socket;
 }
-#endif
+#endif /* defined(TRANS_PF) */
 
-#if defined(TRANS_NETFILTER) || defined(TRANS_PF) || defined(TRANS_TPROXY)
+#if defined(TRANS_NETFILTER) || defined(TRANS_PF) || \
+  defined(TRANS_TPROXY)
 /** Try fill in the address of <b>req</b> from the socket configured
  * with <b>conn</b>. */
 static int
@@ -2100,7 +2101,7 @@ destination_from_socket(entry_connection_t *conn, socks_request_t *req)
     }
     goto done;
   }
-#endif
+#endif /* defined(TRANS_TPROXY) */
 
 #ifdef TRANS_NETFILTER
   int rv = -1;
@@ -2110,13 +2111,13 @@ destination_from_socket(entry_connection_t *conn, socks_request_t *req)
       rv = getsockopt(ENTRY_TO_CONN(conn)->s, SOL_IP, SO_ORIGINAL_DST,
                       (struct sockaddr*)&orig_dst, &orig_dst_len);
       break;
-#endif
+#endif /* defined(TRANS_NETFILTER_IPV4) */
 #ifdef TRANS_NETFILTER_IPV6
     case AF_INET6:
       rv = getsockopt(ENTRY_TO_CONN(conn)->s, SOL_IPV6, IP6T_SO_ORIGINAL_DST,
                       (struct sockaddr*)&orig_dst, &orig_dst_len);
       break;
-#endif
+#endif /* defined(TRANS_NETFILTER_IPV6) */
     default:
       log_warn(LD_BUG,
                "Received transparent data from an unsuported socket family %d",
@@ -2142,7 +2143,7 @@ destination_from_socket(entry_connection_t *conn, socks_request_t *req)
   (void)req;
   log_warn(LD_BUG, "Unable to determine destination from socket.");
   return -1;
-#endif
+#endif /* defined(TRANS_NETFILTER) || ... */
 
  done:
   tor_addr_from_sockaddr(&addr, (struct sockaddr*)&orig_dst, &req->port);
@@ -2150,7 +2151,7 @@ destination_from_socket(entry_connection_t *conn, socks_request_t *req)
 
   return 0;
 }
-#endif
+#endif /* defined(TRANS_NETFILTER) || defined(TRANS_PF) || ... */
 
 #ifdef TRANS_PF
 static int
@@ -2184,7 +2185,7 @@ destination_from_pf(entry_connection_t *conn, socks_request_t *req)
 
     return 0;
   }
-#endif
+#endif /* defined(__FreeBSD__) */
 
   memset(&pnl, 0, sizeof(pnl));
   pnl.proto           = IPPROTO_TCP;
@@ -2233,7 +2234,7 @@ destination_from_pf(entry_connection_t *conn, socks_request_t *req)
 
   return 0;
 }
-#endif
+#endif /* defined(TRANS_PF) */
 
 /** Fetch the original destination address and port from a
  * system-specific interface and put them into a
@@ -2269,7 +2270,7 @@ connection_ap_get_original_destination(entry_connection_t *conn,
   log_warn(LD_BUG, "Called connection_ap_get_original_destination, but no "
            "transparent proxy method was configured.");
   return -1;
-#endif
+#endif /* defined(TRANS_NETFILTER) || ... */
 }
 
 /** connection_edge_process_inbuf() found a conn in state
@@ -3436,7 +3437,8 @@ connection_exit_begin_conn(cell_t *cell, circuit_t *circ)
     port = bcell.port;
 
     if (or_circ && or_circ->p_chan) {
-      if ((or_circ->is_first_hop ||
+      const int client_chan = channel_is_client(or_circ->p_chan);
+      if ((client_chan ||
            (!connection_or_digest_is_known_relay(
                 or_circ->p_chan->identity_digest) &&
           should_refuse_unknown_exits(options)))) {
@@ -3446,10 +3448,10 @@ connection_exit_begin_conn(cell_t *cell, circuit_t *circ)
         log_fn(LOG_PROTOCOL_WARN, LD_PROTOCOL,
                "Attempt by %s to open a stream %s. Closing.",
                safe_str(channel_get_canonical_remote_descr(or_circ->p_chan)),
-               or_circ->is_first_hop ? "on first hop of circuit" :
-                                       "from unknown relay");
+               client_chan ? "on first hop of circuit" :
+                             "from unknown relay");
         relay_send_end_cell_from_edge(rh.stream_id, circ,
-                                      or_circ->is_first_hop ?
+                                      client_chan ?
                                         END_STREAM_REASON_TORPROTOCOL :
                                         END_STREAM_REASON_MISC,
                                       NULL);

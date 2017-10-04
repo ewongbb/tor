@@ -129,6 +129,10 @@ for my $fn (@ARGV) {
             if (/,[^ ]([\w|\d]+)/g) {
                 msg "      Space missing after comma on $. in $fn.\n";
             }
+            ## Warn about double semi-colons at the end of a line.
+            if (/;;$/) {
+                msg "       double semi-colons at the end of $. in $fn\n"
+            }            
             ## Warn about multiple internal spaces.
             #if (/[^\s,:]\s{2,}[^\s\\=]/) {
             #    msg "     X  X:$fn:$.\n";

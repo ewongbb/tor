@@ -76,7 +76,7 @@ set_unix_port(edge_connection_t *conn, rend_service_port_config_t *p)
   return 0;
 }
 
-#else /* defined(HAVE_SYS_UN_H) */
+#else /* !(defined(HAVE_SYS_UN_H)) */
 
 static int
 set_unix_port(edge_connection_t *conn, rend_service_port_config_t *p)
@@ -94,7 +94,7 @@ add_unix_port(smartlist_t *ports, rend_service_port_config_t *p)
   return -ENOSYS;
 }
 
-#endif /* HAVE_SYS_UN_H */
+#endif /* defined(HAVE_SYS_UN_H) */
 
 /* Helper function: The key is a digest that we compare to a node_t object
  * current hsdir_index. */
@@ -641,7 +641,7 @@ get_second_cached_disaster_srv(void)
   return cached_disaster_srv[1];
 }
 
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 /* When creating a blinded key, we need a parameter which construction is as
  * follow: H(pubkey | [secret] | ed25519-basepoint | nonce).
@@ -1454,7 +1454,7 @@ hs_lookup_last_hid_serv_request(routerstatus_t *hs_dir,
                                 const char *req_key_str,
                                 time_t now, int set)
 {
-  char hsdir_id_base32[REND_DESC_ID_V2_LEN_BASE32 + 1];
+  char hsdir_id_base32[BASE32_DIGEST_LEN + 1];
   char *hsdir_desc_comb_id = NULL;
   time_t *last_request_ptr;
   strmap_t *last_hid_serv_requests = get_last_hid_serv_requests();

@@ -17,7 +17,7 @@
  * with the libevent fix.
  */
 #define _LARGEFILE64_SOURCE
-#endif
+#endif /* !defined(_LARGEFILE64_SOURCE) */
 
 /** Malloc mprotect limit in bytes.
  *
@@ -77,7 +77,7 @@
 #define USE_BACKTRACE
 #define EXPOSE_CLEAN_BACKTRACE
 #include "backtrace.h"
-#endif
+#endif /* defined(HAVE_EXECINFO_H) && defined(HAVE_BACKTRACE) && ... */
 
 #ifdef USE_BACKTRACE
 #include <execinfo.h>
@@ -103,7 +103,7 @@
 
 #define M_SYSCALL arm_r7
 
-#endif
+#endif /* defined(__i386__) || ... */
 
 /**Determines if at least one sandbox is active.*/
 static int sandbox_active = 0;
@@ -302,7 +302,7 @@ sb_time(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
        SCMP_CMP(0, SCMP_CMP_EQ, 0));
 #else
   return 0;
-#endif
+#endif /* defined(__NR_time) */
 }
 
 /**
@@ -321,7 +321,7 @@ sb_accept4(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
   if (rc) {
     return rc;
   }
-#endif
+#endif /* defined(__i386__) */
 
   rc = seccomp_rule_add_1(ctx, SCMP_ACT_ALLOW, SCMP_SYS(accept4),
                    SCMP_CMP_MASKED(3, SOCK_CLOEXEC|SOCK_NONBLOCK, 0));
@@ -399,7 +399,7 @@ sb_mmap2(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
 
   return 0;
 }
-#endif
+#endif /* defined(__NR_mmap2) */
 
 /**
  * Function responsible for setting up the open syscall for
@@ -667,6 +667,25 @@ sb_socketpair(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
   return 0;
 }
 
+#ifdef HAVE_KIST_SUPPORT
+
+#include <linux/sockios.h>
+
+static int
+sb_ioctl(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
+{
+  int rc;
+  (void) filter;
+
+  rc = seccomp_rule_add_1(ctx, SCMP_ACT_ALLOW, SCMP_SYS(ioctl),
+                          SCMP_CMP(1, SCMP_CMP_EQ, SIOCOUTQNSD));
+  if (rc)
+    return rc;
+  return 0;
+}
+
+#endif /* defined(HAVE_KIST_SUPPORT) */
+
 /**
  * Function responsible for setting up the setsockopt syscall for
  * the seccomp filter sandbox.
@@ -707,7 +726,7 @@ sb_setsockopt(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       SCMP_CMP(2, SCMP_CMP_EQ, SO_SNDBUFFORCE));
   if (rc)
     return rc;
-#endif
+#endif /* defined(HAVE_SYSTEMD) */
 
 #ifdef IP_TRANSPARENT
   rc = seccomp_rule_add_2(ctx, SCMP_ACT_ALLOW, SCMP_SYS(setsockopt),
@@ -715,7 +734,7 @@ sb_setsockopt(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       SCMP_CMP(2, SCMP_CMP_EQ, IP_TRANSPARENT));
   if (rc)
     return rc;
-#endif
+#endif /* defined(IP_TRANSPARENT) */
 
 #ifdef IPV6_V6ONLY
   rc = seccomp_rule_add_2(ctx, SCMP_ACT_ALLOW, SCMP_SYS(setsockopt),
@@ -723,7 +742,7 @@ sb_setsockopt(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       SCMP_CMP(2, SCMP_CMP_EQ, IPV6_V6ONLY));
   if (rc)
     return rc;
-#endif
+#endif /* defined(IPV6_V6ONLY) */
 
   return 0;
 }
@@ -756,7 +775,7 @@ sb_getsockopt(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       SCMP_CMP(2, SCMP_CMP_EQ, SO_SNDBUF));
   if (rc)
     return rc;
-#endif
+#endif /* defined(HAVE_SYSTEMD) */
 
 #ifdef HAVE_LINUX_NETFILTER_IPV4_H
   rc = seccomp_rule_add_2(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockopt),
@@ -764,7 +783,7 @@ sb_getsockopt(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       SCMP_CMP(2, SCMP_CMP_EQ, SO_ORIGINAL_DST));
   if (rc)
     return rc;
-#endif
+#endif /* defined(HAVE_LINUX_NETFILTER_IPV4_H) */
 
 #ifdef HAVE_LINUX_NETFILTER_IPV6_IP6_TABLES_H
   rc = seccomp_rule_add_2(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockopt),
@@ -772,7 +791,16 @@ sb_getsockopt(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
       SCMP_CMP(2, SCMP_CMP_EQ, IP6T_SO_ORIGINAL_DST));
   if (rc)
     return rc;
-#endif
+#endif /* defined(HAVE_LINUX_NETFILTER_IPV6_IP6_TABLES_H) */
+
+#ifdef HAVE_KIST_SUPPORT
+#include <netinet/tcp.h>
+  rc = seccomp_rule_add_2(ctx, SCMP_ACT_ALLOW, SCMP_SYS(getsockopt),
+      SCMP_CMP(1, SCMP_CMP_EQ, SOL_TCP),
+      SCMP_CMP(2, SCMP_CMP_EQ, TCP_INFO));
+  if (rc)
+    return rc;
+#endif /* defined(HAVE_KIST_SUPPORT) */
 
   return 0;
 }
@@ -812,7 +840,7 @@ sb_fcntl64(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
 
   return 0;
 }
-#endif
+#endif /* defined(__NR_fcntl64) */
 
 /**
  * Function responsible for setting up the epoll_ctl syscall for
@@ -1041,7 +1069,7 @@ sb_stat64(scmp_filter_ctx ctx, sandbox_cfg_t *filter)
 
   return 0;
 }
-#endif
+#endif /* defined(__NR_stat64) */
 
 /**
  * Array of function pointers responsible for filtering different syscalls at
@@ -1078,7 +1106,11 @@ static sandbox_filter_func_t filter_func[] = {
     sb_socket,
     sb_setsockopt,
     sb_getsockopt,
-    sb_socketpair
+    sb_socketpair,
+
+#ifdef HAVE_KIST_SUPPORT
+    sb_ioctl,
+#endif
 };
 
 const char *
@@ -1737,7 +1769,7 @@ sigsys_debugging(int nr, siginfo_t *info, void *void_context)
   /* Clean up the top stack frame so we get the real function
    * name for the most recently failing function. */
   clean_backtrace(syscall_cb_buf, depth, ctx);
-#endif
+#endif /* defined(USE_BACKTRACE) */
 
   syscall_name = get_syscall_name(syscall);
 
@@ -1811,7 +1843,7 @@ register_cfg(sandbox_cfg_t* cfg)
   return 0;
 }
 
-#endif // USE_LIBSECCOMP
+#endif /* defined(USE_LIBSECCOMP) */
 
 #ifdef USE_LIBSECCOMP
 /**
@@ -1841,7 +1873,7 @@ sandbox_is_active(void)
 {
   return sandbox_active != 0;
 }
-#endif // USE_LIBSECCOMP
+#endif /* defined(USE_LIBSECCOMP) */
 
 sandbox_cfg_t*
 sandbox_cfg_new(void)
@@ -1869,7 +1901,7 @@ sandbox_init(sandbox_cfg_t *cfg)
            "Currently, sandboxing is only implemented on Linux. The feature "
            "is disabled on your platform.");
   return 0;
-#endif
+#endif /* defined(USE_LIBSECCOMP) || ... */
 }
 
 #ifndef USE_LIBSECCOMP
@@ -1925,5 +1957,5 @@ void
 sandbox_disable_getaddrinfo_cache(void)
 {
 }
-#endif
+#endif /* !defined(USE_LIBSECCOMP) */
 

@@ -137,6 +137,8 @@ src_test_test_SOURCES = \
 	src/test/test_options.c \
 	src/test/test_policy.c \
 	src/test/test_procmon.c \
+	src/test/test_proto_http.c \
+	src/test/test_proto_misc.c \
 	src/test/test_protover.c \
 	src/test/test_pt.c \
 	src/test/test_pubsub.c \
@@ -332,6 +334,8 @@ EXTRA_DIST += \
 	src/test/bt_test.py \
 	src/test/ntor_ref.py \
 	src/test/hs_ntor_ref.py \
+	src/test/hs_build_address.py \
+	src/test/hs_indexes.py \
 	src/test/fuzz_static_testcases.sh \
 	src/test/slownacl_curve25519.py \
 	src/test/zero_length_keys.sh \

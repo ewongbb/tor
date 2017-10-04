@@ -61,6 +61,7 @@
 #include "router.h"
 #include "routerlist.h"
 #include "routerparse.h"
+#include "scheduler.h"
 #include "shared_random.h"
 #include "transports.h"
 #include "torcert.h"
@@ -1561,6 +1562,15 @@ notify_control_networkstatus_changed(const networkstatus_t *old_c,
   smartlist_free(changed);
 }
 
+/* Called when the consensus has changed from old_c to new_c. */
+static void
+notify_networkstatus_changed(const networkstatus_t *old_c,
+                             const networkstatus_t *new_c)
+{
+  notify_control_networkstatus_changed(old_c, new_c);
+  scheduler_notify_networkstatus_changed(old_c, new_c);
+}
+
 /** Copy all the ancillary information (like router download status and so on)
  * from <b>old_c</b> to <b>new_c</b>. */
 static void
@@ -1619,7 +1629,7 @@ networkstatus_set_current_consensus_from_ns(networkstatus_t *c,
   }
   return current_md_consensus ? 0 : -1;
 }
-#endif //TOR_UNIT_TESTS
+#endif /* defined(TOR_UNIT_TESTS) */
 
 /**
  * Return true if any option is set in <b>options</b> to make us behave
@@ -1887,8 +1897,7 @@ networkstatus_set_current_consensus(const char *consensus,
   const int is_usable_flavor = flav == usable_consensus_flavor();
 
   if (is_usable_flavor) {
-    notify_control_networkstatus_changed(
-                         networkstatus_get_latest_consensus(), c);
+    notify_networkstatus_changed(networkstatus_get_latest_consensus(), c);
   }
   if (flav == FLAV_NS) {
     if (current_ns_consensus) {
@@ -2315,9 +2324,9 @@ get_net_param_from_list(smartlist_t *net_params, const char *param_name,
  * Make sure the value parsed from the consensus is at least
  * <b>min_val</b> and at most <b>max_val</b> and raise/cap the parsed value
  * if necessary. */
-int32_t
-networkstatus_get_param(const networkstatus_t *ns, const char *param_name,
-                        int32_t default_val, int32_t min_val, int32_t max_val)
+MOCK_IMPL(int32_t,
+networkstatus_get_param, (const networkstatus_t *ns, const char *param_name,
+                        int32_t default_val, int32_t min_val, int32_t max_val))
 {
   if (!ns) /* if they pass in null, go find it ourselves */
     ns = networkstatus_get_latest_consensus();

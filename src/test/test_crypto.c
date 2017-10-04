@@ -1388,7 +1388,7 @@ do_truncate(const char *fname, size_t len)
   tor_free(bytes);
   return r;
 }
-#endif
+#endif /* defined(HAVE_TRUNCATE) */
 
 /** Sanity check for crypto pk digests  */
 static void
@@ -1411,6 +1411,7 @@ test_crypto_digests(void *arg)
              AUTHORITY_SIGNKEY_A_DIGEST, HEX_DIGEST_LEN);
 
   r = crypto_pk_get_common_digests(k, &pkey_digests);
+  tt_int_op(r, OP_EQ, 0);
 
   tt_mem_op(hex_str(pkey_digests.d[DIGEST_SHA1], DIGEST_LEN), OP_EQ,
              AUTHORITY_SIGNKEY_A_DIGEST, HEX_DIGEST_LEN);
@@ -1912,7 +1913,7 @@ test_crypto_curve25519_impl(void *arg)
                                 "e0544770bc7de853b38f9100489e3e79";
   const char e1e2k_expected[] = "cd6e8269104eb5aaee886bd2071fba88"
                                 "bd13861475516bc2cd2b6e005e805064";
-#else
+#else /* !(defined(SLOW_CURVE25519_TEST)) */
   const int loop_max=200;
   const char e1_expected[]    = "bc7112cde03f97ef7008cad1bdc56be3"
                                 "c6a1037d74cceb3712e9206871dcf654";
@@ -1920,7 +1921,7 @@ test_crypto_curve25519_impl(void *arg)
                                 "8e3ee1a63c7d14274ea5d4c67f065467";
   const char e1e2k_expected[] = "7ddb98bd89025d2347776b33901b3e7e"
                                 "c0ee98cb2257a4545c0cfb2ca3e1812b";
-#endif
+#endif /* defined(SLOW_CURVE25519_TEST) */
 
   unsigned char e1k[32];
   unsigned char e2k[32];
@@ -2603,6 +2604,8 @@ test_crypto_ed25519_testvectors(void *arg)
     uint8_t blinding_param[32];
     ed25519_signature_t sig;
     int sign;
+
+    memset(&curvekp, 0xd0, sizeof(curvekp));
 
 #define DECODE(p,s) base16_decode((char*)(p),sizeof(p),(s),strlen(s))
 #define EQ(a,h) test_memeq_hex((const char*)(a), (h))

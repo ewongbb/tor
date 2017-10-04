@@ -701,7 +701,7 @@ channel_remove_from_digest_map(channel_t *chan)
 
     return;
   }
-#endif
+#endif /* 0 */
 
   /* Pull it out of its list, wherever that list is */
   TOR_LIST_REMOVE(chan, next_with_same_id);
@@ -1832,7 +1832,7 @@ cell_queue_entry_is_padding(cell_queue_entry_t *q)
 
   return 0;
 }
-#endif
+#endif /* 0 */
 
 /**
  * Allocate a new cell queue entry for a fixed-size cell
@@ -2603,8 +2603,8 @@ channel_flush_cells(channel_t *chan)
  * available.
  */
 
-int
-channel_more_to_flush(channel_t *chan)
+MOCK_IMPL(int,
+channel_more_to_flush, (channel_t *chan))
 {
   tor_assert(chan);
 
@@ -2715,7 +2715,7 @@ channel_do_open_actions(channel_t *chan)
     router_set_status(chan->identity_digest, 1);
   } else {
     /* only report it to the geoip module if it's not a known router */
-    if (!router_get_by_id_digest(chan->identity_digest)) {
+    if (!connection_or_digest_is_known_relay(chan->identity_digest)) {
       if (channel_get_addr_if_possible(chan, &remote_addr)) {
         char *transport_name = NULL;
         if (chan->get_transport_name(chan, &transport_name) < 0)
@@ -4090,7 +4090,7 @@ channel_mark_bad_for_new_circs(channel_t *chan)
  */
 
 int
-channel_is_client(channel_t *chan)
+channel_is_client(const channel_t *chan)
 {
   tor_assert(chan);
 
@@ -4109,6 +4109,20 @@ channel_mark_client(channel_t *chan)
   tor_assert(chan);
 
   chan->is_client = 1;
+}
+
+/**
+ * Clear the client flag
+ *
+ * Mark a channel as being _not_ from a client
+ */
+
+void
+channel_clear_client(channel_t *chan)
+{
+  tor_assert(chan);
+
+  chan->is_client = 0;
 }
 
 /**
@@ -4841,8 +4855,6 @@ channel_update_xmit_queue_size(channel_t *chan)
                 U64_FORMAT ", new size is " U64_FORMAT,
                 U64_PRINTF_ARG(adj), U64_PRINTF_ARG(chan->global_identifier),
                 U64_PRINTF_ARG(estimated_total_queue_size));
-      /* Tell the scheduler we're increasing the queue size */
-      scheduler_adjust_queue_size(chan, 1, adj);
     }
   } else if (queued < chan->bytes_queued_for_xmit) {
     adj = chan->bytes_queued_for_xmit - queued;
@@ -4865,8 +4877,6 @@ channel_update_xmit_queue_size(channel_t *chan)
                 U64_FORMAT ", new size is " U64_FORMAT,
                 U64_PRINTF_ARG(adj), U64_PRINTF_ARG(chan->global_identifier),
                 U64_PRINTF_ARG(estimated_total_queue_size));
-      /* Tell the scheduler we're decreasing the queue size */
-      scheduler_adjust_queue_size(chan, -1, adj);
     }
   }
 }

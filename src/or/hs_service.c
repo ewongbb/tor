@@ -214,6 +214,37 @@ service_clear_config(hs_service_config_t *config)
   memset(config, 0, sizeof(*config));
 }
 
+/* Helper function to return a human readable description of the given intro
+ * point object.
+ *
+ * This function is not thread-safe. Each call to this invalidates the
+ * previous values returned by it. */
+static const char *
+describe_intro_point(const hs_service_intro_point_t *ip)
+{
+  /* Hex identity digest of the IP prefixed by the $ sign and ends with NUL
+   * byte hence the plus two. */
+  static char buf[HEX_DIGEST_LEN + 2];
+  const char *legacy_id = NULL;
+
+  SMARTLIST_FOREACH_BEGIN(ip->base.link_specifiers,
+                          const hs_desc_link_specifier_t *, lspec) {
+    if (lspec->type == LS_LEGACY_ID) {
+      legacy_id = (const char *) lspec->u.legacy_id;
+      break;
+    }
+  } SMARTLIST_FOREACH_END(lspec);
+
+  /* For now, we only print the identity digest but we could improve this with
+   * much more information such as the ed25519 identity has well. */
+  buf[0] = '$';
+  if (legacy_id) {
+    base16_encode(buf + 1, HEX_DIGEST_LEN + 1, legacy_id, DIGEST_LEN);
+  }
+
+  return buf;
+}
+
 /* Return the lower bound of maximum INTRODUCE2 cells per circuit before we
  * rotate intro point (defined by a consensus parameter or the default
  * value). */
@@ -911,7 +942,7 @@ write_address_to_file(const hs_service_t *service, const char *fname_)
                       "group-readable.", escaped(fname));
     }
   }
-#endif /* _WIN32 */
+#endif /* !defined(_WIN32) */
 
   /* Success. */
   ret = 0;
@@ -1540,6 +1571,8 @@ pick_intro_point(unsigned int direct_conn, smartlist_t *exclude_nodes)
   if (ip == NULL) {
     goto err;
   }
+
+  log_info(LD_REND, "Picked intro point: %s", extend_info_describe(info));
   extend_info_free(info);
   return ip;
  err:
@@ -1695,11 +1728,12 @@ update_service_descriptor(hs_service_t *service,
                                                                  desc);
     if (num_new_intro_points != 0) {
       log_info(LD_REND, "Service %s just picked %u intro points and wanted "
-                        "%u. It currently has %d intro points. "
-                        "Launching ESTABLISH_INTRO circuit shortly.",
+                        "%u for %s descriptor. It currently has %d intro "
+                        "points. Launching ESTABLISH_INTRO circuit shortly.",
                safe_str_client(service->onion_address),
                num_new_intro_points,
                service->config.num_intro_points - num_intro_points,
+               (desc == service->desc_current) ? "current" : "next",
                num_intro_points);
       /* We'll build those introduction point into the descriptor once we have
        * confirmation that the circuits are opened and ready. However,
@@ -1784,6 +1818,13 @@ cleanup_intro_points(hs_service_t *service, time_t now)
        * reached the maximum number of retry with a non existing circuit. */
       if (has_expired || node == NULL ||
           ip->circuit_retries > MAX_INTRO_POINT_CIRCUIT_RETRIES) {
+        log_info(LD_REND, "Intro point %s%s (retried: %u times). "
+                          "Removing it.",
+                 describe_intro_point(ip),
+                 has_expired ? " has expired" :
+                    (node == NULL) ?  " fell off the consensus" : "",
+                 ip->circuit_retries);
+
         /* Remove intro point from descriptor map. We'll add it to the failed
          * map if we retried it too many times. */
         MAP_DEL_CURRENT(key);
@@ -1918,7 +1959,7 @@ STATIC void
 run_housekeeping_event(time_t now)
 {
   /* Note that nothing here opens circuit(s) nor uploads descriptor(s). We are
-   * simply moving things around or removing uneeded elements. */
+   * simply moving things around or removing unneeded elements. */
 
   FOR_EACH_SERVICE_BEGIN(service) {
 
@@ -1994,13 +2035,9 @@ launch_intro_point_circuits(hs_service_t *service)
 
       ei = get_extend_info_from_intro_point(ip, direct_conn);
       if (ei == NULL) {
-        if (!direct_conn) {
-          /* In case of a multi-hop connection, it should never happen that we
-           * can't get the extend info from the node. Avoid connection and
-           * remove intro point from descriptor in order to recover from this
-           * potential bug. */
-          tor_assert_nonfatal(ei);
-        }
+        /* This is possible if we can get a node_t but not the extend info out
+         * of it. In this case, we remove the intro point and a new one will
+         * be picked at the next main loop callback. */
         MAP_DEL_CURRENT(key);
         service_intro_point_free(ip);
         continue;
@@ -2009,7 +2046,7 @@ launch_intro_point_circuits(hs_service_t *service)
       /* Launch a circuit to the intro point. */
       ip->circuit_retries++;
       if (hs_circ_launch_intro_point(service, ip, ei) < 0) {
-        log_warn(LD_REND, "Unable to launch intro circuit to node %s "
+        log_info(LD_REND, "Unable to launch intro circuit to node %s "
                           "for service %s.",
                  safe_str_client(extend_info_describe(ei)),
                  safe_str_client(service->onion_address));
@@ -3310,5 +3347,5 @@ get_first_service(void)
   return *obj;
 }
 
-#endif /* TOR_UNIT_TESTS */
+#endif /* defined(TOR_UNIT_TESTS) */
 

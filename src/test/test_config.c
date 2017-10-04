@@ -279,7 +279,7 @@ test_config_check_or_create_data_subdir(void *arg)
   tt_assert(!is_private_dir(subpath));
   tt_assert(!check_or_create_data_subdir(subdir));
   tt_assert(is_private_dir(subpath));
-#endif
+#endif /* !defined (_WIN32) */
 
  done:
   rmdir(subpath);
@@ -704,6 +704,7 @@ test_config_parse_transport_plugin_line(void *arg)
   tt_int_op(r, OP_LT, 0);
   r = parse_transport_line(options,
       "transport_1,transport_2 proxy 1.2.3.4:567", 1, 1);
+  tt_int_op(r, OP_LT, 0);
   /* No port error exit */
   r = parse_transport_line(options,
       "transport_1 socks5 1.2.3.4", 1, 0);
@@ -3744,119 +3745,119 @@ test_config_port_cfg_line_extract_addrport(void *arg)
 
   tt_int_op(port_cfg_line_extract_addrport("", &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "");;
+  tt_str_op(a, OP_EQ, "");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("hello", &a, &unixy, &rest),
             OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "hello");;
+  tt_str_op(a, OP_EQ, "hello");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport(" flipperwalt gersplut",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "flipperwalt");;
+  tt_str_op(a, OP_EQ, "flipperwalt");
   tt_str_op(rest, OP_EQ, "gersplut");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport(" flipperwalt \t gersplut",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "flipperwalt");;
+  tt_str_op(a, OP_EQ, "flipperwalt");
   tt_str_op(rest, OP_EQ, "gersplut");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("flipperwalt \t gersplut",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "flipperwalt");;
+  tt_str_op(a, OP_EQ, "flipperwalt");
   tt_str_op(rest, OP_EQ, "gersplut");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:flipperwalt \t gersplut",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "flipperwalt");;
+  tt_str_op(a, OP_EQ, "flipperwalt");
   tt_str_op(rest, OP_EQ, "gersplut");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("lolol",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:lolol",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:lolol ",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport(" unix:lolol",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("foobar:lolol",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, "foobar:lolol");;
+  tt_str_op(a, OP_EQ, "foobar:lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport(":lolol",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 0);
-  tt_str_op(a, OP_EQ, ":lolol");;
+  tt_str_op(a, OP_EQ, ":lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:\"lolol\"",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:\"lolol\" ",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:\"lolol\" foo ",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lolol");;
+  tt_str_op(a, OP_EQ, "lolol");
   tt_str_op(rest, OP_EQ, "foo ");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:\"lol ol\" foo ",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lol ol");;
+  tt_str_op(a, OP_EQ, "lol ol");
   tt_str_op(rest, OP_EQ, "foo ");
   tor_free(a);
 
   tt_int_op(port_cfg_line_extract_addrport("unix:\"lol\\\" ol\" foo ",
                                            &a, &unixy, &rest), OP_EQ, 0);
   tt_int_op(unixy, OP_EQ, 1);
-  tt_str_op(a, OP_EQ, "lol\" ol");;
+  tt_str_op(a, OP_EQ, "lol\" ol");
   tt_str_op(rest, OP_EQ, "foo ");
   tor_free(a);
 
@@ -4004,7 +4005,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   tt_int_op(port_cfg->entry_cfg.onion_traffic, OP_EQ, 1);
   tt_int_op(port_cfg->entry_cfg.cache_ipv4_answers, OP_EQ, 1);
   tt_int_op(port_cfg->entry_cfg.prefer_ipv6_virtaddr, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
   // Test failure if we have no ipv4 and no ipv6 and no onion (DNS only)
   config_free_lines(config_port_invalid); config_port_invalid = NULL;
@@ -4076,7 +4077,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   tt_int_op(port_cfg->entry_cfg.ipv4_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.ipv6_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.onion_traffic, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
   // Test success with quoted unix: address.
   config_free_lines(config_port_valid); config_port_valid = NULL;
@@ -4098,7 +4099,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   tt_int_op(port_cfg->entry_cfg.ipv4_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.ipv6_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.onion_traffic, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
   // Test failure with broken quoted unix: address.
   config_free_lines(config_port_valid); config_port_valid = NULL;
@@ -4143,7 +4144,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   tt_int_op(port_cfg->entry_cfg.ipv4_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.ipv6_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.onion_traffic, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
   // Test success with no ipv4 but take ipv6
   config_free_lines(config_port_valid); config_port_valid = NULL;
@@ -4162,7 +4163,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   port_cfg = (port_cfg_t *)smartlist_get(slout, 0);
   tt_int_op(port_cfg->entry_cfg.ipv4_traffic, OP_EQ, 0);
   tt_int_op(port_cfg->entry_cfg.ipv6_traffic, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
   // Test success with both ipv4 and ipv6
   config_free_lines(config_port_valid); config_port_valid = NULL;
@@ -4181,7 +4182,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   port_cfg = (port_cfg_t *)smartlist_get(slout, 0);
   tt_int_op(port_cfg->entry_cfg.ipv4_traffic, OP_EQ, 1);
   tt_int_op(port_cfg->entry_cfg.ipv6_traffic, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
   // Test failure if we specify world writable for an IP Port
   config_free_lines(config_port_invalid); config_port_invalid = NULL;
@@ -4645,7 +4646,7 @@ test_config_parse_port_config__ports__ports_given(void *data)
   tt_int_op(smartlist_len(slout), OP_EQ, 1);
   port_cfg = (port_cfg_t *)smartlist_get(slout, 0);
   tt_int_op(port_cfg->is_group_writable, OP_EQ, 1);
-#endif
+#endif /* defined(_WIN32) */
 
  done:
   if (slout)
@@ -4948,6 +4949,41 @@ test_config_include_empty_file_folder(void *data)
   tor_free(file_path);
   tor_free(dir);
 }
+
+#ifndef _WIN32
+static void
+test_config_include_no_permission(void *data)
+{
+  (void)data;
+  config_line_t *result = NULL;
+
+  char *folder_path = NULL;
+  char *dir = tor_strdup(get_fname("test_include_forbidden_folder"));
+  tt_ptr_op(dir, OP_NE, NULL);
+
+  tt_int_op(mkdir(dir, 0700), OP_EQ, 0);
+
+  tor_asprintf(&folder_path, "%s"PATH_SEPARATOR"forbidden_dir", dir);
+  tt_int_op(mkdir(folder_path, 0100), OP_EQ, 0);
+
+  char torrc_contents[1000];
+  tor_snprintf(torrc_contents, sizeof(torrc_contents),
+               "%%include %s\n",
+               folder_path);
+
+  int include_used;
+  tt_int_op(config_get_lines_include(torrc_contents, &result, 0,&include_used),
+            OP_EQ, -1);
+  tt_ptr_op(result, OP_EQ, NULL);
+
+ done:
+  config_free_lines(result);
+  tor_free(folder_path);
+  if (dir)
+    chmod(dir, 0700);
+  tor_free(dir);
+}
+#endif
 
 static void
 test_config_include_recursion_before_after(void *data)
@@ -5375,6 +5411,41 @@ test_config_include_flag_defaults_only(void *data)
   tor_free(dir);
 }
 
+static void
+test_config_dup_and_filter(void *arg)
+{
+  (void)arg;
+  /* Test normal input. */
+  config_line_t *line = NULL;
+  config_line_append(&line, "abc", "def");
+  config_line_append(&line, "ghi", "jkl");
+  config_line_append(&line, "ABCD", "mno");
+
+  config_line_t *line_dup = config_lines_dup_and_filter(line, "aBc");
+  tt_ptr_op(line_dup, OP_NE, NULL);
+  tt_ptr_op(line_dup->next, OP_NE, NULL);
+  tt_ptr_op(line_dup->next->next, OP_EQ, NULL);
+
+  tt_str_op(line_dup->key, OP_EQ, "abc");
+  tt_str_op(line_dup->value, OP_EQ, "def");
+  tt_str_op(line_dup->next->key, OP_EQ, "ABCD");
+  tt_str_op(line_dup->next->value, OP_EQ, "mno");
+
+  /* empty output */
+  config_free_lines(line_dup);
+  line_dup = config_lines_dup_and_filter(line, "skdjfsdkljf");
+  tt_ptr_op(line_dup, OP_EQ, NULL);
+
+  /* empty input */
+  config_free_lines(line_dup);
+  line_dup = config_lines_dup_and_filter(NULL, "abc");
+  tt_ptr_op(line_dup, OP_EQ, NULL);
+
+ done:
+  config_free_lines(line);
+  config_free_lines(line_dup);
+}
+
 #define CONFIG_TEST(name, flags)                          \
   { #name, test_config_ ## name, flags, NULL, NULL }
 
@@ -5405,6 +5476,9 @@ struct testcase_t config_tests[] = {
   CONFIG_TEST(include_does_not_exist, 0),
   CONFIG_TEST(include_error_in_included_file, 0),
   CONFIG_TEST(include_empty_file_folder, 0),
+#ifndef _WIN32
+  CONFIG_TEST(include_no_permission, 0),
+#endif
   CONFIG_TEST(include_recursion_before_after, 0),
   CONFIG_TEST(include_recursion_after_only, 0),
   CONFIG_TEST(include_folder_order, 0),
@@ -5414,6 +5488,7 @@ struct testcase_t config_tests[] = {
   CONFIG_TEST(include_flag_both_without, TT_FORK),
   CONFIG_TEST(include_flag_torrc_only, TT_FORK),
   CONFIG_TEST(include_flag_defaults_only, TT_FORK),
+  CONFIG_TEST(dup_and_filter, 0),
   END_OF_TESTCASES
 };
 

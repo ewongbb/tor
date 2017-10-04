@@ -51,8 +51,8 @@ static atomic_counter_t total_compress_allocation;
 
 /** Return true if uncompressing an input of size <b>in_size</b> to an input of
  * size at least <b>size_out</b> looks like a compression bomb. */
-int
-tor_compress_is_compression_bomb(size_t size_in, size_t size_out)
+MOCK_IMPL(int,
+tor_compress_is_compression_bomb,(size_t size_in, size_t size_out))
 {
   if (size_in == 0 || size_out < CHECK_FOR_COMPRESSION_BOMB_AFTER)
     return 0;
@@ -164,7 +164,7 @@ tor_compress_impl(int compress,
           goto err;
         }
         if (out_alloc >= SIZE_T_CEILING / 2) {
-          log_warn(LD_GENERAL, "While %scompresing data: ran out of space.",
+          log_warn(LD_GENERAL, "While %scompressing data: ran out of space.",
                    compress?"":"un");
           goto err;
         }
@@ -185,11 +185,12 @@ tor_compress_impl(int compress,
       }
       case TOR_COMPRESS_ERROR:
         log_fn(protocol_warn_level, LD_GENERAL,
-               "Error while %scompresing data: bad input?",
+               "Error while %scompressing data: bad input?",
                compress?"":"un");
         goto err; // bad data.
-      default:
+
         // LCOV_EXCL_START
+      default:
         tor_assert_nonfatal_unreached();
         goto err;
         // LCOV_EXCL_STOP
@@ -546,6 +547,13 @@ tor_compress_process(tor_compress_state_t *state,
   const size_t out_len_orig = *out_len;
   tor_compress_output_t rv;
 
+  if (*out_len == 0 && (*in_len > 0 || finish)) {
+    // If we still have input data, but no space for output data, we might as
+    // well return early and let the caller do the reallocation of the out
+    // variable.
+    return TOR_COMPRESS_BUFFER_FULL;
+  }
+
   switch (state->method) {
     case GZIP_METHOD:
     case ZLIB_METHOD:
@@ -554,9 +562,9 @@ tor_compress_process(tor_compress_state_t *state,
                                      finish);
       break;
     case LZMA_METHOD:
-      rv =tor_lzma_compress_process(state->u.lzma_state,
-                                    out, out_len, in, in_len,
-                                    finish);
+      rv = tor_lzma_compress_process(state->u.lzma_state,
+                                     out, out_len, in, in_len,
+                                     finish);
       break;
     case ZSTD_METHOD:
       rv = tor_zstd_compress_process(state->u.zstd_state,

@@ -410,7 +410,7 @@ circuit_conforms_to_options(const origin_circuit_t *circ,
 
   return 1;
 }
-#endif
+#endif /* 0 */
 
 /** Close all circuits that start at us, aren't open, and were born
  * at least CircuitBuildTimeout seconds ago.
@@ -637,7 +637,7 @@ circuit_expire_building(void)
                victim->n_circ_id,
                (int)(now - victim->timestamp_dirty));
     }
-#endif
+#endif /* 0 */
 
     /* if circ is !open, or if it's open but purpose is a non-finished
      * intro or rend, then mark it for close */
@@ -1343,7 +1343,7 @@ circuit_expire_old_circs_as_needed(time_t now)
       log_fn(LOG_INFO, "Creating a new testing circuit.");
       circuit_launch(CIRCUIT_PURPOSE_C_GENERAL, 0);
     }
-#endif
+#endif /* 0 */
   }
 }
 
@@ -1518,7 +1518,7 @@ circuit_expire_old_circuits_clientside(void)
 #define IDLE_ONE_HOP_CIRC_TIMEOUT 60
 
 /** Find each non-origin circuit that has been unused for too long,
- * has no streams on it, used a create_fast, and ends here: mark it
+ * has no streams on it, came from a client, and ends here: mark it
  * for close.
  */
 void
@@ -1534,9 +1534,9 @@ circuit_expire_old_circuits_serverside(time_t now)
     /* If the circuit has been idle for too long, and there are no streams
      * on it, and it ends here, and it used a create_fast, mark it for close.
      */
-    if (or_circ->is_first_hop && !circ->n_chan &&
+    if (or_circ->p_chan && channel_is_client(or_circ->p_chan) &&
+        !circ->n_chan &&
         !or_circ->n_streams && !or_circ->resolving_streams &&
-        or_circ->p_chan &&
         channel_when_last_xmit(or_circ->p_chan) <= cutoff) {
       log_info(LD_CIRC, "Closing circ_id %u (empty %d secs ago)",
                (unsigned)or_circ->p_circ_id,
@@ -1756,13 +1756,17 @@ circuit_build_failed(origin_circuit_t *circ)
         already_marked = 1;
       }
       log_info(LD_OR,
-               "Our circuit failed to get a response from the first hop "
-               "(%s). I'm going to try to rotate to a better connection.",
+               "Our circuit %u (id: %" PRIu32 ") failed to get a response "
+               "from the first hop (%s). I'm going to try to rotate to a "
+               "better connection.",
+               TO_CIRCUIT(circ)->n_circ_id, circ->global_identifier,
                channel_get_canonical_remote_descr(n_chan));
       n_chan->is_bad_for_new_circs = 1;
     } else {
       log_info(LD_OR,
-               "Our circuit died before the first hop with no connection");
+               "Our circuit %u (id: %" PRIu32 ") died before the first hop "
+               "with no connection",
+               TO_CIRCUIT(circ)->n_circ_id, circ->global_identifier);
     }
     if (n_chan_id && !already_marked) {
       /* New guard API: we failed. */
@@ -1904,9 +1908,9 @@ circuit_launch_by_extend_info(uint8_t purpose,
       uint8_t old_purpose = circ->base_.purpose;
       struct timeval old_timestamp_began = circ->base_.timestamp_began;
 
-      log_info(LD_CIRC,
-               "Cannibalizing circ '%s' for purpose %d (%s)",
-               build_state_get_exit_nickname(circ->build_state), purpose,
+      log_info(LD_CIRC, "Cannibalizing circ %u (id: %" PRIu32 ") for "
+                        "purpose %d (%s)",
+               TO_CIRCUIT(circ)->n_circ_id, circ->global_identifier, purpose,
                circuit_purpose_to_string(purpose));
 
       if ((purpose == CIRCUIT_PURPOSE_S_CONNECT_REND ||
@@ -2288,7 +2292,7 @@ circuit_get_open_circ_or_launch(entry_connection_t *conn,
          new_circ_purpose == CIRCUIT_PURPOSE_C_INTRODUCING)) {
       want_onehop = 1;
     }
-#endif
+#endif /* defined(ENABLE_TOR2WEB_MODE) */
 
     /* Determine what kind of a circuit to launch, and actually launch it. */
     {
@@ -2696,9 +2700,10 @@ connection_ap_handshake_attach_circuit(entry_connection_t *conn)
       tor_assert(rendcirc);
       /* one is already established, attach */
       log_info(LD_REND,
-               "rend joined circ %u already here. attaching. "
-               "(stream %d sec old)",
-               (unsigned)rendcirc->base_.n_circ_id, conn_age);
+               "rend joined circ %u (id: %" PRIu32 ") already here. "
+               "Attaching. (stream %d sec old)",
+               (unsigned) TO_CIRCUIT(rendcirc)->n_circ_id,
+               rendcirc->global_identifier, conn_age);
       /* Mark rendezvous circuits as 'newly dirty' every time you use
        * them, since the process of rebuilding a rendezvous circ is so
        * expensive. There is a tradeoff between linkability and
@@ -2731,9 +2736,10 @@ connection_ap_handshake_attach_circuit(entry_connection_t *conn)
     if (rendcirc && (rendcirc->base_.purpose ==
                      CIRCUIT_PURPOSE_C_REND_READY_INTRO_ACKED)) {
       log_info(LD_REND,
-               "pending-join circ %u already here, with intro ack. "
-               "Stalling. (stream %d sec old)",
-               (unsigned)rendcirc->base_.n_circ_id, conn_age);
+               "pending-join circ %u (id: %" PRIu32 ") already here, with "
+               "intro ack. Stalling. (stream %d sec old)",
+               (unsigned) TO_CIRCUIT(rendcirc)->n_circ_id,
+               rendcirc->global_identifier, conn_age);
       return 0;
     }
 
@@ -2745,10 +2751,13 @@ connection_ap_handshake_attach_circuit(entry_connection_t *conn)
     if (retval > 0) {
       /* one has already sent the intro. keep waiting. */
       tor_assert(introcirc);
-      log_info(LD_REND, "Intro circ %u present and awaiting ack (rend %u). "
-               "Stalling. (stream %d sec old)",
-               (unsigned)introcirc->base_.n_circ_id,
-               rendcirc ? (unsigned)rendcirc->base_.n_circ_id : 0,
+      log_info(LD_REND, "Intro circ %u (id: %" PRIu32 ") present and "
+                        "awaiting ACK. Rend circuit %u (id: %" PRIu32 "). "
+                        "Stalling. (stream %d sec old)",
+               (unsigned) TO_CIRCUIT(introcirc)->n_circ_id,
+               introcirc->global_identifier,
+               rendcirc ? (unsigned) TO_CIRCUIT(rendcirc)->n_circ_id : 0,
+               rendcirc ? rendcirc->global_identifier : 0,
                conn_age);
       return 0;
     }
@@ -2758,19 +2767,24 @@ connection_ap_handshake_attach_circuit(entry_connection_t *conn)
     if (rendcirc && introcirc &&
         rendcirc->base_.purpose == CIRCUIT_PURPOSE_C_REND_READY) {
       log_info(LD_REND,
-               "ready rend circ %u already here (no intro-ack yet on "
-               "intro %u). (stream %d sec old)",
-               (unsigned)rendcirc->base_.n_circ_id,
-               (unsigned)introcirc->base_.n_circ_id, conn_age);
+               "ready rend circ %u (id: %" PRIu32 ") already here. No"
+               "intro-ack yet on intro %u (id: %" PRIu32 "). "
+               "(stream %d sec old)",
+               (unsigned) TO_CIRCUIT(rendcirc)->n_circ_id,
+               rendcirc->global_identifier,
+               (unsigned) TO_CIRCUIT(introcirc)->n_circ_id,
+               introcirc->global_identifier, conn_age);
 
       tor_assert(introcirc->base_.purpose == CIRCUIT_PURPOSE_C_INTRODUCING);
       if (introcirc->base_.state == CIRCUIT_STATE_OPEN) {
         int ret;
-        log_info(LD_REND, "found open intro circ %u (rend %u); sending "
-                 "introduction. (stream %d sec old)",
-                 (unsigned)introcirc->base_.n_circ_id,
-                 (unsigned)rendcirc->base_.n_circ_id,
-                 conn_age);
+        log_info(LD_REND, "Found open intro circ %u (id: %" PRIu32 "). "
+                          "Rend circuit %u (id: %" PRIu32 "); Sending "
+                          "introduction. (stream %d sec old)",
+                 (unsigned) TO_CIRCUIT(introcirc)->n_circ_id,
+                 introcirc->global_identifier,
+                 (unsigned) TO_CIRCUIT(rendcirc)->n_circ_id,
+                 rendcirc->global_identifier, conn_age);
         ret = hs_client_send_introduce1(introcirc, rendcirc);
         switch (ret) {
         case 0: /* success */
@@ -2794,10 +2808,13 @@ connection_ap_handshake_attach_circuit(entry_connection_t *conn)
       }
     }
 
-    log_info(LD_REND, "Intro (%u) and rend (%u) circs are not both ready. "
-             "Stalling conn. (%d sec old)",
-             introcirc ? (unsigned)introcirc->base_.n_circ_id : 0,
-             rendcirc ? (unsigned)rendcirc->base_.n_circ_id : 0, conn_age);
+    log_info(LD_REND, "Intro %u (id: %" PRIu32 ") and rend circuit %u "
+                      "(id: %" PRIu32 ") circuits are not both ready. "
+                      "Stalling conn. (%d sec old)",
+             introcirc ? (unsigned) TO_CIRCUIT(introcirc)->n_circ_id : 0,
+             introcirc ? introcirc->global_identifier : 0,
+             rendcirc ? (unsigned) TO_CIRCUIT(rendcirc)->n_circ_id : 0,
+             rendcirc ? rendcirc->global_identifier : 0, conn_age);
     return 0;
   }
 }

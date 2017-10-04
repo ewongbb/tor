@@ -65,7 +65,7 @@ MOCK_DECL(STATIC int, set_exitconn_info_from_resolve,
 
 MOCK_DECL(STATIC int, launch_resolve, (cached_resolve_t *resolve));
 
-#endif
+#endif /* defined(DNS_PRIVATE) */
 
-#endif
+#endif /* !defined(TOR_DNS_H) */
 

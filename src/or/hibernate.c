@@ -1126,5 +1126,5 @@ hibernate_set_state_for_testing_(hibernate_state_t newstate)
 {
   hibernate_state = newstate;
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 

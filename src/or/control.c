@@ -593,7 +593,7 @@ control_ports_write_to_file(void)
       smartlist_add_asprintf(lines, "UNIX_PORT=%s\n", conn->address);
       continue;
     }
-#endif
+#endif /* defined(AF_UNIX) */
     smartlist_add_asprintf(lines, "PORT=%s:%d\n", conn->address, conn->port);
   } SMARTLIST_FOREACH_END(conn);
 
@@ -610,7 +610,7 @@ control_ports_write_to_file(void)
                options->ControlPortWriteToFile);
     }
   }
-#endif
+#endif /* !defined(_WIN32) */
   tor_free(joined);
   SMARTLIST_FOREACH(lines, char *, cp, tor_free(cp));
   smartlist_free(lines);
@@ -1749,7 +1749,7 @@ getinfo_helper_misc(control_connection_t *conn, const char *question,
     #else
       int myUid = geteuid();
       tor_asprintf(answer, "%d", myUid);
-    #endif
+#endif /* defined(_WIN32) */
   } else if (!strcmp(question, "process/user")) {
     #ifdef _WIN32
       *answer = tor_strdup("");
@@ -1762,7 +1762,7 @@ getinfo_helper_misc(control_connection_t *conn, const char *question,
       } else {
         *answer = tor_strdup("");
       }
-    #endif
+#endif /* defined(_WIN32) */
   } else if (!strcmp(question, "process/descriptor-limit")) {
     int max_fds = get_max_sockets();
     tor_asprintf(answer, "%d", max_fds);
@@ -2158,7 +2158,7 @@ download_status_to_string(const download_status_t *dl)
 
   if (dl) {
     /* Get some substrings of the eventual output ready */
-    format_iso_time(tbuf, dl->next_attempt_at);
+    format_iso_time(tbuf, download_status_get_next_attempt_at(dl));
 
     switch (dl->schedule) {
       case DL_SCHED_GENERIC:
@@ -5588,15 +5588,20 @@ control_event_stream_bandwidth(edge_connection_t *edge_conn)
 {
   circuit_t *circ;
   origin_circuit_t *ocirc;
+  struct timeval now;
+  char tbuf[ISO_TIME_USEC_LEN+1];
   if (EVENT_IS_INTERESTING(EVENT_STREAM_BANDWIDTH_USED)) {
     if (!edge_conn->n_read && !edge_conn->n_written)
       return 0;
 
+    tor_gettimeofday(&now);
+    format_iso_time_nospace_usec(tbuf, &now);
     send_control_event(EVENT_STREAM_BANDWIDTH_USED,
-                       "650 STREAM_BW "U64_FORMAT" %lu %lu\r\n",
+                       "650 STREAM_BW "U64_FORMAT" %lu %lu %s\r\n",
                        U64_PRINTF_ARG(edge_conn->base_.global_identifier),
                        (unsigned long)edge_conn->n_read,
-                       (unsigned long)edge_conn->n_written);
+                       (unsigned long)edge_conn->n_written,
+                       tbuf);
 
     circ = circuit_get_by_edge_conn(edge_conn);
     if (circ && CIRCUIT_IS_ORIGIN(circ)) {
@@ -5618,6 +5623,8 @@ control_event_stream_bandwidth_used(void)
   if (EVENT_IS_INTERESTING(EVENT_STREAM_BANDWIDTH_USED)) {
     smartlist_t *conns = get_connection_array();
     edge_connection_t *edge_conn;
+    struct timeval now;
+    char tbuf[ISO_TIME_USEC_LEN+1];
 
     SMARTLIST_FOREACH_BEGIN(conns, connection_t *, conn)
     {
@@ -5627,11 +5634,14 @@ control_event_stream_bandwidth_used(void)
         if (!edge_conn->n_read && !edge_conn->n_written)
           continue;
 
+        tor_gettimeofday(&now);
+        format_iso_time_nospace_usec(tbuf, &now);
         send_control_event(EVENT_STREAM_BANDWIDTH_USED,
-                           "650 STREAM_BW "U64_FORMAT" %lu %lu\r\n",
+                           "650 STREAM_BW "U64_FORMAT" %lu %lu %s\r\n",
                            U64_PRINTF_ARG(edge_conn->base_.global_identifier),
                            (unsigned long)edge_conn->n_read,
-                           (unsigned long)edge_conn->n_written);
+                           (unsigned long)edge_conn->n_written,
+                           tbuf);
 
         edge_conn->n_written = edge_conn->n_read = 0;
     }
@@ -5647,6 +5657,8 @@ int
 control_event_circ_bandwidth_used(void)
 {
   origin_circuit_t *ocirc;
+  struct timeval now;
+  char tbuf[ISO_TIME_USEC_LEN+1];
   if (!EVENT_IS_INTERESTING(EVENT_CIRC_BANDWIDTH_USED))
     return 0;
 
@@ -5656,11 +5668,15 @@ control_event_circ_bandwidth_used(void)
     ocirc = TO_ORIGIN_CIRCUIT(circ);
     if (!ocirc->n_read_circ_bw && !ocirc->n_written_circ_bw)
       continue;
+    tor_gettimeofday(&now);
+    format_iso_time_nospace_usec(tbuf, &now);
     send_control_event(EVENT_CIRC_BANDWIDTH_USED,
-                       "650 CIRC_BW ID=%d READ=%lu WRITTEN=%lu\r\n",
+                       "650 CIRC_BW ID=%d READ=%lu WRITTEN=%lu "
+                       "TIME=%s\r\n",
                        ocirc->global_identifier,
                        (unsigned long)ocirc->n_read_circ_bw,
-                       (unsigned long)ocirc->n_written_circ_bw);
+                       (unsigned long)ocirc->n_written_circ_bw,
+                       tbuf);
     ocirc->n_written_circ_bw = ocirc->n_read_circ_bw = 0;
   }
   SMARTLIST_FOREACH_END(circ);
@@ -5831,7 +5847,7 @@ control_event_circuit_cell_stats(void)
   if (!get_options()->TestingEnableCellStatsEvent ||
       !EVENT_IS_INTERESTING(EVENT_CELL_STATS))
     return 0;
-  cell_stats = tor_malloc(sizeof(cell_stats_t));;
+  cell_stats = tor_malloc(sizeof(cell_stats_t));
   SMARTLIST_FOREACH_BEGIN(circuit_get_global_list(), circuit_t *, circ) {
     if (!circ->testing_cell_stats)
       continue;
@@ -7302,5 +7318,5 @@ control_testing_set_global_event_mask(uint64_t mask)
 {
   global_event_mask = mask;
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 

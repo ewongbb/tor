@@ -4,7 +4,7 @@ dnl Copyright (c) 2007-2017, The Tor Project, Inc.
 dnl See LICENSE for licensing information
 
 AC_PREREQ([2.63])
-AC_INIT([tor],[0.3.2.0-alpha-dev])
+AC_INIT([tor],[0.3.2.2-alpha-dev])
 AC_CONFIG_SRCDIR([src/or/main.c])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -722,11 +722,12 @@ AC_ARG_WITH(ssl-dir,
       fi
   ])
 
+AC_MSG_NOTICE([Now, we'll look for OpenSSL >= 1.0.1])
 TOR_SEARCH_LIBRARY(openssl, $tryssldir, [-lssl -lcrypto $TOR_LIB_GDI],
-    [#include <openssl/rand.h>],
-    [void RAND_add(const void *buf, int num, double entropy);],
-    [RAND_add((void*)0,0,0);], [],
-    [/usr/local/openssl /usr/lib/openssl /usr/local/ssl /usr/lib/ssl /usr/local /usr/athena /opt/openssl])
+    [#include <openssl/ssl.h>],
+    [struct ssl_method_st; const struct ssl_method_st *TLSv1_1_method(void);],
+    [TLSv1_1_method();], [],
+    [/usr/local/opt/openssl /usr/local/openssl /usr/lib/openssl /usr/local/ssl /usr/lib/ssl /usr/local /usr/athena /opt/openssl])
 
 dnl XXXX check for OPENSSL_VERSION_NUMBER == SSLeay()
 
@@ -791,6 +792,34 @@ dnl Check if OpenSSL structures are opaque
 AC_CHECK_MEMBERS([SSL.state], , ,
 [#include <openssl/ssl.h>
 ])
+
+dnl Define the set of checks for KIST scheduler support.
+AC_DEFUN([CHECK_KIST_SUPPORT],[
+  dnl KIST needs struct tcp_info and for certain members to exist.
+  AC_CHECK_MEMBERS(
+    [struct tcp_info.tcpi_unacked, struct tcp_info.tcpi_snd_mss],
+    , ,[[#include <netinet/tcp.h>]])
+  dnl KIST needs SIOCOUTQNSD to exist for an ioctl call.
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [
+                     #include <linux/sockios.h>
+                     #ifndef SIOCOUTQNSD
+                     #error
+                     #endif
+                     ])], have_siocoutqnsd=yes, have_siocoutqnsd=no)
+  if test "x$have_siocoutqnsd" = "xyes"; then
+    if test "x$ac_cv_member_struct_tcp_info_tcpi_unacked" = "xyes"; then
+      if test "x$ac_cv_member_struct_tcp_info_tcpi_snd_mss" = "xyes"; then
+        have_kist_support=yes
+      fi
+    fi
+  fi
+])
+dnl Now, trigger the check.
+CHECK_KIST_SUPPORT
+AS_IF([test "x$have_kist_support" = "xyes"],
+      [AC_DEFINE(HAVE_KIST_SUPPORT, 1, [Defined if KIST scheduler is supported
+                                        on this system])],
+      [AC_MSG_NOTICE([KIST scheduler can't be used. Missing support.])])
 
 LIBS="$save_LIBS"
 LDFLAGS="$save_LDFLAGS"

@@ -1872,7 +1872,7 @@ router_picked_poor_directory_log(const routerstatus_t *rs)
       || !router_have_minimum_dir_info()) {
     return;
   }
-#endif
+#endif /* !LOG_FALSE_POSITIVES_DURING_BOOTSTRAP */
 
   /* We couldn't find a node, or the one we have doesn't fit our preferences.
    * Sometimes this is normal, sometimes it can be a reachability issue. */
@@ -2306,7 +2306,7 @@ routerlist_add_node_and_family(smartlist_t *sl, const routerinfo_t *router)
 {
   /* XXXX MOVE ? */
   node_t fake_node;
-  const node_t *node = node_get_by_id(router->cache_info.identity_digest);;
+  const node_t *node = node_get_by_id(router->cache_info.identity_digest);
   if (node == NULL) {
     memset(&fake_node, 0, sizeof(fake_node));
     fake_node.ri = (routerinfo_t *)router;
@@ -4056,7 +4056,7 @@ routerlist_remove_old_cached_routers_with_id(time_t now,
     signed_descriptor_t *r = smartlist_get(lst, i);
     tor_assert(tor_memeq(ident, r->identity_digest, DIGEST_LEN));
   }
-#endif
+#endif /* 1 */
   /* Check whether we need to do anything at all. */
   {
     int mdpr = directory_caches_dir_info(get_options()) ? 2 : 1;

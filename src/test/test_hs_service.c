@@ -14,10 +14,12 @@
 #define HS_COMMON_PRIVATE
 #define HS_SERVICE_PRIVATE
 #define HS_INTROPOINT_PRIVATE
+#define HS_CIRCUIT_PRIVATE
 #define MAIN_PRIVATE
 #define NETWORKSTATUS_PRIVATE
 #define STATEFILE_PRIVATE
 #define TOR_CHANNEL_INTERNAL_
+#define HS_CLIENT_PRIVATE
 
 #include "test.h"
 #include "test_helpers.h"
@@ -37,11 +39,12 @@
 
 #include "hs_common.h"
 #include "hs_config.h"
-#include "hs_circuit.h"
 #include "hs_ident.h"
 #include "hs_intropoint.h"
 #include "hs_ntor.h"
+#include "hs_circuit.h"
 #include "hs_service.h"
+#include "hs_client.h"
 #include "main.h"
 #include "rendservice.h"
 #include "statefile.h"
@@ -425,7 +428,7 @@ test_service_intro_point(void *arg)
   /* Test functions that uses a service intropoints map with that previously
    * created object (non legacy). */
   {
-    uint8_t garbage[DIGEST256_LEN] = {0};
+    ed25519_public_key_t garbage = { {0} };
     hs_service_intro_point_t *query;
 
     service = hs_service_new(get_options());
@@ -436,8 +439,7 @@ test_service_intro_point(void *arg)
     service_intro_point_add(service->desc_current->intro_points.map, ip);
     query = service_intro_point_find(service, &ip->auth_key_kp.pubkey);
     tt_mem_op(query, OP_EQ, ip, sizeof(hs_service_intro_point_t));
-    query = service_intro_point_find(service,
-                                     (const ed25519_public_key_t *) garbage);
+    query = service_intro_point_find(service, &garbage);
     tt_ptr_op(query, OP_EQ, NULL);
 
     /* While at it, can I find the descriptor with the intro point? */
@@ -677,6 +679,8 @@ test_intro_established(void *arg)
 
   circ = helper_create_origin_circuit(CIRCUIT_PURPOSE_S_ESTABLISH_INTRO,
                                       flags);
+  tt_assert(circ);
+
   /* Test a wrong purpose. */
   TO_CIRCUIT(circ)->purpose = CIRCUIT_PURPOSE_S_INTRO;
   setup_full_capture_of_logs(LOG_WARN);
@@ -724,7 +728,8 @@ test_intro_established(void *arg)
   tt_int_op(TO_CIRCUIT(circ)->purpose, OP_EQ, CIRCUIT_PURPOSE_S_INTRO);
 
  done:
-  circuit_free(TO_CIRCUIT(circ));
+  if (circ)
+    circuit_free(TO_CIRCUIT(circ));
   hs_free_all();
   UNMOCK(circuit_mark_for_close_);
 }
@@ -793,6 +798,7 @@ test_introduce2(void *arg)
   dummy_state = tor_malloc_zero(sizeof(or_state_t));
 
   circ = helper_create_origin_circuit(CIRCUIT_PURPOSE_S_INTRO, flags);
+  tt_assert(circ);
 
   /* Test a wrong purpose. */
   TO_CIRCUIT(circ)->purpose = CIRCUIT_PURPOSE_S_ESTABLISH_INTRO;
@@ -844,7 +850,8 @@ test_introduce2(void *arg)
  done:
   or_state_free(dummy_state);
   dummy_state = NULL;
-  circuit_free(TO_CIRCUIT(circ));
+  if (circ)
+    circuit_free(TO_CIRCUIT(circ));
   hs_free_all();
   UNMOCK(circuit_mark_for_close_);
 }
@@ -1142,9 +1149,9 @@ test_build_update_descriptors(void *arg)
   tor_free(node->ri->onion_curve25519_pkey); /* Avoid memleak. */
   tor_free(node->ri->cache_info.signing_key_cert);
   crypto_pk_free(node->ri->onion_pkey);
-  expect_log_msg_containing("just picked 1 intro points and wanted 3. It "
-                            "currently has 0 intro points. Launching "
-                            "ESTABLISH_INTRO circuit shortly.");
+  expect_log_msg_containing("just picked 1 intro points and wanted 3 for next "
+                            "descriptor. It currently has 0 intro points. "
+                            "Launching ESTABLISH_INTRO circuit shortly.");
   teardown_capture_of_logs();
   tt_int_op(digest256map_size(service->desc_current->intro_points.map),
             OP_EQ, 1);
@@ -1264,6 +1271,7 @@ test_upload_descriptors(void *arg)
 
   ret = parse_rfc1123_time("Sat, 26 Oct 1985 13:00:00 UTC",
                            &mock_ns.valid_after);
+  tt_int_op(ret, OP_EQ, 0);
   ret = parse_rfc1123_time("Sat, 26 Oct 1985 14:00:00 UTC",
                            &mock_ns.fresh_until);
   tt_int_op(ret, OP_EQ, 0);
@@ -1339,6 +1347,7 @@ test_revision_counter_state(void *arg)
                                                  &desc_two->blinded_kp.pubkey,
                                                                &service_found);
   tt_int_op(service_found, OP_EQ, 0);
+  tt_u64_op(cached_rev_counter, OP_EQ, 0);
 
   /* Now let's try with the right pubkeys */
   cached_rev_counter =check_state_line_for_service_rev_counter(state_line_one,
@@ -1358,6 +1367,130 @@ test_revision_counter_state(void *arg)
   tor_free(state_line_two);
   service_descriptor_free(desc_one);
   service_descriptor_free(desc_two);
+}
+
+/** Global vars used by test_rendezvous1_parsing() */
+static char rend1_payload[RELAY_PAYLOAD_SIZE];
+static size_t rend1_payload_len = 0;
+
+/** Mock for relay_send_command_from_edge() to send a RENDEZVOUS1 cell. Instead
+ *  of sending it to the network, instead save it to the global `rend1_payload`
+ *  variable so that we can inspect it in the test_rendezvous1_parsing()
+ *  test. */
+static int
+mock_relay_send_rendezvous1(streamid_t stream_id, circuit_t *circ,
+                            uint8_t relay_command, const char *payload,
+                            size_t payload_len,
+                            crypt_path_t *cpath_layer,
+                            const char *filename, int lineno)
+{
+  (void) stream_id;
+  (void) circ;
+  (void) relay_command;
+  (void) cpath_layer;
+  (void) filename;
+  (void) lineno;
+
+  memcpy(rend1_payload, payload, payload_len);
+  rend1_payload_len = payload_len;
+
+  return 0;
+}
+
+/** Send a RENDEZVOUS1 as a service, and parse it as a client. */
+static void
+test_rendezvous1_parsing(void *arg)
+{
+  int retval;
+  static const char *test_addr =
+    "4acth47i6kxnvkewtm6q7ib2s3ufpo5sqbsnzjpbi7utijcltosqemad.onion";
+  hs_service_t *service = NULL;
+  origin_circuit_t *service_circ = NULL;
+  origin_circuit_t *client_circ = NULL;
+  ed25519_keypair_t ip_auth_kp;
+  curve25519_keypair_t ephemeral_kp;
+  curve25519_keypair_t client_kp;
+  curve25519_keypair_t ip_enc_kp;
+  int flags = CIRCLAUNCH_NEED_UPTIME | CIRCLAUNCH_IS_INTERNAL;
+
+  (void) arg;
+
+  MOCK(relay_send_command_from_edge_, mock_relay_send_rendezvous1);
+
+  {
+    /* Let's start by setting up the service that will start the rend */
+    service = tor_malloc_zero(sizeof(hs_service_t));
+    ed25519_secret_key_generate(&service->keys.identity_sk, 0);
+    ed25519_public_key_generate(&service->keys.identity_pk,
+                                &service->keys.identity_sk);
+    memcpy(service->onion_address, test_addr, sizeof(service->onion_address));
+    tt_assert(service);
+  }
+
+  {
+    /* Now let's set up the service rendezvous circuit and its keys. */
+    service_circ = helper_create_origin_circuit(CIRCUIT_PURPOSE_S_CONNECT_REND,
+                                                flags);
+    tor_free(service_circ->hs_ident);
+    hs_ntor_rend_cell_keys_t hs_ntor_rend_cell_keys;
+    uint8_t rendezvous_cookie[HS_REND_COOKIE_LEN];
+    curve25519_keypair_generate(&ip_enc_kp, 0);
+    curve25519_keypair_generate(&ephemeral_kp, 0);
+    curve25519_keypair_generate(&client_kp, 0);
+    ed25519_keypair_generate(&ip_auth_kp, 0);
+    retval = hs_ntor_service_get_rendezvous1_keys(&ip_auth_kp.pubkey,
+                                                  &ip_enc_kp,
+                                                  &ephemeral_kp,
+                                                  &client_kp.pubkey,
+                                                  &hs_ntor_rend_cell_keys);
+    tt_int_op(retval, OP_EQ, 0);
+
+    memset(rendezvous_cookie, 2, sizeof(rendezvous_cookie));
+    service_circ->hs_ident =
+      create_rp_circuit_identifier(service, rendezvous_cookie,
+                                   &ephemeral_kp.pubkey,
+                                   &hs_ntor_rend_cell_keys);
+  }
+
+  /* Send out the RENDEZVOUS1 and make sure that our mock func worked */
+  tt_assert(tor_mem_is_zero(rend1_payload, 32));
+  hs_circ_service_rp_has_opened(service, service_circ);
+  tt_assert(!tor_mem_is_zero(rend1_payload, 32));
+  tt_int_op(rend1_payload_len, OP_EQ, HS_LEGACY_RENDEZVOUS_CELL_SIZE);
+
+  /******************************/
+
+  /** Now let's create the client rendezvous circuit */
+  client_circ =
+    helper_create_origin_circuit(CIRCUIT_PURPOSE_C_REND_READY_INTRO_ACKED,
+                                 flags);
+  /* fix up its circ ident */
+  ed25519_pubkey_copy(&client_circ->hs_ident->intro_auth_pk,
+                      &ip_auth_kp.pubkey);
+  memcpy(&client_circ->hs_ident->rendezvous_client_kp,
+         &client_kp, sizeof(client_circ->hs_ident->rendezvous_client_kp));
+  memcpy(&client_circ->hs_ident->intro_enc_pk.public_key,
+         &ip_enc_kp.pubkey.public_key,
+         sizeof(client_circ->hs_ident->intro_enc_pk.public_key));
+
+  /* Now parse the rendezvous2 circuit and make sure it was fine. We are
+   * skipping 20 bytes off its payload, since that's the rendezvous cookie
+   * which is only present in REND1. */
+  retval = handle_rendezvous2(client_circ,
+                              (uint8_t*)rend1_payload+20,
+                              rend1_payload_len-20);
+  tt_int_op(retval, OP_EQ, 0);
+
+  /* TODO: We are only simulating client/service here. We could also simulate
+   * the rendezvous point by plugging in rend_mid_establish_rendezvous(). We
+   * would need an extra circuit and some more stuff but it's doable. */
+
+ done:
+  circuit_free(TO_CIRCUIT(service_circ));
+  circuit_free(TO_CIRCUIT(client_circ));
+  hs_service_free(service);
+  hs_free_all();
+  UNMOCK(relay_send_command_from_edge_);
 }
 
 struct testcase_t hs_service_tests[] = {
@@ -1388,6 +1521,8 @@ struct testcase_t hs_service_tests[] = {
   { "upload_descriptors", test_upload_descriptors, TT_FORK,
     NULL, NULL },
   { "revision_counter_state", test_revision_counter_state, TT_FORK,
+    NULL, NULL },
+  { "rendezvous1_parsing", test_rendezvous1_parsing, TT_FORK,
     NULL, NULL },
 
   END_OF_TESTCASES

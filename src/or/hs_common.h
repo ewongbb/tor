@@ -118,6 +118,12 @@
 /* Default value of hsdir spread fetch (hsdir_spread_fetch). */
 #define HS_DEFAULT_HSDIR_SPREAD_FETCH 3
 
+/* The size of a legacy RENDEZVOUS1 cell which adds up to 168 bytes. It is
+ * bigger than the 84 bytes needed for version 3 so we need to pad up to that
+ * length so it is indistinguishable between versions. */
+#define HS_LEGACY_RENDEZVOUS_CELL_SIZE \
+  (REND_COOKIE_LEN + DH_KEY_LEN + DIGEST_LEN)
+
 /* Type of authentication key used by an introduction point. */
 typedef enum {
   HS_AUTH_KEY_TYPE_LEGACY  = 1,
@@ -266,9 +272,9 @@ STATIC uint64_t get_time_period_length(void);
 STATIC uint8_t *get_first_cached_disaster_srv(void);
 STATIC uint8_t *get_second_cached_disaster_srv(void);
 
-#endif /* TOR_UNIT_TESTS */
+#endif /* defined(TOR_UNIT_TESTS) */
 
-#endif /* HS_COMMON_PRIVATE */
+#endif /* defined(HS_COMMON_PRIVATE) */
 
-#endif /* TOR_HS_COMMON_H */
+#endif /* !defined(TOR_HS_COMMON_H) */
 

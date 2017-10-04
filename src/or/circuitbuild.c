@@ -1570,7 +1570,7 @@ circuit_truncated(origin_circuit_t *circ, crypt_path_t *layer, int reason)
 
   log_info(LD_CIRC, "finished");
   return 0;
-#endif
+#endif /* 0 */
 }
 
 /** Given a response payload and keys, initialize, then send a created
@@ -1618,12 +1618,12 @@ onionskin_answer(or_circuit_t *circ,
 
   memcpy(circ->rend_circ_nonce, rend_circ_nonce, DIGEST_LEN);
 
-  circ->is_first_hop = (created_cell->cell_type == CELL_CREATED_FAST);
+  int used_create_fast = (created_cell->cell_type == CELL_CREATED_FAST);
 
   append_cell_to_circuit_queue(TO_CIRCUIT(circ),
                                circ->p_chan, &cell, CELL_DIRECTION_IN, 0);
   log_debug(LD_CIRC, "Finished sending '%s' cell.",
-            circ->is_first_hop ? "created_fast" : "created");
+            used_create_fast ? "created_fast" : "created");
 
   /* Ignore the local bit when ExtendAllowPrivateAddresses is set:
    * it violates the assumption that private addresses are local.
@@ -2112,7 +2112,7 @@ pick_tor2web_rendezvous_node(router_crn_flags_t flags,
 
   return rp_node;
 }
-#endif
+#endif /* defined(ENABLE_TOR2WEB_MODE) || defined(TOR_UNIT_TESTS) */
 
 /* Pick a Rendezvous Point for our HS circuits according to <b>flags</b>. */
 static const node_t *
@@ -2148,7 +2148,7 @@ pick_rendezvous_node(router_crn_flags_t flags)
              "Unable to find a random rendezvous point that is reachable via "
              "a direct connection, falling back to a 3-hop path.");
   }
-#endif
+#endif /* defined(ENABLE_TOR2WEB_MODE) */
 
   return router_choose_random_node(NULL, options->ExcludeNodes, flags);
 }
@@ -2430,15 +2430,15 @@ cpath_get_n_hops(crypt_path_t **head_ptr)
   }
 
   tmp = *head_ptr;
-  if (tmp) {
+  do {
     n_hops++;
-    tmp = (*head_ptr)->next;
-  }
+    tmp = tmp->next;
+  } while (tmp != *head_ptr);
 
   return n_hops;
 }
 
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 /** A helper function used by onion_extend_cpath(). Use <b>purpose</b>
  * and <b>state</b> and the cpath <b>head</b> (currently populated only

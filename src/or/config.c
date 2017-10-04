@@ -114,9 +114,9 @@
  * Coverity. Here's a kludge to unconfuse it.
  */
 #   define __INCLUDE_LEVEL__ 2
-#   endif
+#endif /* defined(__COVERITY__) && !defined(__INCLUDE_LEVEL__) */
 #include <systemd/sd-daemon.h>
-#endif
+#endif /* defined(HAVE_SYSTEMD) */
 
 /* Prefix used to indicate a Unix socket in a FooPort configuration. */
 static const char unix_socket_prefix[] = "unix:";
@@ -174,18 +174,26 @@ static config_abbrev_t option_abbrevs_[] = {
   { NULL, NULL, 0, 0},
 };
 
+/** dummy instance of or_options_t, used for type-checking its
+ * members with CONF_CHECK_VAR_TYPE. */
+DUMMY_TYPECHECK_INSTANCE(or_options_t);
+
 /** An entry for config_vars: "The option <b>name</b> has type
  * CONFIG_TYPE_<b>conftype</b>, and corresponds to
  * or_options_t.<b>member</b>"
  */
 #define VAR(name,conftype,member,initvalue)                             \
   { name, CONFIG_TYPE_ ## conftype, offsetof(or_options_t, member),     \
-      initvalue }
+      initvalue CONF_TEST_MEMBERS(or_options_t, conftype, member) }
 /** As VAR, but the option name and member name are the same. */
 #define V(member,conftype,initvalue)                                    \
   VAR(#member, conftype, member, initvalue)
 /** An entry for config_vars: "The option <b>name</b> is obsolete." */
+#ifdef TOR_UNIT_TESTS
+#define OBSOLETE(name) { name, CONFIG_TYPE_OBSOLETE, 0, NULL, {.INT=NULL} }
+#else
 #define OBSOLETE(name) { name, CONFIG_TYPE_OBSOLETE, 0, NULL }
+#endif
 
 /**
  * Macro to declare *Port options.  Each one comes in three entries.
@@ -208,7 +216,7 @@ static config_var_t option_vars_[] = {
   VAR("AccountingRule",          STRING,   AccountingRule_option,  "max"),
   V(AccountingStart,             STRING,   NULL),
   V(Address,                     STRING,   NULL),
-  V(AllowDotExit,                BOOL,     "0"),
+  OBSOLETE("AllowDotExit"),
   OBSOLETE("AllowInvalidNodes"),
   V(AllowNonRFC953Hostnames,     BOOL,     "0"),
   OBSOLETE("AllowSingleHopCircuits"),
@@ -345,7 +353,7 @@ static config_var_t option_vars_[] = {
     SHARE_DATADIR PATH_SEPARATOR "tor" PATH_SEPARATOR "geoip"),
   V(GeoIPv6File,                 FILENAME,
     SHARE_DATADIR PATH_SEPARATOR "tor" PATH_SEPARATOR "geoip6"),
-#endif
+#endif /* defined(_WIN32) */
   OBSOLETE("Group"),
   V(GuardLifetime,               INTERVAL, "0 minutes"),
   V(HardwareAccel,               BOOL,     "0"),
@@ -489,9 +497,12 @@ static config_var_t option_vars_[] = {
   V(ServerDNSSearchDomains,      BOOL,     "0"),
   V(ServerDNSTestAddresses,      CSV,
       "www.google.com,www.mit.edu,www.yahoo.com,www.slashdot.org"),
-  V(SchedulerLowWaterMark__,     MEMUNIT,  "100 MB"),
-  V(SchedulerHighWaterMark__,    MEMUNIT,  "101 MB"),
-  V(SchedulerMaxFlushCells__,    UINT,     "1000"),
+  OBSOLETE("SchedulerLowWaterMark__"),
+  OBSOLETE("SchedulerHighWaterMark__"),
+  OBSOLETE("SchedulerMaxFlushCells__"),
+  V(KISTSchedRunInterval,        MSEC_INTERVAL, "0 msec"),
+  V(KISTSockBufSizeFactor,       DOUBLE,   "1.0"),
+  V(Schedulers,                  CSV,      "KIST,KISTLite,Vanilla"),
   V(ShutdownWaitLength,          INTERVAL, "30 seconds"),
   OBSOLETE("SocksListenAddress"),
   V(SocksPolicy,                 LINELIST, NULL),
@@ -620,7 +631,7 @@ static config_var_t option_vars_[] = {
   V(TestingDirAuthVoteHSDirIsStrict,  BOOL,     "0"),
   VAR("___UsingTestNetworkDefaults", BOOL, UsingTestNetworkDefaults_, "0"),
 
-  { NULL, CONFIG_TYPE_OBSOLETE, 0, NULL }
+  END_OF_CONFIG_VARS
 };
 
 /** Override default values with these if the user sets the TestingTorNetwork
@@ -675,7 +686,7 @@ static const config_var_t testing_tor_network_defaults[] = {
   VAR("___UsingTestNetworkDefaults", BOOL, UsingTestNetworkDefaults_, "1"),
   V(RendPostPeriod,              INTERVAL, "2 minutes"),
 
-  { NULL, CONFIG_TYPE_OBSOLETE, 0, NULL }
+  END_OF_CONFIG_VARS
 };
 
 #undef VAR
@@ -683,17 +694,19 @@ static const config_var_t testing_tor_network_defaults[] = {
 #undef OBSOLETE
 
 static const config_deprecation_t option_deprecation_notes_[] = {
-  /* Deprecated since 0.2.9.2-alpha... */
-  { "AllowDotExit", "Unrestricted use of the .exit notation can be used for "
-    "a wide variety of application-level attacks." },
-  /* End of options deprecated since 0.2.9.2-alpha. */
-
-  /* Deprecated since 0.3.2.0-alpha. */
+  /* Deprecated since 0.3.2.1-alpha. */
   { "HTTPProxy", "It only applies to direct unencrypted HTTP connections "
     "to your directory server, which your Tor probably wasn't using." },
   { "HTTPProxyAuthenticator", "HTTPProxy is deprecated in favor of HTTPSProxy "
     "which should be used with HTTPSProxyAuthenticator." },
-  /* End of options deprecated since 0.3.2.0-alpha. */
+  /* End of options deprecated since 0.3.2.1-alpha */
+
+  /* Options deprecated since 0.3.2.2-alpha */
+  { "ReachableDirAddresses", "It has no effect on relays, and has had no "
+    "effect on clients since 0.2.8." },
+  { "ClientPreferIPv6DirPort", "It has no effect on relays, and has had no "
+    "effect on clients since 0.2.8." },
+  /* End of options deprecated since 0.3.2.2-alpha. */
 
   { NULL, NULL }
 };
@@ -920,6 +933,10 @@ or_options_free(or_options_t *options)
                       rs, routerset_free(rs));
     smartlist_free(options->NodeFamilySets);
   }
+  if (options->SchedulerTypes_) {
+    SMARTLIST_FOREACH(options->SchedulerTypes_, int *, i, tor_free(i));
+    smartlist_free(options->SchedulerTypes_);
+  }
   tor_free(options->BridgePassword_AuthDigest_);
   tor_free(options->command_arg);
   tor_free(options->master_key_fname);
@@ -1046,7 +1063,6 @@ static const char *default_authorities[] = {
     "154.35.175.225:80 CF6D 0AAF B385 BE71 B8E1 11FC 5CFF 4B47 9237 33BC",
   "longclaw orport=443 "
     "v3ident=23D15D965BC35114467363C165C4F724B64B4F66 "
-    "ipv6=[2620:13:4000:8000:60:f3ff:fea1:7cff]:443 "
     "199.254.238.52:80 74A9 1064 6BCE EFBC D2E8 74FC 1DC9 9743 0F96 8145",
   NULL
 };
@@ -1250,13 +1266,13 @@ options_act_reversible(const or_options_t *old_options, char **msg)
                       "on this OS/with this build.");
     goto rollback;
   }
-#else
+#else /* !(!defined(HAVE_SYS_UN_H)) */
   if (options->ControlSocketsGroupWritable && !options->ControlSocket) {
     *msg = tor_strdup("Setting ControlSocketGroupWritable without setting"
                       "a ControlSocket makes no sense.");
     goto rollback;
   }
-#endif
+#endif /* !defined(HAVE_SYS_UN_H) */
 
   if (running_tor) {
     int n_ports=0;
@@ -1333,7 +1349,7 @@ options_act_reversible(const or_options_t *old_options, char **msg)
       goto rollback;
     }
   }
-#endif
+#endif /* defined(HAVE_NET_IF_H) && defined(HAVE_NET_PFVAR_H) */
 
   /* Attempt to lock all current and future memory with mlockall() only once */
   if (options->DisableAllSwap) {
@@ -1385,7 +1401,7 @@ options_act_reversible(const or_options_t *old_options, char **msg)
                options->DataDirectory, strerror(errno));
     }
   }
-#endif
+#endif /* !defined(_WIN32) */
 
   /* Bail out at this point if we're not going to be a client or server:
    * we don't run Tor itself. */
@@ -1667,7 +1683,7 @@ options_act(const or_options_t *old_options)
     return -1;
   }
 /* LCOV_EXCL_STOP */
-#else
+#else /* !(defined(ENABLE_TOR2WEB_MODE)) */
   if (options->Tor2webMode) {
     log_err(LD_CONFIG, "This copy of Tor was not compiled to run in "
             "'tor2web mode'. It cannot be run with the Tor2webMode torrc "
@@ -1675,7 +1691,7 @@ options_act(const or_options_t *old_options)
             "--enable-tor2web-mode option.");
     return -1;
   }
-#endif
+#endif /* defined(ENABLE_TOR2WEB_MODE) */
 
   /* If we are a bridge with a pluggable transport proxy but no
      Extended ORPort, inform the user that they are missing out. */
@@ -1833,11 +1849,9 @@ options_act(const or_options_t *old_options)
     return -1;
   }
 
-  /* Set up scheduler thresholds */
-  scheduler_set_watermarks((uint32_t)options->SchedulerLowWaterMark__,
-                           (uint32_t)options->SchedulerHighWaterMark__,
-                           (options->SchedulerMaxFlushCells__ > 0) ?
-                           options->SchedulerMaxFlushCells__ : 1000);
+  /* Inform the scheduler subsystem that a configuration changed happened. It
+   * might be a change of scheduler or parameter. */
+  scheduler_conf_changed();
 
   /* Set up accounting */
   if (accounting_parse_options(options, 0)<0) {
@@ -2876,7 +2890,7 @@ options_validate_cb(void *old_options, void *options, void *default_options,
 #else
 #define COMPLAIN(args, ...)                                     \
   STMT_BEGIN log_warn(LD_CONFIG, args, ##__VA_ARGS__); STMT_END
-#endif
+#endif /* defined(__GNUC__) && __GNUC__ <= 3 */
 
 /** Log a warning message iff <b>filepath</b> is not absolute.
  * Warning message must contain option name <b>option</b> and
@@ -2940,6 +2954,61 @@ warn_about_relative_paths(or_options_t *options)
       n += warn_if_option_path_is_relative("HiddenServiceDir", hs_line->value);
   }
   return n != 0;
+}
+
+/* Validate options related to the scheduler. From the Schedulers list, the
+ * SchedulerTypes_ list is created with int values so once we select the
+ * scheduler, which can happen anytime at runtime, we don't have to parse
+ * strings and thus be quick.
+ *
+ * Return 0 on success else -1 and msg is set with an error message. */
+static int
+options_validate_scheduler(or_options_t *options, char **msg)
+{
+  tor_assert(options);
+  tor_assert(msg);
+
+  if (!options->Schedulers || smartlist_len(options->Schedulers) == 0) {
+    REJECT("Empty Schedulers list. Either remove the option so the defaults "
+           "can be used or set at least one value.");
+  }
+  /* Ok, we do have scheduler types, validate them. */
+  options->SchedulerTypes_ = smartlist_new();
+  SMARTLIST_FOREACH_BEGIN(options->Schedulers, const char *, type) {
+    int *sched_type;
+    if (!strcasecmp("KISTLite", type)) {
+      sched_type = tor_malloc_zero(sizeof(int));
+      *sched_type = SCHEDULER_KIST_LITE;
+      smartlist_add(options->SchedulerTypes_, sched_type);
+    } else if (!strcasecmp("KIST", type)) {
+      sched_type = tor_malloc_zero(sizeof(int));
+      *sched_type = SCHEDULER_KIST;
+      smartlist_add(options->SchedulerTypes_, sched_type);
+    } else if (!strcasecmp("Vanilla", type)) {
+      sched_type = tor_malloc_zero(sizeof(int));
+      *sched_type = SCHEDULER_VANILLA;
+      smartlist_add(options->SchedulerTypes_, sched_type);
+    } else {
+      tor_asprintf(msg, "Unknown type %s in option Schedulers. "
+                        "Possible values are KIST, KISTLite and Vanilla.",
+                   escaped(type));
+      return -1;
+    }
+  } SMARTLIST_FOREACH_END(type);
+
+  if (options->KISTSockBufSizeFactor < 0) {
+    REJECT("KISTSockBufSizeFactor must be at least 0");
+  }
+
+  /* Don't need to validate that the Interval is less than anything because
+   * zero is valid and all negative values are valid. */
+  if (options->KISTSchedRunInterval > KIST_SCHED_RUN_INTERVAL_MAX) {
+    tor_asprintf(msg, "KISTSchedRunInterval must not be more than %d (ms)",
+                 KIST_SCHED_RUN_INTERVAL_MAX);
+    return -1;
+  }
+
+  return 0;
 }
 
 /* Validate options related to single onion services.
@@ -3130,7 +3199,7 @@ options_validate(or_options_t *old_options, or_options_t *options,
              "and OS X/Darwin-specific feature.");
 #else
       options->TransProxyType_parsed = TPT_PF_DIVERT;
-#endif
+#endif /* !defined(OpenBSD) && !defined( DARWIN ) */
     } else if (!strcasecmp(options->TransProxyType, "tproxy")) {
 #if !defined(__linux__)
       REJECT("TPROXY is a Linux-specific feature.");
@@ -3144,7 +3213,7 @@ options_validate(or_options_t *old_options, or_options_t *options,
              "and OS X/Darwin-specific feature.");
 #else
       options->TransProxyType_parsed = TPT_IPFW;
-#endif
+#endif /* !defined(KERNEL_MAY_SUPPORT_IPFW) */
     } else {
       REJECT("Unrecognized value for TransProxyType");
     }
@@ -3154,10 +3223,10 @@ options_validate(or_options_t *old_options, or_options_t *options,
       REJECT("Cannot use TransProxyType without any valid TransPort.");
     }
   }
-#else
+#else /* !(defined(USE_TRANSPARENT)) */
   if (options->TransPort_set)
     REJECT("TransPort is disabled in this build.");
-#endif
+#endif /* defined(USE_TRANSPARENT) */
 
   if (options->TokenBucketRefillInterval <= 0
       || options->TokenBucketRefillInterval > 1000) {
@@ -3169,17 +3238,6 @@ options_validate(or_options_t *old_options, or_options_t *options,
     routerset_union(options->ExcludeExitNodesUnion_,
                     options->ExcludeExitNodes);
     routerset_union(options->ExcludeExitNodesUnion_, options->ExcludeNodes);
-  }
-
-  if (options->SchedulerLowWaterMark__ == 0 ||
-      options->SchedulerLowWaterMark__ > UINT32_MAX) {
-    log_warn(LD_GENERAL, "Bad SchedulerLowWaterMark__ option");
-    return -1;
-  } else if (options->SchedulerHighWaterMark__ <=
-             options->SchedulerLowWaterMark__ ||
-             options->SchedulerHighWaterMark__ > UINT32_MAX) {
-    log_warn(LD_GENERAL, "Bad SchedulerHighWaterMark option");
-    return -1;
   }
 
   if (options->NodeFamilies) {
@@ -3456,7 +3514,7 @@ options_validate(or_options_t *old_options, or_options_t *options,
   if (options->RendPostPeriod < min_rendpostperiod) {
     log_warn(LD_CONFIG, "RendPostPeriod option is too short; "
              "raising to %d seconds.", min_rendpostperiod);
-    options->RendPostPeriod = min_rendpostperiod;;
+    options->RendPostPeriod = min_rendpostperiod;
   }
 
   if (options->RendPostPeriod > MAX_DIR_PERIOD) {
@@ -3490,7 +3548,7 @@ options_validate(or_options_t *old_options, or_options_t *options,
                "Tor2WebMode is enabled; disabling UseEntryGuards.");
     options->UseEntryGuards = 0;
   }
-#endif
+#endif /* defined(ENABLE_TOR2WEB_MODE) */
 
   if (options->Tor2webRendezvousPoints && !options->Tor2webMode) {
     REJECT("Tor2webRendezvousPoints cannot be set without Tor2webMode.");
@@ -4300,6 +4358,10 @@ options_validate(or_options_t *old_options, or_options_t *options,
       REJECT("BridgeRelay is 1, ORPort is not set. This is an invalid "
              "combination.");
 
+  if (options_validate_scheduler(options, msg) < 0) {
+    return -1;
+  }
+
   return 0;
 }
 
@@ -4334,7 +4396,7 @@ compute_real_max_mem_in_queues(const uint64_t val, int log_guess)
 #else
       /* (presumably) 32-bit system. Let's hope for 1 GB. */
       result = ONE_GIGABYTE;
-#endif
+#endif /* SIZEOF_VOID_P >= 8 */
     } else {
       /* We detected it, so let's pick 3/4 of the total RAM as our limit. */
       const uint64_t avail = (ram / 4) * 3;
@@ -4667,7 +4729,7 @@ get_windows_conf_root(void)
   path[sizeof(path)-1] = '\0';
 #else
   strlcpy(path, tpath, sizeof(path));
-#endif
+#endif /* defined(UNICODE) */
 
   /* Now we need to free the memory that the path-idl was stored in.  In
    * typical Windows fashion, we can't just call 'free()' on it. */
@@ -4683,7 +4745,7 @@ get_windows_conf_root(void)
   is_set = 1;
   return path;
 }
-#endif
+#endif /* defined(_WIN32) */
 
 /** Return the default location for our torrc file (if <b>defaults_file</b> is
  * false), or for the torrc-defaults file (if <b>defaults_file</b> is true). */
@@ -4707,7 +4769,7 @@ get_default_conf_file(int defaults_file)
   }
 #else
   return defaults_file ? CONFDIR "/torrc-defaults" : CONFDIR "/torrc";
-#endif
+#endif /* defined(DISABLE_SYSTEM_TORRC) || ... */
 }
 
 /** Verify whether lst is a list of strings containing valid-looking
@@ -4858,9 +4920,9 @@ find_torrc_filename(config_line_t *cmd_arg,
       } else {
         fname = dflt ? tor_strdup(dflt) : NULL;
       }
-#else
+#else /* !(!defined(_WIN32)) */
       fname = dflt ? tor_strdup(dflt) : NULL;
-#endif
+#endif /* !defined(_WIN32) */
     }
   }
   return fname;
@@ -5492,7 +5554,7 @@ options_init_logs(const or_options_t *old_options, or_options_t *options,
       }
 #else
       log_warn(LD_CONFIG, "Syslog is not supported on this system. Sorry.");
-#endif
+#endif /* defined(HAVE_SYSLOG_H) */
       goto cleanup;
     }
 
@@ -6090,6 +6152,8 @@ parse_dir_authority_line(const char *line, dirinfo_type_t required_type,
   char v3_digest[DIGEST_LEN];
   dirinfo_type_t type = 0;
   double weight = 1.0;
+
+  memset(v3_digest, 0, sizeof(v3_digest));
 
   items = smartlist_new();
   smartlist_split_string(items, line, NULL,
@@ -6707,7 +6771,7 @@ parse_port_config(smartlist_t *out,
         } else if (!strcasecmp(elt, "AllAddrs")) {
 
           all_addrs = 1;
-#endif
+#endif /* 0 */
         } else if (!strcasecmp(elt, "IPv4Only")) {
           bind_ipv4_only = 1;
         } else if (!strcasecmp(elt, "IPv6Only")) {
@@ -7489,7 +7553,7 @@ normalize_data_directory(or_options_t *options)
   strlcpy(p, get_windows_conf_root(), MAX_PATH);
   options->DataDirectory = p;
   return 0;
-#else
+#else /* !(defined(_WIN32)) */
   const char *d = options->DataDirectory;
   if (!d)
     d = "~/.tor";
@@ -7515,7 +7579,7 @@ normalize_data_directory(or_options_t *options)
    options->DataDirectory = fn;
  }
  return 0;
-#endif
+#endif /* defined(_WIN32) */
 }
 
 /** Check and normalize the value of options->DataDirectory; return 0 if it
@@ -8046,10 +8110,10 @@ config_load_geoip_file_(sa_family_t family,
   }
   geoip_load_file(family, fname);
   tor_free(free_fname);
-#else
+#else /* !(defined(_WIN32)) */
   (void)default_fname;
   geoip_load_file(family, fname);
-#endif
+#endif /* defined(_WIN32) */
 }
 
 /** Load geoip files for IPv4 and IPv6 if <a>options</a> and
@@ -8124,9 +8188,9 @@ init_cookie_authentication(const char *fname, const char *header,
       log_warn(LD_FS, "Unable to make %s group-readable.", escaped(fname));
     }
   }
-#else
+#else /* !(!defined(_WIN32)) */
   (void) group_readable;
-#endif
+#endif /* !defined(_WIN32) */
 
   /* Success! */
   log_info(LD_GENERAL, "Generated auth cookie file in '%s'.", escaped(fname));

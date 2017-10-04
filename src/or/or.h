@@ -64,7 +64,7 @@
 #include <process.h>
 #include <direct.h>
 #include <windows.h>
-#endif
+#endif /* defined(_WIN32) */
 
 #include "crypto.h"
 #include "crypto_format.h"
@@ -747,15 +747,15 @@ typedef enum {
 #define REND_NUMBER_OF_CONSECUTIVE_REPLICAS 3
 
 /** Length of v2 descriptor ID (32 base32 chars = 160 bits). */
-#define REND_DESC_ID_V2_LEN_BASE32 32
+#define REND_DESC_ID_V2_LEN_BASE32 BASE32_DIGEST_LEN
 
 /** Length of the base32-encoded secret ID part of versioned hidden service
  * descriptors. */
-#define REND_SECRET_ID_PART_LEN_BASE32 32
+#define REND_SECRET_ID_PART_LEN_BASE32 BASE32_DIGEST_LEN
 
 /** Length of the base32-encoded hash of an introduction point's
  * identity key. */
-#define REND_INTRO_POINT_ID_LEN_BASE32 32
+#define REND_INTRO_POINT_ID_LEN_BASE32 BASE32_DIGEST_LEN
 
 /** Length of the descriptor cookie that is used for client authorization
  * to hidden services. */
@@ -1418,7 +1418,7 @@ typedef struct listener_connection_t {
  * session as described in RFC 5705.
  *
  * Not used by today's tors, since everything that supports this
- * also supports ED25519_SHA3_5705, which is better.
+ * also supports ED25519_SHA256_5705, which is better.
  **/
 #define AUTHTYPE_RSA_SHA256_RFC5705 2
 /** As AUTHTYPE_RSA_SHA256_RFC5705, but uses an Ed25519 identity key to
@@ -1834,7 +1834,7 @@ typedef struct dir_connection_t {
 
   /** Number of RELAY_DATA cells sent. */
   uint32_t data_cells_sent;
-#endif
+#endif /* defined(MEASUREMENTS_21206) */
 } dir_connection_t;
 
 /** Subtype of connection_t for an connection to a controller. */
@@ -3473,9 +3473,6 @@ typedef struct or_circuit_t {
   /* We have already received an INTRODUCE1 cell on this circuit. */
   unsigned int already_received_introduce1 : 1;
 
-  /** True iff this circuit was made with a CREATE_FAST cell. */
-  unsigned int is_first_hop : 1;
-
   /** If set, this circuit carries HS traffic. Consider it in any HS
    *  statistics. */
   unsigned int circuit_carries_hs_traffic_stats : 1;
@@ -3707,8 +3704,8 @@ typedef struct {
   config_line_t *SocksPort_lines;
   /** Ports to listen on for transparent pf/netfilter connections. */
   config_line_t *TransPort_lines;
-  const char *TransProxyType; /**< What kind of transparent proxy
-                               * implementation are we using? */
+  char *TransProxyType; /**< What kind of transparent proxy
+                         * implementation are we using? */
   /** Parsed value of TransProxyType. */
   enum {
     TPT_DEFAULT,
@@ -4169,13 +4166,6 @@ typedef struct {
    * if we are a cache).  For authorities, this is always true. */
   int DownloadExtraInfo;
 
-  /** If true, we convert "www.google.com.foo.exit" addresses on the
-   * socks/trans/natd ports into "www.google.com" addresses that
-   * exit from the node "foo". Disabled by default since attacking
-   * websites and exit relays can use it to manipulate your path
-   * selection. */
-  int AllowDotExit;
-
   /** If true, we're configured to collect statistics on clients
    * requesting network statuses from us as directory. */
   int DirReqStatistics_option;
@@ -4548,19 +4538,6 @@ typedef struct {
   /** How long (seconds) do we keep a guard before picking a new one? */
   int GuardLifetime;
 
-  /** Low-water mark for global scheduler - start sending when estimated
-   * queued size falls below this threshold.
-   */
-  uint64_t SchedulerLowWaterMark__;
-  /** High-water mark for global scheduler - stop sending when estimated
-   * queued size exceeds this threshold.
-   */
-  uint64_t SchedulerHighWaterMark__;
-  /** Flush size for global scheduler - flush this many cells at a time
-   * when sending.
-   */
-  int SchedulerMaxFlushCells__;
-
   /** Is this an exit node?  This is a tristate, where "1" means "yes, and use
    * the default exit policy if none is given" and "0" means "no; exit policy
    * is 'reject *'" and "auto" (-1) means "same as 1, but warn the user."
@@ -4633,6 +4610,21 @@ typedef struct {
   /** Bool (default: 0). Tells Tor to never try to exec another program.
    */
   int NoExec;
+
+  /** Have the KIST scheduler run every X milliseconds. If less than zero, do
+   * not use the KIST scheduler but use the old vanilla scheduler instead. If
+   * zero, do what the consensus says and fall back to using KIST as if this is
+   * set to "10 msec" if the consensus doesn't say anything. */
+  int KISTSchedRunInterval;
+
+  /** A multiplier for the KIST per-socket limit calculation. */
+  double KISTSockBufSizeFactor;
+
+  /** The list of scheduler type string ordered by priority that is first one
+   * has to be tried first. Default: KIST,KISTLite,Vanilla */
+  smartlist_t *Schedulers;
+  /* An ordered list of scheduler_types mapped from Schedulers. */
+  smartlist_t *SchedulerTypes_;
 } or_options_t;
 
 /** Persistent state for an onion router, as saved to disk. */
@@ -4694,8 +4686,8 @@ typedef struct {
 
   /** Build time histogram */
   config_line_t * BuildtimeHistogram;
-  unsigned int TotalBuildTimes;
-  unsigned int CircuitBuildAbandonedCount;
+  int TotalBuildTimes;
+  int CircuitBuildAbandonedCount;
 
   /** What version of Tor wrote this state file? */
   char *TorVersion;
@@ -5056,7 +5048,7 @@ typedef struct measured_bw_line_t {
   long int bw_kb;
 } measured_bw_line_t;
 
-#endif
+#endif /* defined(DIRSERV_PRIVATE) */
 
 /********************************* dirvote.c ************************/
 
@@ -5469,5 +5461,5 @@ typedef struct tor_version_t {
   char git_tag[DIGEST_LEN];
 } tor_version_t;
 
-#endif
+#endif /* !defined(TOR_OR_H) */
 

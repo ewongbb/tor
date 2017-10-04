@@ -39,7 +39,7 @@
 #define check() STMT_BEGIN buf_assert_ok(buf); STMT_END
 #else
 #define check() STMT_NIL
-#endif
+#endif /* defined(PARANOIA) */
 
 /* Implementation notes:
  *
@@ -98,7 +98,7 @@
     DBG_S(tor_assert(a == b));                                          \
     memset(a, 0, SENTINEL_LEN);                                         \
   } while (0)
-#endif
+#endif /* defined(DISABLE_MEMORY_SENTINELS) */
 
 /** Move all bytes stored in <b>chunk</b> to the front of <b>chunk</b>->mem,
  * to free up space at the end. */
@@ -311,7 +311,7 @@ buf_new_with_data(const char *cp, size_t sz)
 
   return buf;
 }
-#endif
+#endif /* defined(TOR_UNIT_TESTS) */
 
 /** Remove the first <b>n</b> bytes from buf. */
 void
@@ -648,8 +648,12 @@ buf_flush_to_socket(buf_t *buf, tor_socket_t s, size_t sz,
   size_t flushed = 0;
   tor_assert(buf_flushlen);
   tor_assert(SOCKET_OK(s));
-  tor_assert(*buf_flushlen <= buf->datalen);
-  tor_assert(sz <= *buf_flushlen);
+  if (BUG(*buf_flushlen > buf->datalen)) {
+    *buf_flushlen = buf->datalen;
+  }
+  if (BUG(sz > *buf_flushlen)) {
+    sz = *buf_flushlen;
+  }
 
   check();
   while (sz) {
@@ -907,6 +911,8 @@ buf_peek_startswith(const buf_t *buf, const char *cmd)
 {
   char tmp[PEEK_BUF_STARTSWITH_MAX];
   size_t clen = strlen(cmd);
+  if (clen == 0)
+    return 1;
   if (BUG(clen > sizeof(tmp)))
     return 0;
   if (buf->datalen < clen)
@@ -962,7 +968,7 @@ buf_get_line(buf_t *buf, char *data_out, size_t *data_len)
   return 1;
 }
 
-/** Compress on uncompress the <b>data_len</b> bytes in <b>data</b> using the
+/** Compress or uncompress the <b>data_len</b> bytes in <b>data</b> using the
  * compression state <b>state</b>, appending the result to <b>buf</b>.  If
  * <b>done</b> is true, flush the data in the state and finish the
  * compression/uncompression.  Return -1 on failure, 0 on success. */
@@ -1053,11 +1059,13 @@ buf_assert_ok(buf_t *buf)
       tor_assert(ch->data >= &ch->mem[0]);
       tor_assert(ch->data <= &ch->mem[0]+ch->memlen);
       if (ch->data == &ch->mem[0]+ch->memlen) {
+        /* LCOV_EXCL_START */
         static int warned = 0;
         if (! warned) {
           log_warn(LD_BUG, "Invariant violation in buf.c related to #15083");
           warned = 1;
         }
+        /* LCOV_EXCL_STOP */
       }
       tor_assert(ch->data+ch->datalen <= &ch->mem[0] + ch->memlen);
       if (!ch->next)

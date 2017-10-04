@@ -73,6 +73,9 @@
 /** Length of our DH keys. */
 #define DH_BYTES (1024/8)
 
+/** Length of a sha1 message digest when encoded in base32 with trailing =
+ * signs removed. */
+#define BASE32_DIGEST_LEN 32
 /** Length of a sha1 message digest when encoded in base64 with trailing =
  * signs removed. */
 #define BASE64_DIGEST_LEN 27
@@ -349,12 +352,12 @@ STATIC int crypto_strongest_rand_raw(uint8_t *out, size_t out_len);
 extern int break_strongest_rng_syscall;
 extern int break_strongest_rng_fallback;
 #endif
-#endif
+#endif /* defined(CRYPTO_PRIVATE) */
 
 #ifdef TOR_UNIT_TESTS
 void crypto_pk_assign_(crypto_pk_t *dest, const crypto_pk_t *src);
 digest_algorithm_t crypto_digest_get_algorithm(crypto_digest_t *digest);
 #endif
 
-#endif
+#endif /* !defined(TOR_CRYPTO_H) */
 

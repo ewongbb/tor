@@ -389,9 +389,9 @@ static int check_signature_token(const char *digest,
   log_debug(LD_MM, "Area for %s has %lu allocated; using %lu.",   \
             name, (unsigned long)alloc, (unsigned long)used);     \
   STMT_END
-#else
+#else /* !(defined(DEBUG_AREA_ALLOC)) */
 #define DUMP_AREA(a,name) STMT_NIL
-#endif
+#endif /* defined(DEBUG_AREA_ALLOC) */
 
 /* Dump mechanism for unparseable descriptors */
 
@@ -702,7 +702,7 @@ dump_desc_populate_one_file, (const char *dirname, const char *f))
     goto done;
     /* LCOV_EXCL_STOP */
   }
-#endif
+#endif /* SIZE_MAX > UINT64_MAX */
   if (BUG(st.st_size < 0)) {
     /* LCOV_EXCL_START
      * Should be impossible, since the OS isn't supposed to be b0rken. */
@@ -1426,9 +1426,9 @@ dump_distinct_digest_count(int severity)
     verified_digests = digestmap_new();
   tor_log(severity, LD_GENERAL, "%d *distinct* router digests verified",
       digestmap_size(verified_digests));
-#else
+#else /* !(defined(COUNT_DISTINCT_DIGESTS)) */
   (void)severity; /* suppress "unused parameter" warning */
-#endif
+#endif /* defined(COUNT_DISTINCT_DIGESTS) */
 }
 
 /** Try to find an IPv6 OR port in <b>list</b> of directory_token_t's
@@ -2938,7 +2938,7 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
   }
 
   Wgg /= weight_scale;
-  Wgm /= weight_scale;
+  Wgm /= weight_scale; (void) Wgm; // unused from here on.
   Wgd /= weight_scale;
 
   Wmg /= weight_scale;
@@ -2946,8 +2946,8 @@ networkstatus_verify_bw_weights(networkstatus_t *ns, int consensus_method)
   Wme /= weight_scale;
   Wmd /= weight_scale;
 
-  Weg /= weight_scale;
-  Wem /= weight_scale;
+  Weg /= weight_scale; (void) Weg; // unused from here on.
+  Wem /= weight_scale; (void) Wem; // unused from here on.
   Wee /= weight_scale;
   Wed /= weight_scale;
 

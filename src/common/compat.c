@@ -88,12 +88,12 @@ SecureZeroMemory(PVOID ptr, SIZE_T cnt)
   while (cnt--)
     *vcptr++ = 0;
 }
-#endif
+#endif /* defined(HAVE_DECL_SECUREZEROMEMORY) && !HAVE_DECL_SECUREZEROMEMORY */
 #elif defined(HAVE_READPASSPHRASE_H)
 #include <readpassphrase.h>
 #else
 #include "tor_readpassphrase.h"
-#endif
+#endif /* defined(_WIN32) || ... */
 
 /* Includes for the process attaching prevention */
 #if defined(HAVE_SYS_PRCTL_H) && defined(__linux__)
@@ -102,7 +102,7 @@ SecureZeroMemory(PVOID ptr, SIZE_T cnt)
 #elif defined(__APPLE__)
 #include <sys/types.h>
 #include <sys/ptrace.h>
-#endif
+#endif /* defined(HAVE_SYS_PRCTL_H) && defined(__linux__) || ... */
 
 #ifdef HAVE_NETDB_H
 #include <netdb.h>
@@ -161,7 +161,7 @@ tor_open_cloexec(const char *path, int flags, unsigned mode)
    * are running on one without. */
   if (errno != EINVAL)
     return -1;
-#endif
+#endif /* defined(O_CLOEXEC) */
 
   log_debug(LD_FS, "Opening %s with flags %x", p, flags);
   fd = open(p, flags, mode);
@@ -173,7 +173,7 @@ tor_open_cloexec(const char *path, int flags, unsigned mode)
       return -1;
     }
   }
-#endif
+#endif /* defined(FD_CLOEXEC) */
   return fd;
 }
 
@@ -191,7 +191,7 @@ tor_fopen_cloexec(const char *path, const char *mode)
       return NULL;
     }
   }
-#endif
+#endif /* defined(FD_CLOEXEC) */
   return result;
 }
 
@@ -212,7 +212,8 @@ tor_rename(const char *path_old, const char *path_new)
 #define COMPAT_HAS_MMAN_AND_PAGESIZE
 #endif
 
-#if defined(COMPAT_HAS_MMAN_AND_PAGESIZE) || defined(RUNNING_DOXYGEN)
+#if defined(COMPAT_HAS_MMAN_AND_PAGESIZE) || \
+  defined(RUNNING_DOXYGEN)
 /** Try to create a memory mapping for <b>filename</b> and return it.  On
  * failure, return NULL.  Sets errno properly, using ERANGE to mean
  * "empty file". */
@@ -450,7 +451,7 @@ tor_munmap_file(tor_mmap_t *handle)
   /* Can't fail in this mmap()/munmap()-free case */
   return 0;
 }
-#endif
+#endif /* defined(COMPAT_HAS_MMAN_AND_PAGESIZE) || ... || ... */
 
 /** Replacement for snprintf.  Differs from platform snprintf in two
  * ways: First, always NUL-terminates its output.  Second, always
@@ -590,7 +591,7 @@ tor_vasprintf(char **strp, const char *fmt, va_list args)
   }
   *strp = strp_tmp;
   return len;
-#endif
+#endif /* defined(HAVE_VASPRINTF) || ... */
 }
 
 /** Given <b>hlen</b> bytes at <b>haystack</b> and <b>nlen</b> bytes at
@@ -636,7 +637,7 @@ tor_memmem(const void *_haystack, size_t hlen,
     }
   }
   return NULL;
-#endif
+#endif /* defined(HAVE_MEMMEM) && (!defined(__GNUC__) || __GNUC__ >= 2) */
 }
 
 /**
@@ -777,7 +778,7 @@ tor_fix_source_file(const char *fname)
   }
   return r;
 }
-#endif
+#endif /* defined(_WIN32) */
 
 /**
  * Read a 16-bit value beginning at <b>cp</b>.  Equivalent to
@@ -871,7 +872,7 @@ replace_file(const char *from, const char *to)
       return -1;
     }
   return tor_rename(from, to);
-#endif
+#endif /* !defined(_WIN32) */
 }
 
 /** Change <b>fname</b>'s modification time to now. */
@@ -957,7 +958,7 @@ tor_lockfile_lock(const char *filename, int blocking, int *locked_out)
       return NULL;
     }
   }
-#endif
+#endif /* defined(_WIN32) || ... */
 
   result = tor_malloc(sizeof(tor_lockfile_t));
   result->filename = tor_strdup(filename);
@@ -985,7 +986,7 @@ tor_lockfile_unlock(tor_lockfile_t *lockfile)
   }
 #else
   /* Closing the lockfile is sufficient. */
-#endif
+#endif /* defined(_WIN32) || ... */
 
   close(lockfile->fd);
   lockfile->fd = -1;
@@ -1033,9 +1034,9 @@ tor_fd_seekend(int fd)
    * no need to worry. */
   if (rc < 0 && errno == ESPIPE)
     rc = 0;
-#endif
+#endif /* defined(ESPIPE) */
   return (rc < 0) ? -1 : 0;
-#endif
+#endif /* defined(_WIN32) */
 }
 
 /** Move <b>fd</b> to position <b>pos</b> in the file. Return -1 on error, 0
@@ -1074,7 +1075,7 @@ tor_ftruncate(int fd)
 static bitarray_t *open_sockets = NULL;
 /** The size of <b>open_sockets</b>, in bits. */
 static int max_socket = -1;
-#endif
+#endif /* defined(DEBUG_SOCKET_COUNTING) */
 
 /** Count of number of sockets currently open.  (Undercounts sockets opened by
  * eventdns and libevent.) */
@@ -1144,7 +1145,7 @@ tor_close_socket, (tor_socket_t s))
     tor_assert(open_sockets && s <= max_socket);
     bitarray_clear(open_sockets, s);
   }
-#endif
+#endif /* defined(DEBUG_SOCKET_COUNTING) */
   if (r == 0) {
     --n_sockets_open;
   } else {
@@ -1154,7 +1155,7 @@ tor_close_socket, (tor_socket_t s))
 #else
     if (r != EBADF)
       --n_sockets_open; // LCOV_EXCL_LINE -- EIO and EINTR too hard to force.
-#endif
+#endif /* defined(_WIN32) */
     r = -1;
   }
 
@@ -1187,9 +1188,9 @@ mark_socket_open(tor_socket_t s)
   }
   bitarray_set(open_sockets, s);
 }
-#else
+#else /* !(defined(DEBUG_SOCKET_COUNTING)) */
 #define mark_socket_open(s) STMT_NIL
-#endif
+#endif /* defined(DEBUG_SOCKET_COUNTING) */
 /** @} */
 
 /** As socket(), but counts the number of open sockets. */
@@ -1247,7 +1248,7 @@ tor_open_socket_with_extensions(int domain, int type, int protocol,
    * support, we are running on one without. */
   if (errno != EINVAL)
     return s;
-#endif /* SOCK_CLOEXEC && SOCK_NONBLOCK */
+#endif /* defined(SOCK_CLOEXEC) && defined(SOCK_NONBLOCK) */
 
   s = socket(domain, type, protocol);
   if (! SOCKET_OK(s))
@@ -1261,9 +1262,9 @@ tor_open_socket_with_extensions(int domain, int type, int protocol,
       return TOR_INVALID_SOCKET;
     }
   }
-#else
+#else /* !(defined(FD_CLOEXEC)) */
   (void)cloexec;
-#endif
+#endif /* defined(FD_CLOEXEC) */
 
   if (nonblock) {
     if (set_socket_nonblocking(s) == -1) {
@@ -1319,7 +1320,8 @@ tor_accept_socket_with_extensions(tor_socket_t sockfd, struct sockaddr *addr,
     return TOR_INVALID_SOCKET;
   }
 
-#if defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC) && defined(SOCK_NONBLOCK)
+#if defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC) \
+  && defined(SOCK_NONBLOCK)
   int ext_flags = (cloexec ? SOCK_CLOEXEC : 0) |
                   (nonblock ? SOCK_NONBLOCK : 0);
   s = accept4(sockfd, addr, len, ext_flags);
@@ -1331,7 +1333,7 @@ tor_accept_socket_with_extensions(tor_socket_t sockfd, struct sockaddr *addr,
    * we are missing SOCK_CLOEXEC/SOCK_NONBLOCK support. */
   if (errno != EINVAL && errno != ENOSYS)
     return s;
-#endif
+#endif /* defined(HAVE_ACCEPT4) && defined(SOCK_CLOEXEC) ... */
 
   s = accept(sockfd, addr, len);
   if (!SOCKET_OK(s))
@@ -1345,9 +1347,9 @@ tor_accept_socket_with_extensions(tor_socket_t sockfd, struct sockaddr *addr,
       return TOR_INVALID_SOCKET;
     }
   }
-#else
+#else /* !(defined(FD_CLOEXEC)) */
   (void)cloexec;
-#endif
+#endif /* defined(FD_CLOEXEC) */
 
   if (nonblock) {
     if (set_socket_nonblocking(s) == -1) {
@@ -1407,7 +1409,7 @@ set_socket_nonblocking(tor_socket_t sock)
     log_warn(LD_NET, "Couldn't set file status flags: %s", strerror(errno));
     return -1;
   }
-#endif
+#endif /* defined(_WIN32) */
 
   return 0;
 }
@@ -1445,7 +1447,7 @@ tor_socketpair(int family, int type, int protocol, tor_socket_t fd[2])
    * are running on one without. */
   if (errno != EINVAL)
     return -errno;
-#endif
+#endif /* defined(SOCK_CLOEXEC) */
 
   r = socketpair(family, type, protocol, fd);
   if (r < 0)
@@ -1468,7 +1470,7 @@ tor_socketpair(int family, int type, int protocol, tor_socket_t fd[2])
       return -errno;
     }
   }
-#endif
+#endif /* defined(FD_CLOEXEC) */
   goto sockets_ok; /* So that sockets_ok will not be unused. */
 
  sockets_ok:
@@ -1484,9 +1486,9 @@ tor_socketpair(int family, int type, int protocol, tor_socket_t fd[2])
   socket_accounting_unlock();
 
   return 0;
-#else
+#else /* !(defined(HAVE_SOCKETPAIR) && !defined(_WIN32)) */
   return tor_ersatz_socketpair(family, type, protocol, fd);
-#endif
+#endif /* defined(HAVE_SOCKETPAIR) && !defined(_WIN32) */
 }
 
 #ifdef NEED_ERSATZ_SOCKETPAIR
@@ -1643,7 +1645,7 @@ tor_ersatz_socketpair(int family, int type, int protocol, tor_socket_t fd[2])
 
 #undef SIZEOF_SOCKADDR
 
-#endif
+#endif /* defined(NEED_ERSATZ_SOCKETPAIR) */
 
 /* Return the maximum number of allowed sockets. */
 int
@@ -1697,7 +1699,7 @@ set_max_file_descriptors(rlim_t limit, int *max_out)
 #else
   const char *platform = "unknown platforms with no getrlimit()";
   const unsigned long MAX_CONNECTIONS = 15000;
-#endif
+#endif /* defined(CYGWIN) || defined(__CYGWIN__) || ... */
   log_fn(LOG_INFO, LD_NET,
          "This platform is missing getrlimit(). Proceeding.");
   if (limit > MAX_CONNECTIONS) {
@@ -1708,7 +1710,7 @@ set_max_file_descriptors(rlim_t limit, int *max_out)
     return -1;
   }
   limit = MAX_CONNECTIONS;
-#else /* HAVE_GETRLIMIT */
+#else /* !(!defined(HAVE_GETRLIMIT)) */
   struct rlimit rlim;
 
   if (getrlimit(RLIMIT_NOFILE, &rlim) != 0) {
@@ -1757,7 +1759,7 @@ set_max_file_descriptors(rlim_t limit, int *max_out)
         bad = 0;
       }
     }
-#endif /* OPEN_MAX */
+#endif /* defined(OPEN_MAX) */
     if (bad) {
       log_warn(LD_CONFIG,
                "Couldn't set maximum number of file descriptors: %s",
@@ -1767,7 +1769,7 @@ set_max_file_descriptors(rlim_t limit, int *max_out)
   }
   /* leave some overhead for logs, etc, */
   limit = rlim.rlim_cur;
-#endif /* HAVE_GETRLIMIT */
+#endif /* !defined(HAVE_GETRLIMIT) */
 
   if (limit > INT_MAX)
     limit = INT_MAX;
@@ -1805,7 +1807,7 @@ log_credential_status(void)
            "UID is %u (real), %u (effective), %u (saved)",
            (unsigned)ruid, (unsigned)euid, (unsigned)suid);
   }
-#else
+#else /* !(defined(HAVE_GETRESUID)) */
   /* getresuid is not present on MacOS X, so we can't get the saved (E)UID */
   ruid = getuid();
   euid = geteuid();
@@ -1814,7 +1816,7 @@ log_credential_status(void)
   log_fn(CREDENTIAL_LOG_LEVEL, LD_GENERAL,
          "UID is %u (real), %u (effective), unknown (saved)",
          (unsigned)ruid, (unsigned)euid);
-#endif
+#endif /* defined(HAVE_GETRESUID) */
 
   /* log GIDs */
 #ifdef HAVE_GETRESGID
@@ -1826,7 +1828,7 @@ log_credential_status(void)
            "GID is %u (real), %u (effective), %u (saved)",
            (unsigned)rgid, (unsigned)egid, (unsigned)sgid);
   }
-#else
+#else /* !(defined(HAVE_GETRESGID)) */
   /* getresgid is not present on MacOS X, so we can't get the saved (E)GID */
   rgid = getgid();
   egid = getegid();
@@ -1834,7 +1836,7 @@ log_credential_status(void)
   log_fn(CREDENTIAL_LOG_LEVEL, LD_GENERAL,
          "GID is %u (real), %u (effective), unknown (saved)",
          (unsigned)rgid, (unsigned)egid);
-#endif
+#endif /* defined(HAVE_GETRESGID) */
 
   /* log supplementary groups */
   sup_gids_size = 64;
@@ -1874,7 +1876,7 @@ log_credential_status(void)
 
   return 0;
 }
-#endif
+#endif /* !defined(_WIN32) */
 
 #ifndef _WIN32
 /** Cached struct from the last getpwname() call we did successfully. */
@@ -1974,7 +1976,7 @@ tor_getpwuid(uid_t uid)
 
   return NULL;
 }
-#endif
+#endif /* !defined(_WIN32) */
 
 /** Return true iff we were compiled with capability support, and capabilities
  * seem to work. **/
@@ -1987,9 +1989,9 @@ have_capability_support(void)
     return 0;
   cap_free(caps);
   return 1;
-#else
+#else /* !(defined(HAVE_LINUX_CAPABILITIES)) */
   return 0;
-#endif
+#endif /* defined(HAVE_LINUX_CAPABILITIES) */
 }
 
 #ifdef HAVE_LINUX_CAPABILITIES
@@ -2048,7 +2050,7 @@ drop_capabilities(int pre_setuid)
 
   return 0;
 }
-#endif
+#endif /* defined(HAVE_LINUX_CAPABILITIES) */
 
 /** Call setuid and setgid to run as <b>user</b> and switch to their
  * primary group.  Return 0 on success.  On failure, log and return -1.
@@ -2098,13 +2100,13 @@ switch_id(const char *user, const unsigned flags)
     if (drop_capabilities(1))
       return -1;
   }
-#else
+#else /* !(defined(HAVE_LINUX_CAPABILITIES)) */
   (void) keep_bindlow;
   if (warn_if_no_caps) {
     log_warn(LD_CONFIG, "KeepBindCapabilities set, but no capability support "
              "on this system.");
   }
-#endif
+#endif /* defined(HAVE_LINUX_CAPABILITIES) */
 
   /* Properly switch egid,gid,euid,uid here or bail out */
   if (setgroups(1, &pw->pw_gid)) {
@@ -2164,7 +2166,7 @@ switch_id(const char *user, const unsigned flags)
     if (drop_capabilities(0))
       return -1;
   }
-#endif
+#endif /* defined(HAVE_LINUX_CAPABILITIES) */
 
 #if !defined(CYGWIN) && !defined(__CYGWIN__)
   /* If we tried to drop privilege to a group/user other than root, attempt to
@@ -2188,7 +2190,7 @@ switch_id(const char *user, const unsigned flags)
       return -1;
     }
   }
-#endif
+#endif /* !defined(CYGWIN) && !defined(__CYGWIN__) */
 
   /* Check what really happened */
   if (log_credential_status()) {
@@ -2197,8 +2199,8 @@ switch_id(const char *user, const unsigned flags)
 
   have_already_switched_id = 1; /* mark success so we never try again */
 
-#if defined(__linux__) && defined(HAVE_SYS_PRCTL_H) && defined(HAVE_PRCTL)
-#ifdef PR_SET_DUMPABLE
+#if defined(__linux__) && defined(HAVE_SYS_PRCTL_H) && \
+  defined(HAVE_PRCTL) && defined(PR_SET_DUMPABLE)
   if (pw->pw_uid) {
     /* Re-enable core dumps if we're not running as root. */
     log_info(LD_CONFIG, "Re-enabling coredumps");
@@ -2207,17 +2209,16 @@ switch_id(const char *user, const unsigned flags)
                strerror(errno));
     }
   }
-#endif
-#endif
+#endif /* defined(__linux__) && defined(HAVE_SYS_PRCTL_H) && ... */
   return 0;
 
-#else
+#else /* !(!defined(_WIN32)) */
   (void)user;
   (void)flags;
 
   log_warn(LD_CONFIG, "Switching users is unsupported on your OS.");
   return -1;
-#endif
+#endif /* !defined(_WIN32) */
 }
 
 /* We only use the linux prctl for now. There is no Win32 support; this may
@@ -2240,35 +2241,32 @@ switch_id(const char *user, const unsigned flags)
 int
 tor_disable_debugger_attach(void)
 {
-  int r, attempted;
-  r = -1;
-  attempted = 0;
+  int r = -1;
   log_debug(LD_CONFIG,
             "Attemping to disable debugger attachment to Tor for "
             "unprivileged users.");
-#if defined(__linux__) && defined(HAVE_SYS_PRCTL_H) && defined(HAVE_PRCTL)
-#ifdef PR_SET_DUMPABLE
-  attempted = 1;
+#if defined(__linux__) && defined(HAVE_SYS_PRCTL_H) \
+  && defined(HAVE_PRCTL) && defined(PR_SET_DUMPABLE)
+#define TRIED_TO_DISABLE
   r = prctl(PR_SET_DUMPABLE, 0);
-#endif
-#endif
-#if defined(__APPLE__) && defined(PT_DENY_ATTACH)
-  if (r < 0) {
-    attempted = 1;
-    r = ptrace(PT_DENY_ATTACH, 0, 0, 0);
-  }
-#endif
+#elif defined(__APPLE__) && defined(PT_DENY_ATTACH)
+#define TRIED_TO_ATTACH
+  r = ptrace(PT_DENY_ATTACH, 0, 0, 0);
+#endif /* defined(__linux__) && defined(HAVE_SYS_PRCTL_H) ... || ... */
 
   // XXX: TODO - Mac OS X has dtrace and this may be disabled.
   // XXX: TODO - Windows probably has something similar
-  if (r == 0 && attempted) {
+#ifdef TRIED_TO_DISABLE
+  if (r == 0) {
     log_debug(LD_CONFIG, "Debugger attachment disabled for "
               "unprivileged users.");
     return 1;
-  } else if (attempted) {
+  } else {
     log_warn(LD_CONFIG, "Unable to disable debugger attaching: %s",
              strerror(errno));
   }
+#endif /* defined(TRIED_TO_DISABLE) */
+#undef TRIED_TO_DISABLE
   return r;
 }
 
@@ -2287,7 +2285,7 @@ get_user_homedir(const char *username)
   }
   return tor_strdup(pw->pw_dir);
 }
-#endif
+#endif /* defined(HAVE_PWD_H) */
 
 /** Modify <b>fname</b> to contain the name of its parent directory.  Doesn't
  * actually examine the filesystem; does a purely syntactic modification.
@@ -2315,7 +2313,7 @@ get_parent_directory(char *fname)
   if (fname[0] && fname[1] == ':') {
     fname += 2;
   }
-#endif
+#endif /* defined(_WIN32) */
   /* Now we want to remove all path-separators at the end of the string,
    * and to remove the end of the string starting with the path separator
    * before the last non-path-separator.  In perl, this would be
@@ -2364,7 +2362,7 @@ alloc_getcwd(void)
     raw_free(cwd); // alias for free to avoid tripping check-spaces.
   }
   return result;
-#else
+#else /* !(defined(HAVE_GET_CURRENT_DIR_NAME)) */
   size_t size = 1024;
   char *buf = NULL;
   char *ptr = NULL;
@@ -2381,9 +2379,9 @@ alloc_getcwd(void)
     size *= 2;
   }
   return buf;
-#endif
+#endif /* defined(HAVE_GET_CURRENT_DIR_NAME) */
 }
-#endif
+#endif /* !defined(_WIN32) */
 
 /** Expand possibly relative path <b>fname</b> to an absolute path.
  * Return a newly allocated string, possibly equal to <b>fname</b>. */
@@ -2399,7 +2397,7 @@ make_path_absolute(char *fname)
   if (absfname_malloced) raw_free(absfname_malloced);
 
   return absfname;
-#else
+#else /* !(defined(_WIN32)) */
   char *absfname = NULL, *path = NULL;
 
   tor_assert(fname);
@@ -2422,7 +2420,7 @@ make_path_absolute(char *fname)
     }
   }
   return absfname;
-#endif
+#endif /* defined(_WIN32) */
 }
 
 #ifndef HAVE__NSGETENVIRON
@@ -2431,8 +2429,8 @@ make_path_absolute(char *fname)
 #ifndef RUNNING_DOXYGEN
 extern char **environ;
 #endif
-#endif
-#endif
+#endif /* !defined(HAVE_EXTERN_ENVIRON_DECLARED) */
+#endif /* !defined(HAVE__NSGETENVIRON) */
 
 /** Return the current environment. This is a portable replacement for
  * 'environ'. */
@@ -2444,9 +2442,9 @@ get_environment(void)
    * when we do a mostly-static build on OSX 10.7, the resulting binary won't
    * work on OSX 10.6. */
   return *_NSGetEnviron();
-#else
+#else /* !(defined(HAVE__NSGETENVIRON)) */
   return environ;
-#endif
+#endif /* defined(HAVE__NSGETENVIRON) */
 }
 
 /** Get name of current host and write it to <b>name</b> array, whose
@@ -2587,6 +2585,7 @@ tor_inet_pton(int af, const char *src, void *dst)
     int gapPos = -1, i, setWords=0;
     const char *dot = strchr(src, '.');
     const char *eow; /* end of words. */
+    memset(words, 0xf8, sizeof(words));
     if (dot == src)
       return 0;
     else if (!dot)
@@ -2723,7 +2722,7 @@ get_uname, (void))
       /* (Linux says 0 is success, Solaris says 1 is success) */
       strlcpy(uname_result, u.sysname, sizeof(uname_result));
     } else
-#endif
+#endif /* defined(HAVE_UNAME) */
       {
 #ifdef _WIN32
         OSVERSIONINFOEX info;
@@ -2785,12 +2784,12 @@ get_uname, (void))
           info.wProductType == VER_NT_DOMAIN_CONTROLLER) {
         strlcat(uname_result, " [server]", sizeof(uname_result));
       }
-#endif
-#else
+#endif /* defined(VER_NT_SERVER) */
+#else /* !(defined(_WIN32)) */
         /* LCOV_EXCL_START -- can't provoke uname failure */
         strlcpy(uname_result, "Unknown platform", sizeof(uname_result));
         /* LCOV_EXCL_STOP */
-#endif
+#endif /* defined(_WIN32) */
       }
     uname_result_is_set = 1;
   }
@@ -2846,7 +2845,7 @@ compute_num_cpus_impl(void)
     return -1;
 #else
   return -1;
-#endif
+#endif /* defined(_WIN32) || ... */
 }
 
 #define MAX_DETECTABLE_CPUS 16
@@ -3009,7 +3008,7 @@ tor_localtime_r(const time_t *timep, struct tm *result)
     memcpy(result, r, sizeof(struct tm));
   return correct_tm(1, timep, result, r);
 }
-#endif
+#endif /* defined(HAVE_LOCALTIME_R) || ... */
 /** @} */
 
 /** @{ */
@@ -3052,9 +3051,13 @@ tor_gmtime_r(const time_t *timep, struct tm *result)
     memcpy(result, r, sizeof(struct tm));
   return correct_tm(0, timep, result, r);
 }
-#endif
+#endif /* defined(HAVE_GMTIME_R) || ... */
 
 #if defined(HAVE_MLOCKALL) && HAVE_DECL_MLOCKALL && defined(RLIMIT_MEMLOCK)
+#define HAVE_UNIX_MLOCKALL
+#endif
+
+#ifdef HAVE_UNIX_MLOCKALL
 /** Attempt to raise the current and max rlimit to infinity for our process.
  * This only needs to be done once and can probably only be done when we have
  * not already dropped privileges.
@@ -3085,7 +3088,7 @@ tor_set_max_memlock(void)
 
   return 0;
 }
-#endif
+#endif /* defined(HAVE_UNIX_MLOCKALL) */
 
 /** Attempt to lock all current and all future memory pages.
  * This should only be called once and while we're privileged.
@@ -3110,7 +3113,7 @@ tor_mlockall(void)
    * http://msdn.microsoft.com/en-us/library/aa366895(VS.85).aspx
    */
 
-#if defined(HAVE_MLOCKALL) && HAVE_DECL_MLOCKALL && defined(RLIMIT_MEMLOCK)
+#ifdef HAVE_UNIX_MLOCKALL
   if (tor_set_max_memlock() == 0) {
     log_debug(LD_GENERAL, "RLIMIT_MEMLOCK is now set to RLIM_INFINITY.");
   }
@@ -3131,10 +3134,10 @@ tor_mlockall(void)
                            "pages: %s", strerror(errno));
     return -1;
   }
-#else
+#else /* !(defined(HAVE_UNIX_MLOCKALL)) */
   log_warn(LD_GENERAL, "Unable to lock memory pages. mlockall() unsupported?");
   return -1;
-#endif
+#endif /* defined(HAVE_UNIX_MLOCKALL) */
 }
 
 /**
@@ -3162,7 +3165,7 @@ tor_socket_errno(tor_socket_t sock)
   }
   return err;
 }
-#endif
+#endif /* defined(_WIN32) */
 
 #if defined(_WIN32)
 #define E(code, s) { code, (s " [" #code " ]") }
@@ -3238,7 +3241,7 @@ tor_socket_strerror(int e)
   }
   return strerror(e);
 }
-#endif
+#endif /* defined(_WIN32) */
 
 /** Called before we make any calls to network-related functions.
  * (Some operating systems require their network libraries to be
@@ -3267,7 +3270,7 @@ network_init(void)
   /* WSAData.iMaxSockets might show the max sockets we're allowed to use.
    * We might use it to complain if we're trying to be a server but have
    * too few sockets available. */
-#endif
+#endif /* defined(_WIN32) */
   return 0;
 }
 
@@ -3303,9 +3306,9 @@ format_win32_error(DWORD err)
     result = tor_malloc(len);
     wcstombs(result, str, len);
     result[len-1] = '\0';
-#else
+#else /* !(defined(UNICODE)) */
     result = tor_strdup(str);
-#endif
+#endif /* defined(UNICODE) */
   } else {
     result = tor_strdup("<unformattable error>");
   }
@@ -3314,7 +3317,7 @@ format_win32_error(DWORD err)
   }
   return result;
 }
-#endif
+#endif /* defined(_WIN32) */
 
 #if defined(HW_PHYSMEM64)
 /* This appears to be an OpenBSD thing */
@@ -3322,7 +3325,7 @@ format_win32_error(DWORD err)
 #elif defined(HW_MEMSIZE)
 /* OSX defines this one */
 #define INT64_HW_MEM HW_MEMSIZE
-#endif
+#endif /* defined(HW_PHYSMEM64) || ... */
 
 /**
  * Helper: try to detect the total system memory, and return it. On failure,
@@ -3355,8 +3358,8 @@ get_total_system_memory_impl(void)
   tor_free(s);
   return result * 1024;
 
- err:
   /* LCOV_EXCL_START Can't reach this unless proc is broken. */
+ err:
   tor_free(s);
   close(fd);
   return 0;
@@ -3396,7 +3399,7 @@ get_total_system_memory_impl(void)
 #else
   /* I have no clue. */
   return 0;
-#endif
+#endif /* defined(__linux__) || ... */
 }
 
 /**
@@ -3429,7 +3432,7 @@ get_total_system_memory(size_t *mem_out)
      * size_t. */
     m = SIZE_MAX;
   }
-#endif
+#endif /* SIZE_MAX != UINT64_MAX */
 
   *mem_out = mem_cached = (size_t) m;
 
@@ -3510,7 +3513,7 @@ tor_getpass(const char *prompt, char *output, size_t buflen)
   return r;
 #else
 #error "No implementation for tor_getpass found!"
-#endif
+#endif /* defined(HAVE_READPASSPHRASE) || ... */
 }
 
 /** Return the amount of free disk space we have permission to use, in
@@ -3550,6 +3553,6 @@ tor_get_avail_disk_space(const char *path)
   (void)path;
   errno = ENOSYS;
   return -1;
-#endif
+#endif /* defined(HAVE_STATVFS) || ... */
 }
 

@@ -495,13 +495,26 @@ circuit_package_relay_cell(cell_t *cell, circuit_t *circ,
 {
   channel_t *chan; /* where to send the cell */
 
+  if (circ->marked_for_close) {
+    /* Circuit is marked; send nothing. */
+    return 0;
+  }
+
   if (cell_direction == CELL_DIRECTION_OUT) {
     crypt_path_t *thishop; /* counter for repeated crypts */
     chan = circ->n_chan;
     if (!chan) {
       log_warn(LD_BUG,
                "outgoing relay cell sent from %s:%d has n_chan==NULL."
-               " Dropping.", filename, lineno);
+               " Dropping. Circuit is in state %s (%d), and is "
+               "%smarked for close. (%s:%d, %d)", filename, lineno,
+               circuit_state_to_string(circ->state), circ->state,
+               circ->marked_for_close ? "" : "not ",
+               circ->marked_for_close_file?circ->marked_for_close_file:"",
+               circ->marked_for_close, circ->marked_for_close_reason);
+      if (CIRCUIT_IS_ORIGIN(circ)) {
+        circuit_log_path(LOG_WARN, LD_BUG, TO_ORIGIN_CIRCUIT(circ));
+      }
       log_backtrace(LOG_WARN, LD_BUG, "");
       return 0; /* just drop it */
     }
@@ -811,6 +824,12 @@ connection_edge_send_command(edge_connection_t *fromconn,
     return -1;
   }
 
+  if (circ->marked_for_close) {
+    /* The circuit has been marked, but not freed yet. When it's freed, it
+     * will mark this connection for close. */
+    return -1;
+  }
+
 #ifdef MEASUREMENTS_21206
   /* Keep track of the number of RELAY_DATA cells sent for directory
    * connections. */
@@ -819,7 +838,7 @@ connection_edge_send_command(edge_connection_t *fromconn,
   if (linked_conn && linked_conn->type == CONN_TYPE_DIR) {
     ++(TO_DIR_CONN(linked_conn)->data_cells_sent);
   }
-#endif
+#endif /* defined(MEASUREMENTS_21206) */
 
   return relay_send_command_from_edge(fromconn->stream_id, circ,
                                       relay_command, payload,
@@ -1688,7 +1707,7 @@ connection_edge_process_relay_cell(cell_t *cell, circuit_t *circ,
       if (linked_conn && linked_conn->type == CONN_TYPE_DIR) {
         ++(TO_DIR_CONN(linked_conn)->data_cells_received);
       }
-#endif
+#endif /* defined(MEASUREMENTS_21206) */
 
       if (!optimistic_data) {
         /* Only send a SENDME if we're not getting optimistic data; otherwise
@@ -2388,7 +2407,7 @@ circuit_consider_sending_sendme(circuit_t *circ, crypt_path_t *layer_hint)
      assert_circuit_mux_okay(chan)
 #else
 #define assert_cmux_ok_paranoid(chan)
-#endif
+#endif /* defined(ACTIVE_CIRCUITS_PARANOIA) */
 
 /** The total number of cells we have allocated. */
 static size_t total_cells_allocated = 0;
@@ -2856,7 +2875,7 @@ get_max_middle_cells(void)
 {
   return ORCIRC_MAX_MIDDLE_CELLS;
 }
-#endif
+#endif /* 0 */
 
 /** Add <b>cell</b> to the queue of <b>circ</b> writing to <b>chan</b>
  * transmitting in <b>direction</b>. */
@@ -2966,7 +2985,7 @@ append_cell_to_circuit_queue(circuit_t *circ, channel_t *chan,
       }
     }
   }
-#endif
+#endif /* 0 */
 
   cell_queue_append_packed_copy(circ, queue, exitward, cell,
                                 chan->wide_circ_ids, 1);
