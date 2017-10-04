@@ -238,7 +238,7 @@ tor_addr_make_null(tor_addr_t *a, sa_family_t family)
  * Return 0 on success, -1 on failure; 1 on transient failure.
  */
 MOCK_IMPL(int,
-tor_addr_lookup,(const char *name, uint16_t family, tor_addr_t *addr))
+tor_addr_lookup, (const char *name, uint16_t family, tor_addr_t *addr))
 {
   /* Perhaps eventually this should be replaced by a tor_getaddrinfo or
    * something.
@@ -1611,7 +1611,7 @@ get_interface_addresses_ioctl(int severity, sa_family_t family)
  * interface addresses of requested <b>family</b> and ignore the addresses
  * of other address families. */
 MOCK_IMPL(smartlist_t *,
-get_interface_addresses_raw,(int severity, sa_family_t family))
+get_interface_addresses_raw, (int severity, sa_family_t family))
 {
   smartlist_t *result = NULL;
 #if defined(HAVE_IFADDRS_TO_SMARTLIST)
@@ -1654,9 +1654,9 @@ tor_addr_is_multicast(const tor_addr_t *a)
  * Return 0 on success, -1 on failure.
  */
 MOCK_IMPL(int,
-get_interface_address6_via_udp_socket_hack,(int severity,
-                                            sa_family_t family,
-                                            tor_addr_t *addr))
+get_interface_address6_via_udp_socket_hack, (int severity,
+                                             sa_family_t family,
+                                             tor_addr_t *addr))
 {
   struct sockaddr_storage my_addr, target_addr;
   int sock=-1, r=-1;
@@ -1671,7 +1671,7 @@ get_interface_address6_via_udp_socket_hack,(int severity,
     struct sockaddr_in6 *sin6 = (struct sockaddr_in6*)&target_addr;
     /* Use the "discard" service port */
     sin6->sin6_port = htons(9);
-    sock = tor_open_socket(PF_INET6,SOCK_DGRAM,IPPROTO_UDP);
+    sock = tor_open_socket(PF_INET6, SOCK_DGRAM, IPPROTO_UDP);
     addr_len = (socklen_t)sizeof(struct sockaddr_in6);
     sin6->sin6_family = AF_INET6;
     S6_ADDR16(sin6->sin6_addr)[0] = htons(0x2002); /* 2002:: */
@@ -1679,7 +1679,7 @@ get_interface_address6_via_udp_socket_hack,(int severity,
     struct sockaddr_in *sin = (struct sockaddr_in*)&target_addr;
     /* Use the "discard" service port */
     sin->sin_port = htons(9);
-    sock = tor_open_socket(PF_INET,SOCK_DGRAM,IPPROTO_UDP);
+    sock = tor_open_socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
     addr_len = (socklen_t)sizeof(struct sockaddr_in);
     sin->sin_family = AF_INET;
     sin->sin_addr.s_addr = htonl(0x12000001); /* 18.0.0.1 */
@@ -1694,14 +1694,14 @@ get_interface_address6_via_udp_socket_hack,(int severity,
     goto err;
   }
 
-  if (tor_connect_socket(sock,(struct sockaddr *)&target_addr,
+  if (tor_connect_socket(sock, (struct sockaddr *)&target_addr,
                          addr_len) < 0) {
     int e = tor_socket_errno(sock);
     log_fn(severity, LD_NET, "connect() failed: %s", tor_socket_strerror(e));
     goto err;
   }
 
-  if (tor_getsockname(sock,(struct sockaddr*)&my_addr, &addr_len)) {
+  if (tor_getsockname(sock, (struct sockaddr*)&my_addr, &addr_len)) {
     int e = tor_socket_errno(sock);
     log_fn(severity, LD_NET, "getsockname() to determine interface failed: %s",
            tor_socket_strerror(e));
@@ -1734,7 +1734,8 @@ get_interface_address6_via_udp_socket_hack,(int severity,
  * interfaces which connect to the Internet.
  */
 MOCK_IMPL(int,
-get_interface_address6,(int severity, sa_family_t family, tor_addr_t *addr))
+get_interface_address6, (int severity, sa_family_t family,
+                         tor_addr_t *addr))
 {
   smartlist_t *addrs;
   int rv = -1;
@@ -1782,9 +1783,9 @@ free_interface_address6_list(smartlist_t *addrs)
  * Use free_interface_address6_list to free the returned list.
  */
 MOCK_IMPL(smartlist_t *,
-get_interface_address6_list,(int severity,
-                             sa_family_t family,
-                             int include_internal))
+get_interface_address6_list, (int severity,
+                              sa_family_t family,
+                              int include_internal))
 {
   smartlist_t *addrs;
   tor_addr_t addr;
@@ -1821,7 +1822,7 @@ get_interface_address6_list,(int severity,
   addrs = smartlist_new();
 
   if (family == AF_INET || family == AF_UNSPEC) {
-    if (get_interface_address6_via_udp_socket_hack(severity,AF_INET,
+    if (get_interface_address6_via_udp_socket_hack(severity, AF_INET,
                                                    &addr) == 0) {
       if (include_internal || !tor_addr_is_internal(&addr, 0)) {
         smartlist_add(addrs, tor_memdup(&addr, sizeof(addr)));
@@ -1830,7 +1831,7 @@ get_interface_address6_list,(int severity,
   }
 
   if (family == AF_INET6 || family == AF_UNSPEC) {
-    if (get_interface_address6_via_udp_socket_hack(severity,AF_INET6,
+    if (get_interface_address6_via_udp_socket_hack(severity, AF_INET6,
                                                    &addr) == 0) {
       if (include_internal || !tor_addr_is_internal(&addr, 0)) {
         smartlist_add(addrs, tor_memdup(&addr, sizeof(addr)));
@@ -1940,7 +1941,7 @@ addr_port_lookup(int severity, const char *addrport, char **address,
   colon = strrchr(addrport, ':');
   if (colon) {
     address_ = tor_strndup(addrport, colon-addrport);
-    port_ = (int) tor_parse_long(colon+1,10,1,65535,NULL,NULL);
+    port_ = (int) tor_parse_long(colon+1, 10, 1, 65535, NULL, NULL);
     if (!port_) {
       log_fn(severity, LD_GENERAL, "Port %s out of range", escaped(colon+1));
       ok = 0;
@@ -1960,7 +1961,7 @@ addr_port_lookup(int severity, const char *addrport, char **address,
 
   if (addr) {
     /* There's an addr pointer, so we need to resolve the hostname. */
-    if (tor_lookup_hostname(address_,addr)) {
+    if (tor_lookup_hostname(address_, addr)) {
       log_fn(severity, LD_NET, "Couldn't look up %s", escaped(address_));
       ok = 0;
       *addr = 0;
@@ -2090,7 +2091,7 @@ tor_dup_ip(uint32_t addr)
  * addresses on all interfaces which connect to the Internet.
  */
 MOCK_IMPL(int,
-get_interface_address,(int severity, uint32_t *addr))
+get_interface_address, (int severity, uint32_t *addr))
 {
   tor_addr_t local_addr;
   int r;
