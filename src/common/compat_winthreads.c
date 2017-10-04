@@ -94,7 +94,7 @@ tor_cond_init(tor_cond_t *cond)
   if (InitializeCriticalSectionAndSpinCount(&cond->lock, SPIN_COUNT)==0) {
     return -1;
   }
-  if ((cond->event = CreateEvent(NULL,TRUE,FALSE,NULL)) == NULL) {
+  if ((cond->event = CreateEvent(NULL, TRUE, FALSE, NULL)) == NULL) {
     DeleteCriticalSection(&cond->lock);
     return -1;
   }
