@@ -190,8 +190,8 @@ tor_addr_eq_ipv4h(const tor_addr_t *a, uint32_t u)
  */
 #define TOR_ADDR_BUF_LEN 48
 
-MOCK_DECL(int, tor_addr_lookup,(const char *name, uint16_t family,
-                                tor_addr_t *addr_out));
+MOCK_DECL(int, tor_addr_lookup, (const char *name, uint16_t family,
+                                 tor_addr_t *addr_out));
 char *tor_addr_to_str_dup(const tor_addr_t *addr) ATTR_MALLOC;
 
 /** Wrapper function of fmt_addr_impl(). It does not decorate IPv6
@@ -204,12 +204,12 @@ const char *fmt_addr_impl(const tor_addr_t *addr, int decorate);
 const char *fmt_addrport(const tor_addr_t *addr, uint16_t port);
 const char * fmt_addr32(uint32_t addr);
 
-MOCK_DECL(int,get_interface_address6,(int severity, sa_family_t family,
+MOCK_DECL(int, get_interface_address6, (int severity, sa_family_t family,
 tor_addr_t *addr));
 void free_interface_address6_list(smartlist_t * addrs);
-MOCK_DECL(smartlist_t *,get_interface_address6_list,(int severity,
-                                                     sa_family_t family,
-                                                     int include_internal));
+MOCK_DECL(smartlist_t *, get_interface_address6_list, (int severity,
+                                                       sa_family_t family,
+                                                       int include_internal));
 
 /** Flag to specify how to do a comparison between addresses.  In an "exact"
  * comparison, addresses are equivalent only if they are in the same family
@@ -320,7 +320,7 @@ int addr_mask_get_bits(uint32_t mask);
 #define INET_NTOA_BUF_LEN 16
 int tor_inet_ntoa(const struct in_addr *in, char *buf, size_t buf_len);
 char *tor_dup_ip(uint32_t addr) ATTR_MALLOC;
-MOCK_DECL(int,get_interface_address,(int severity, uint32_t *addr));
+MOCK_DECL(int, get_interface_address, (int severity, uint32_t *addr));
 /** Free a smartlist of IP addresses returned by get_interface_address_list.
  */
 static inline void
@@ -347,11 +347,11 @@ int tor_addr_port_eq(const tor_addr_port_t *a,
                      const tor_addr_port_t *b);
 
 #ifdef ADDRESS_PRIVATE
-MOCK_DECL(smartlist_t *,get_interface_addresses_raw,(int severity,
-                                                     sa_family_t family));
-MOCK_DECL(int,get_interface_address6_via_udp_socket_hack,(int severity,
-                                                          sa_family_t family,
-                                                          tor_addr_t *addr));
+MOCK_DECL(smartlist_t *, get_interface_addresses_raw, (int severity,
+                                                       sa_family_t family));
+MOCK_DECL(int, get_interface_address6_via_udp_socket_hack, (int severity,
+                                                            sa_family_t family,
+                                                            tor_addr_t *addr));
 
 #ifdef HAVE_IFADDRS_TO_SMARTLIST
 STATIC smartlist_t *ifaddrs_to_smartlist(const struct ifaddrs *ifa,
