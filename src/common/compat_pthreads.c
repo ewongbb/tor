@@ -228,7 +228,7 @@ tor_cond_uninit(tor_cond_t *cond)
 {
   if (pthread_cond_destroy(&cond->cond)) {
     // LCOV_EXCL_START
-    log_warn(LD_GENERAL,"Error freeing condition: %s", strerror(errno));
+    log_warn(LD_GENERAL, "Error freeing condition: %s", strerror(errno));
     return;
     // LCOV_EXCL_STOP
   }
